@@ -1,0 +1,113 @@
+---
+import HamburgerButton from "./HamburgerButton.astro";
+import Logo from "./Logo.astro";
+import NextEvent from "./NextEvent.astro";
+---
+
+<header class="mb-10 h-auto max-w-[100vw] p-10">
+  <nav class="lg:flex justify-between text-nowrap hidden">
+    <div class="flex items-center gap-10">
+      <Logo
+        fill="red"
+        class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+      />
+      <div class="flex items-center gap-5">
+        <a href="#own-mission">Nuestra misión</a>
+        <a href="#pivos">Charlas</a>
+        <a href="#blog">Blog</a>
+      </div>
+    </div>
+    <div>
+      <NextEvent />
+    </div>
+  </nav>
+  <nav class="lg:hidden flex justify-between items-center">
+    <Logo
+      class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+    />
+    <div class="flex justify-between items-center gap-6">
+      <HamburgerButton class:list={"block lg:hidden"} id="menuButton" />
+      <div
+        id="menuMobileContent"
+        class="fixed
+        inset-0
+        z-[888]
+        flex
+        w-screen
+        flex-col
+        items-center
+        overflow-x-auto
+        
+        lg:hidden"
+      >
+        <div class="bg-black absolute w-screen h-screen opacity-90"></div>
+        <div class="flex justify-between w-full p-10 text-white z-[888]">
+          <Logo
+            class="text-accent transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+          />
+          <HamburgerButton id="innerMenuButton" />
+        </div>
+        <div
+          class:list={[
+            "flex flex-col items-center gap-5 text-2xl mb-12 z-[888] text-white uppercase",
+          ]}
+        >
+          <a
+            class="hover:text-accent transition duration-300"
+            href="#own-mission">Nuestra misión</a
+          >
+          <a class="hover:text-accent transition duration-300" href="#pivos"
+            >Charlas</a
+          >
+          <a class="hover:text-accent transition duration-300" href="#blog"
+            >Blog</a
+          >
+        </div>
+        <hr class="h-[1px] w-1/2 border-t-0 mb-12" style="background:white" />
+        <NextEvent class="z-[888]" />
+      </div>
+    </div>
+  </nav>
+</header>
+
+<style>
+  #menuMobileContent {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    scrollbar-gutter: stable;
+  }
+
+  #menuMobileContent.open {
+    opacity: 1 !important;
+    pointer-events: all;
+  }
+</style>
+<script>
+  import { $ } from "@/lib/dom-selector";
+  function toggleMenu(
+    nav: HTMLElement | null,
+    menuMobileContent: HTMLElement | null
+  ) {
+    menuMobileContent?.classList.toggle("open");
+    innerMenuButton?.classList.toggle("open");
+    document.body.classList.toggle("overflow-hidden");
+    document.body.classList.toggle("lg:overflow-auto");
+  }
+
+  const nav = $("nav");
+  const menuButton = $("#menuButton");
+  const innerMenuButton = $("#innerMenuButton");
+  const menuMobileContext = $("#menuMobileContent");
+
+  menuButton?.addEventListener("hamburgerButtonClicked", () =>
+    toggleMenu(nav, menuMobileContext)
+  );
+  innerMenuButton?.addEventListener("hamburgerButtonClicked", () =>
+    toggleMenu(nav, menuMobileContext)
+  );
+
+  if (menuMobileContext?.classList.contains("open")) {
+    toggleMenu(nav, menuMobileContext);
+  }
+</script>
