@@ -1,0 +1,19 @@
+---
+import { PARTNERS } from "@/consts/partners";
+import type { Partner } from "@/types/Partner";
+---
+
+<section class="w-full flex justify-between">
+  <div class="max-w-96">
+    <h2 class="text-4xl font-bold">Partners</h2>
+    <p>
+      Estamos agradecidos por la colaboración de estas empresas que hacen
+      posible nuestras charlas tecnológicas. Su apoyo nos permite seguir
+      creciendo y compartiendo conocimiento con la comunidad de desarrolladores
+      en Jaén.
+    </p>
+  </div>
+  <div class="">
+    {PARTNERS.map(({ name }) => <span>{name}</span>)}
+  </div>
+</section>
