@@ -5,18 +5,20 @@ import Twitter from "./icons/Twitter.astro";
 import Logo from "./Logo.astro";
 ---
 
-<div class="bg-black rounded-lg flex justify-between w-full p-10 text-white">
-  <Logo width="140" class="text-white" />
-  <div class="flex gap-4">
+<div
+  class="bg-black rounded-3xl flex flex-col md:flex-row justify-between w-full p-7 md:p-10 text-white gap-5"
+>
+  <Logo class="text-white w-28 md:w-52" />
+  <div class="flex gap-4 items-center">
     <a href="#">
-      <Instagram class="size-10" />
+      <Instagram class="size-6 md:size-10" />
     </a>
     <a href="#">
-      <Discord class="size-10" />
+      <Discord class="size-6 md:size-10" />
     </a>
     <a href="#">
-      <Twitter class="size-10" />
+      <Twitter class="size-6 md:size-10" />
     </a>
-    <a href="https://saraos.tech/@xauendevs" class="text-4xl">💃🏻</a>
+    <a href="https://saraos.tech/@xauendevs" class="text-2xl md:text04xl">💃🏻</a>
   </div>
 </div>

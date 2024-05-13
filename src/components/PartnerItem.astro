@@ -1,0 +1,14 @@
+---
+interface Props {
+  name: string;
+  url: string;
+  mainColor?: string;
+  logo: string;
+}
+
+const { name, logo, url } = Astro.props;
+---
+
+<a href={url} class="h-full">
+  <img src={`/img/partners/${logo}`} alt={`Logo de ${name}`} class="h-full" />
+</a>

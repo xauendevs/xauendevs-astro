@@ -1,19 +1,28 @@
 ---
+import PartnerItem from "@/components/PartnerItem.astro";
 import { PARTNERS } from "@/consts/partners";
 import type { Partner } from "@/types/Partner";
 ---
 
-<section class="w-full flex justify-between">
-  <div class="max-w-96">
-    <h2 class="text-4xl font-bold">Partners</h2>
-    <p>
+<section
+  class="w-full flex justify-between p-8 lg:p-10 flex-col lg:flex-row gap-10"
+>
+  <div class="lg:max-w-[650px]">
+    <h2 class="text-2xl lg:text-4xl font-bold">Partners</h2>
+    <p class="text-sm md:text-lg">
       Estamos agradecidos por la colaboración de estas empresas que hacen
       posible nuestras charlas tecnológicas. Su apoyo nos permite seguir
       creciendo y compartiendo conocimiento con la comunidad de desarrolladores
       en Jaén.
     </p>
   </div>
-  <div class="">
-    {PARTNERS.map(({ name }) => <span>{name}</span>)}
+  <div
+    class="grid grid-cols-2 lg:max-w-[520px] items-center justify-between gap-8 lg:gap-10"
+  >
+    {
+      PARTNERS.map(({ name, logo, url }) => (
+        <PartnerItem name={name} logo={logo} url={url} />
+      ))
+    }
   </div>
 </section>
