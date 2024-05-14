@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import AboutUs from "@/sections/AboutUs.astro";
 import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 ---
@@ -8,8 +9,11 @@ import Pivos from "@/sections/Pivos.astro";
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >
-  <Pivos />
-  <Partners />
+  <main class="flex flex-col gap-8">
+    <AboutUs />
+    <Pivos />
+    <Partners />
+  </main>
 </Layout>
 
 <style></style>
