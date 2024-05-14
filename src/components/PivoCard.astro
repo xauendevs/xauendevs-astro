@@ -1,0 +1,132 @@
+---
+import type { Charlante } from "@/types/Charlante";
+import { formatDate, formatTime } from "@/lib/format-date";
+import LocationPin from "./icons/LocationPin.astro";
+interface Props {
+  id: string;
+  title: string;
+  image: string;
+  charlantes?: Charlante[];
+  place?: string;
+  date: Date;
+  isNext?: boolean;
+}
+
+const { id, title, image, isNext, charlantes, place, date } = Astro.props;
+---
+
+<article
+  id={id}
+  class=`relative bg-[#356154] flex flex-col justify-end p-2 md:p-5 
+  min-w-[200px] max-w-[200px] min-h-[350px] max-h-[350px] rounded-3xl group overflow-hidden ${isNext ? 'next-pivo' : ''} select-none
+  md:min-w-[330px]  md:max-w-[330px]  md:min-h-[460px] md:max-h-[460px] 
+    `
+>
+  <div
+    id="background-image"
+    class="absolute left-0 top-0 bottom-0 w-full
+ h-full group-hover:scale-110 group-focus:scale-110 transition-scale duration-500
+ ease-in-out opacity-90 bg-blend-luminosity
+ bg-center
+ bg-cover bg-no-repeat z-10"
+    style=`background-image:url('/img/pivos/${id}/${image}'),url('/img/pivos/default.png')`
+  >
+  </div>
+
+  <div
+    class="absolute z-10 top-0 bottom-0 right-0 left-0 w-full h-full
+bg-gradient-to-b from-transparent from-20% via-primary/20 to-black/80"
+  >
+  </div>
+  <div id="info-pivo" class="flex flex-col gap-4 text-white z-10">
+    <h3
+      id="title-pivo"
+      class="font-bold text-xl md:text-2xl group-hover:translate-y-0 translate-y-10 transition-transform duration-500"
+    >
+      {title}
+    </h3>
+    <div class="flex gap-4">
+      <div
+        id="charlante-pivo"
+        class="flex h-full w-full gap-1 md:gap-2 group-hover:translate-y-0 translate-y-28 transition-transform duration-500 items-center"
+      >
+        {
+          charlantes && charlantes.length > 1 && (
+            <div class="flex -space-x-5 rtl:space-x-reverse">
+              <img
+                class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                src={`/img/charlantes/${charlantes[0].photo}`}
+                alt=""
+              />
+
+              <span class="flex items-center justify-center min-w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full  dark:border-gray-800">
+                +{charlantes.length - 1}
+              </span>
+            </div>
+          )
+        }
+        {
+          charlantes && charlantes.length === 1 && (
+            <img
+              src={`/img/charlantes/${charlantes[0].photo}`}
+              class="rounded-full size-8 md:size-10 object-cover"
+            />
+          )
+        }
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-[70%_30%] items-center justify-between grow"
+        >
+          <div class="flex flex-col">
+            <span
+              title={charlantes
+                ? charlantes[0]
+                  ? charlantes[0].name
+                  : "John Doe"
+                : "John Doe"}
+              class="text-sm leading-0 overflow-hidden text-nowrap text-ellipsis whitespace-nowrap"
+              >{
+                charlantes
+                  ? charlantes[0]
+                    ? charlantes[0].name
+                    : "John Doe"
+                  : "John Doe"
+              }</span
+            >
+            <div class="flex gap-1">
+              <LocationPin class="hidden md:block size-4" />
+              <span class="text-xs text-nowrap">{place}</span>
+            </div>
+          </div>
+          <div class="flex md:flex-col gap-1">
+            <span class="text-xs text-right capitalize">{formatDate(date)}</span
+            >
+
+            <span class="text-xs text-right">{formatTime(date)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+<style>
+  .next-pivo #background-image {
+    background-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+  article:not(.next-pivo) #background-image:not(:hover) {
+    filter: grayscale(100%);
+  }
+  article:not(.next-pivo):hover #background-image {
+    background-color: var(--color-accent);
+    filter: grayscale(0%);
+  }
+
+  .next-pivo:hover #background-image {
+    filter: grayscale(0%);
+  }
+  .next-pivo #title-pivo,
+  .next-pivo #charlante-pivo {
+    transform: translateY(0);
+  }
+</style>

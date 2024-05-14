@@ -6,11 +6,23 @@ export default {
     extend: {
       colors: {
         accent: "var(--color-accent)",
+        dark: "var(--color-dark)",
       },
       brightness: {
         25: ".25",
       },
+      scale: ["group-active"],
     },
   },
-  plugins: [animations],
+  plugins: [
+    animations,
+    function ({ addVariant }) {
+      // Agregamos la variante group-active
+      addVariant("group-active", ({ modifySelectors, separator }) => {
+        modifySelectors(({ className }) => {
+          return `.group:active .${className}`;
+        });
+      });
+    },
+  ],
 };

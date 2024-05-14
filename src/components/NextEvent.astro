@@ -1,17 +1,33 @@
+---
+import { PIVOS } from "@/consts/pivos";
+import { formatDateTime } from "@/lib/format-date";
+const nextEvent = PIVOS.sort(
+  (a, b) => a.date.getTime() - b.date.getTime()
+).find((pivo) => {
+  return pivo.date.getTime() > new Date().getTime();
+});
+---
+
 <div
   class="flex items-center bg-accent px-4 py-2 lg:px-6 lg:py-3 text-[10px] lg:text-xs rounded-full z-[888]"
 >
   <span class="font-bold">Próximo evento:</span>
-  <span class="ml-2">
-    <img src="/img/calendar_today.svg" class="size-4 lg:size-5" />
-  </span>
-  <div class="flex flex-col ml-2 max-w-60">
-    <span
-      class="font-bold text-ellipsis whitespace-nowrap overflow-hidden"
-      title="Tras los píxeles, Descifrando el código de la Realidad Virtual y Aumentada"
-    >
-      Tras los píxeles, Descifrando el código de la Realidad Virtual y Aumentada
-    </span>
-    <span> 26/04/2024 * 19:00 </span>
-  </div>
+  {
+    nextEvent && (
+      <>
+        <span class="ml-2">
+          <img src="/img/calendar_today.svg" class="size-4 lg:size-5" />
+        </span>
+        <div class="flex flex-col ml-2 max-w-60">
+          <span
+            class="font-bold text-ellipsis whitespace-nowrap overflow-hidden"
+            title="Tras los píxeles, Descifrando el código de la Realidad Virtual y Aumentada"
+          >
+            {nextEvent.title}
+          </span>
+          <span> {formatDateTime(nextEvent.date)} </span>
+        </div>
+      </>
+    )
+  }
 </div>
