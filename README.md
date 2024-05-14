@@ -25,7 +25,6 @@ Puedes colaborar con el rediseño de la web de XauenDevs, no solo estás colabor
   - [Prerequisitos](#prerequisitos)
   - [Instalación](#instalación)
 - [Contribuir al proyecto](#contribuir-al-proyecto)
-  - [Contribuir desde Stackblitz](#contribuir-desde-stackblitz)
 - [🛠️ Stack](#️-stack)
 
 </details>
@@ -36,7 +35,7 @@ Puedes colaborar con el rediseño de la web de XauenDevs, no solo estás colabor
 
 ### Prerequisitos
 
-- o NPM
+- NPM
 
   ```sh
   npm install npm@latest -g
