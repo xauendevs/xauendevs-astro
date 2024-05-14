@@ -1,54 +1,110 @@
-# Astro Starter Kit: Basics
+<a name="readme-top"></a>
 
-```sh
-npm create astro@latest -- --template basics
-```
+<div align="center">
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+<a href="https://github.com/xauendevs/xauendevs-astro">
+  <img width="300px" src="https://raw.githubusercontent.com/xauendevs/xauendevs-astro/main/public/img/devS.svg" alt="Logo" width="800" />
+</a>
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## Rediseño XauenDevs
 
-## 🚀 Project Structure
+Puedes colaborar con el rediseño de la web de XauenDevs, no solo estás colaborando con la comunidad sino que puedes practicar/aprender algo nuevo como Astro.\
+[Diseño de Figma](https://www.figma.com/design/jN8BrJx9paE4iBNNnU6F0g/Prototipo-Landing?node-id=0-1&t=hsSZtMPQBtG9fFGq-0) · [Reportar error](https://github.com/xauendevs/xauendevs-astro/issues) · [Sugerir algo](https://github.com/xauendevs/xauendevs-astro/issues)
 
-Inside of your Astro project, you'll see the following folders and files:
+</div>
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+<details>
+<summary>Tabla de contenidos</summary>
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- [Para empezar](#para-empezar)
+  - [Prerequisitos](#prerequisitos)
+  - [Instalación](#instalación)
+- [Contribuir al proyecto](#contribuir-al-proyecto)
+  - [Contribuir desde Stackblitz](#contribuir-desde-stackblitz)
+- [🛠️ Stack](#️-stack)
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+</details>
 
-Any static assets, like images, can be placed in the `public/` directory.
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
-## 🧞 Commands
+## Para empezar
 
-All commands are run from the root of the project, from a terminal:
+### Prerequisitos
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+- o NPM
 
-## 👀 Want to learn more?
+  ```sh
+  npm install npm@latest -g
+  ```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Instalación
+
+1. Clona el repositorio
+
+   ```sh
+   git clone https://github.com/xauendevs/xauendevs-astro
+   ```
+
+2. Instala los paquetes de NPM
+
+   ```sh
+   npm install
+   ```
+
+3. Ejecuta el proyecto
+
+   ```sh
+   npm run dev
+   ```
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+## Contribuir al proyecto
+
+Las contribuciones son lo que hacen que la comunidad de código abierto sea un lugar increíble para aprender, inspirar y crear. ¡Cualquier contribución que hagas es **muy apreciada**!
+
+Si tienes alguna sugerencia que podría mejorar el proyecto, por favor haz un [_fork_](https://github.com/xauendevs/xauendevs-astro/fork) del repositorio y crea una [_pull request_](https://github.com/xauendevs/xauendevs-astro/pulls). También puedes simplemente abrir un [_issue_](https://github.com/xauendevs/xauendevs-astro/issues) con la etiqueta "enhancement".
+
+Aquí tienes una guía rápida:
+
+1. Haz un [_fork_](https://github.com/xauendevs/xauendevs-astro/fork) del Proyecto
+2. Clona tu [_fork_](https://github.com/xauendevs/xauendevs-astro/fork) (`git clone <URL del fork>`)
+3. Añade el repositorio original como remoto (`git remote add upstream <URL del repositorio original>`)
+4. Crea tu Rama de Funcionalidad (`git switch -c feature/CaracteristicaIncreible`)
+5. Realiza tus Cambios (`git commit -m 'Add: alguna CaracterísticaIncreible'`)
+6. Haz Push a la Rama (`git push origin feature/CaracteristicaIncreible`)
+7. Abre una [_pull request_](https://github.com/xauendevs/xauendevs-astro/pulls)
+
+Por favor, consulta nuestra [guía de contribución](https://github.com/xauendevs/xauendevs-astro/blob/master/CONTRIBUTING.md) para saber cómo puedes empezar de la mejor manera y siguiendo [buenas prácticas](https://github.com/xauendevs/xauendevs-astro/blob/main/CONTRIBUTING.md#buenas-prácticas-).
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+## 🛠️ Stack
+
+- [![Astro][astro-badge]][astro-url] - The web framework for content-driven websites.
+- [![Typescript][typescript-badge]][typescript-url] - JavaScript with syntax for types.
+- [![Tailwind CSS][tailwind-badge]][tailwind-url] - A utility-first CSS framework for rapidly building custom designs.
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+[astro-url]: https://astro.build/
+[typescript-url]: https://www.typescriptlang.org/
+[tailwind-url]: https://tailwindcss.com/
+[animations-url]: https://tailwindcss-animations.vercel.app/
+[astro-badge]: https://img.shields.io/badge/Astro-fff?style=for-the-badge&logo=astro&logoColor=bd303a&color=352563
+[typescript-badge]: https://img.shields.io/badge/Typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white&color=blue
+[tailwind-badge]: https://img.shields.io/badge/Tailwind-ffffff?style=for-the-badge&logo=tailwindcss&logoColor=38bdf8
+[contributors-shield]: https://img.shields.io/github/contributors/xauendevs/xauendevs-astro.svg?style=for-the-badge
+[contributors-url]: https://github.com/xauendevs/xauendevs-astro/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/xauendevs/xauendevs-astro.svg?style=for-the-badge
+[forks-url]: https://github.com/xauendevs/xauendevs-astro/network/members
+[stars-shield]: https://img.shields.io/github/stars/xauendevs/xauendevs-astro.svg?style=for-the-badge
+[stars-url]: https://github.com/xauendevs/xauendevs-astro/stargazers
+[issues-shield]: https://img.shields.io/github/issues/xauendevs/xauendevs-astro.svg?style=for-the-badge
+[issues-url]: https://github.com/xauendevs/xauendevs-astro/issues
+[with-love]: https://img.shields.io/badge/with_%F0%9F%92%9A_from-JAEN-green
