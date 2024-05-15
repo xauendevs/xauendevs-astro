@@ -89,6 +89,10 @@ Por favor, consulta nuestra [guía de contribución](https://github.com/xauendev
 - [![Typescript][typescript-badge]][typescript-url] - JavaScript with syntax for types.
 - [![Tailwind CSS][tailwind-badge]][tailwind-url] - A utility-first CSS framework for rapidly building custom designs.
 
+**¡Gracias a todos por colaborar!**
+
+[![Contribuidores](https://contrib.rocks/image?repo=xauendevs/xauendevs-astro&max=500&columns=20)](https://github.com/xauendevs/xauendevs-astro/graphs/contributors)
+
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 [astro-url]: https://astro.build/
