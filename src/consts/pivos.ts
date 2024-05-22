@@ -24,7 +24,7 @@ export const PIVOS: Pivo[] = addGetters([
     description:
       "Diseño UI/UX para desarrolladores para el usuario del usuario del usuario",
     charlanteIds: ["jose-cruz"],
-    date: new Date(2024, 4, 10, 19, 0),
+    date: new Date(2024, 4, 24, 19, 0),
     image: "",
     socialImage: "cartel.png",
   },
