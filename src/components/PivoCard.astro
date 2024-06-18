@@ -1,9 +1,9 @@
 ---
-import type { Charlante } from "@/types/Charlante";
 import { formatDate, formatTime } from "@/lib/format-date";
+import type { Charlante } from "@/types/Charlante";
 import LocationPin from "./icons/LocationPin.astro";
 interface Props {
-  id: string;
+  id: number;
   title: string;
   image: string;
   charlantes?: Charlante[];
@@ -16,7 +16,7 @@ const { id, title, image, isNext, charlantes, place, date } = Astro.props;
 ---
 
 <article
-  id={id}
+  id={id.toString()}
   class=`relative bg-[#356154] flex flex-col justify-end p-2 md:p-5 
   min-w-[200px] max-w-[200px] min-h-[350px] max-h-[350px] rounded-3xl group overflow-hidden ${isNext ? 'next-pivo' : ''} select-none
   md:min-w-[330px]  md:max-w-[330px]  md:min-h-[460px] md:max-h-[460px] 
