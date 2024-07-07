@@ -22,4 +22,6 @@ pnpm-debug.log*
 .vscode
 package-lock.json
 
+.vercel/
+
 db/
