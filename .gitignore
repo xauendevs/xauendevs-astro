@@ -23,3 +23,5 @@ pnpm-debug.log*
 package-lock.json
 
 .vercel/
+
+db/

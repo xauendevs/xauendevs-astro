@@ -1,7 +1,7 @@
 import type { Charlante } from "./Charlante";
 
 export interface Pivo {
-  id: string;
+  id: number;
   title: string;
   description: string;
   image: string;
