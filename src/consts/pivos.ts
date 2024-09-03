@@ -4,24 +4,24 @@ import { CHARLANTES } from "./charlantes";
 
 const DEFAULT_PLACE = "Cuatro Gatos Coworking";
 
-const addGetters = (pivos: Pivo[]): Pivo[] => {
-  return pivos.map((pivo) => ({
-    ...pivo,
-    get charlantes() {
-      return CHARLANTES.filter((charlante) => {
-        return pivo.charlanteIds?.includes(charlante.id);
-      });
-    },
-    get location() {
-      return pivo.location || DEFAULT_PLACE;
-    },
-  }));
-};
+// const addGetters = (pivos: Pivo[]): Pivo[] => {
+//   return pivos.map((pivo) => ({
+//     ...pivo,
+//     get charlantes() {
+//       return CHARLANTES.filter((charlante) => {
+//         return pivo.charlanteIds?.includes(charlante.id);
+//       });
+//     },
+//     get location() {
+//       return pivo.location || DEFAULT_PLACE;
+//     },
+//   }));
+// };
 
-const { rows, columns } = await turso.execute("SELECT * FROM pivos");
+const { rows, columns } = await turso.execute("SELECT * FROM Pivos");
 
-const { rows: charlantesRows, columns: charlantesColumns } =
-  await turso.execute("SELECT * FROM pivo_speakers");
+// const { rows: charlantesRows, columns: charlantesColumns } =
+//   await turso.execute("SELECT * FROM pivo_speakers");
 
 const newPivos = rows.map((row) => {
   return columns.reduce((acc, column) => {
@@ -35,19 +35,19 @@ const newPivos = rows.map((row) => {
   }, {} as Record<string, any>) as Omit<Pivo, "charlanteIds" | "charlantes">;
 });
 
-const newCharlantes = charlantesRows.map((row) => {
-  return charlantesColumns.reduce((acc, column) => {
-    acc[column] = row[column];
-    return acc;
-  }, {} as Record<string, any>) as { speaker_id: string; pivo_id: number };
-});
+// const newCharlantes = charlantesRows.map((row) => {
+//   return charlantesColumns.reduce((acc, column) => {
+//     acc[column] = row[column];
+//     return acc;
+//   }, {} as Record<string, any>) as { speaker_id: string; pivo_id: number };
+// });
 
-const allPivos = newPivos.map((pivo) => {
-  const charlanteIds = newCharlantes
-    .filter((charlante) => charlante.pivo_id === Number(pivo.id))
-    .map((charlante) => charlante.speaker_id);
+// const allPivos = newPivos.map((pivo) => {
+//   const charlanteIds = newCharlantes
+//     .filter((charlante) => charlante.pivo_id === Number(pivo.id))
+//     .map((charlante) => charlante.speaker_id);
 
-  return { ...pivo, charlanteIds } as Pivo;
-});
+//   return { ...pivo, charlanteIds } as Pivo;
+// });
 
-export const PIVOS: Pivo[] = addGetters(allPivos);
+export const PIVOS: Pivo[] = newPivos as any;
