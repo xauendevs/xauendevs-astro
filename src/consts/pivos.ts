@@ -55,6 +55,7 @@ ORDER BY
       title: row.title as string,
       description: row.description as string,
       image: row.image as string,
+      location: row.location as string,
       socialImage: row.socialImage as string,
       date: new Date(row.date as string),
     };
