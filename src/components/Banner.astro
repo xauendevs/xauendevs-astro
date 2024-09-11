@@ -3,8 +3,11 @@ import LogoRD from "./LogoRD.astro";
 ---
 
 <div
-  class="flex flex-col md:flex-row gap-10 bg-accent p-8 md:p-10 rounded-3xl justify-between items-center"
+  class="relative flex flex-col md:flex-row gap-10 bg-accent p-8 md:p-10 rounded-3xl justify-between items-center"
 >
+  <div class="absolute top-0 right-0 bottom-0 left-0  backdrop-blur-sm rounded-3xl flex justify-center items-center"> 
+    <p class="text-2xl font-bold bg-black text-white px-12 py-2 -rotate-12">PRÓXIMAMENTE</p>
+  </div>
   <div class="flex flex-col items-center md:flex-row gap-10">
     <LogoRD />
     <div class="flex flex-col">
