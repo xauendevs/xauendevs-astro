@@ -2,19 +2,19 @@
 import ArrowRight from "@/components/icons/ArrowRight.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import SectionTitle from "@/components/SectionTitle.astro";
-import { PIVOS } from "@/consts/pivos";
+import { getPivos } from "@/consts/pivos";
 
-const nextEvent = PIVOS.sort(
-  (a, b) => a.date.getTime() - b.date.getTime()
-).find((pivo) => {
+const pivos = await getPivos();
+const nextEvent = pivos.find((pivo) => {
   return pivo.date.getTime() > new Date().getTime();
 });
 
-const pastPivos = PIVOS.sort((a, b) => b.date.getTime() - a.date.getTime())
+const pastPivos = pivos
   .filter((pivo) => {
     return pivo.date.getTime() < new Date().getTime();
   })
   .slice(0, 5);
+  console.log('Hola: ' +pivos[0].image)
 ---
 
 <section class="bg-black/5 rounded-3xl p-7 lg:p-10 overflow-hidden">
@@ -52,8 +52,8 @@ const pastPivos = PIVOS.sort((a, b) => b.date.getTime() - a.date.getTime())
           <PivoCard
             id={nextEvent.id}
             title={nextEvent.title}
-            image={nextEvent.socialImage}
-            charlantes={nextEvent.charlantes}
+            image={nextEvent.image}
+            speakers={nextEvent.speakers}
             place={nextEvent.location}
             date={nextEvent.date}
             isNext
@@ -72,12 +72,12 @@ const pastPivos = PIVOS.sort((a, b) => b.date.getTime() - a.date.getTime())
         {
           pastPivos &&
             pastPivos.map(
-              ({ id, title, socialImage, date, charlantes, location }) => (
+              ({ id, title, image, date, speakers, location }) => (
                 <PivoCard
                   id={id}
                   title={title}
-                  image={socialImage}
-                  charlantes={charlantes}
+                  image={image}
+                  speakers={speakers}
                   place={location}
                   date={date}
                 />

@@ -7,7 +7,7 @@ export interface Pivo {
   image: string;
   socialImage: string;
   date: Date;
-  charlanteIds: string[];
-  charlantes?: Charlante[];
+  charlanteIds?: string[];
+  speakers?: Charlante[];
   location?: string;
 }

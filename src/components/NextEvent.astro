@@ -1,9 +1,8 @@
 ---
-import { PIVOS } from "@/consts/pivos";
+import { getPivos } from "@/consts/pivos";
 import { formatDateTime } from "@/lib/format-date";
-const nextEvent = PIVOS.sort(
-  (a, b) => a.date.getTime() - b.date.getTime()
-).find((pivo) => {
+const pivos = await getPivos();
+const nextEvent = pivos.find((pivo) => {
   return pivo.date.getTime() > new Date().getTime();
 });
 ---

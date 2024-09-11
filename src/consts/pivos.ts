@@ -1,6 +1,7 @@
 import { turso } from "@/lib/turso";
 import type { Pivo } from "@/types/Pivo";
 import { CHARLANTES } from "./charlantes";
+import type { Charlante } from "@/types/Charlante";
 
 const DEFAULT_PLACE = "Cuatro Gatos Coworking";
 
@@ -18,22 +19,53 @@ const DEFAULT_PLACE = "Cuatro Gatos Coworking";
 //   }));
 // };
 
-const { rows, columns } = await turso.execute("SELECT * FROM Pivos");
+export async function getPivos() {
+  const { rows, columns } = await turso.execute(`SELECT
+    Pivos.id,
+    Pivos.title,
+    Pivos.description,
+    Pivos.date,
+    Pivos.image,
+    Pivos.location,
+    COALESCE(
+        json_group_array(
+            json_object(
+                'id', Speakers.id,
+                'name', Speakers.name,
+                'photo', Speakers.image
+            )
+        ),
+        '[]'
+    ) AS speakers
+FROM
+    Pivos
+LEFT JOIN
+    Pivos_Speakers ON Pivos.id = Pivos_Speakers.pivo_id
+LEFT JOIN
+    Speakers ON Pivos_Speakers.speaker_id = Speakers.id
+GROUP BY
+    Pivos.id
+ORDER BY
+    Pivos.date DESC;
+`);
 
-// const { rows: charlantesRows, columns: charlantesColumns } =
-//   await turso.execute("SELECT * FROM pivo_speakers");
+  const newPivos = rows.map((row) => {
+    const pivo: Pivo = {
+      id: row.id! as number,
+      title: row.title as string,
+      description: row.description as string,
+      image: row.image as string,
+      socialImage: row.socialImage as string,
+      date: new Date(row.date as string),
+    };
+    const speakers: Charlante[] = JSON.parse(row.speakers as string);
+    pivo.speakers = speakers.filter((speaker) => speaker.id);
 
-const newPivos = rows.map((row) => {
-  return columns.reduce((acc, column) => {
-    if (column === "date") {
-      acc[column] = new Date(row[column] as string);
-    } else {
-      acc[column] = row[column];
-    }
+    return pivo as Pivo;
+  });
 
-    return acc;
-  }, {} as Record<string, any>) as Omit<Pivo, "charlanteIds" | "charlantes">;
-});
+  return newPivos;
+}
 
 // const newCharlantes = charlantesRows.map((row) => {
 //   return charlantesColumns.reduce((acc, column) => {
@@ -49,5 +81,3 @@ const newPivos = rows.map((row) => {
 
 //   return { ...pivo, charlanteIds } as Pivo;
 // });
-
-export const PIVOS: Pivo[] = newPivos as any;
