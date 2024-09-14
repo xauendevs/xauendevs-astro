@@ -1,13 +1,13 @@
 import type { Charlante } from "./Charlante";
 
 export interface Pivo {
-  id: string;
+  id: number;
   title: string;
   description: string;
   image: string;
   socialImage: string;
   date: Date;
-  charlanteIds: string[];
-  charlantes?: Charlante[];
+  charlanteIds?: string[];
+  speakers?: Charlante[];
   location?: string;
 }
