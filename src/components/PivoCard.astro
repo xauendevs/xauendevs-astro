@@ -58,7 +58,7 @@ bg-gradient-to-b from-transparent from-20% via-primary/20 to-black/80"
               <img
                 class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
                 src={`/img/charlantes/${speakers[0].photo}`}
-                alt=""
+                alt={speakers.map(speaker=> speaker.name).join(",")}
               />
 
               <span class="flex items-center justify-center min-w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full  dark:border-gray-800">
@@ -72,6 +72,7 @@ bg-gradient-to-b from-transparent from-20% via-primary/20 to-black/80"
             <img
               src={`/img/charlantes/${speakers[0].photo}`}
               class="rounded-full size-8 md:size-10 object-cover"
+              alt={speakers.map(speaker=> speaker.name).join(",")}
             />
           )
         }
