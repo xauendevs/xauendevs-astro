@@ -1,6 +1,10 @@
-const { STRAPI_HOST } = import.meta.env;
+const { STRAPI_HOST, STRAPI_API_KEY } = import.meta.env;
 
 export function query(url: string) {
   console.log(`${STRAPI_HOST}/api/${url}`);
-  return fetch(`${STRAPI_HOST}/api/${url}`).then((res) => res.json());
+  return fetch(`${STRAPI_HOST}/api/${url}`, {
+    headers: {
+      Authorization: `Bearer ${STRAPI_API_KEY}`,
+    },
+  }).then((res) => res.json());
 }
