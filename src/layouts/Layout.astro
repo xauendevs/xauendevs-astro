@@ -1,6 +1,7 @@
 ---
-import Footer from "@/sections/Footer.astro";
+import MouseDown from "@/components/icons/MouseDown.astro";
 import Header from "@/components/Navbar.astro";
+import Footer from "@/sections/Footer.astro";
 import "@fontsource/roboto";
 import ClientRouter from "astro/components/ClientRouter.astro";
 interface Props {
@@ -20,11 +21,14 @@ const { title, description } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="relative">
     <Header />
     <main class="px-8 md:px-10">
       <slot class="" />
     </main>
+    <section class="fixed z-50 right-0 bottom-0 px-5 pb-3 drop-shadow">
+      <MouseDown />
+    </section>
     <Footer />
     <ClientRouter />
   </body>
