@@ -1,7 +1,9 @@
 ---
 import PartnerItem from "@/components/PartnerItem.astro";
 import SectionTitle from "@/components/SectionTitle.astro";
-import { PARTNERS } from "@/consts/partners";
+import { getPartners } from "@/lib/get-partner";
+
+const partners = await getPartners();
 ---
 
 <section
@@ -20,7 +22,7 @@ import { PARTNERS } from "@/consts/partners";
     class="grid grid-cols-2 lg:max-w-[520px] items-center justify-between gap-8 lg:gap-10"
   >
     {
-      PARTNERS.map(({ name, logo, url }) => (
+      partners?.map(({ name, logo, url }) => (
         <PartnerItem name={name} logo={logo} url={url} />
       ))
     }

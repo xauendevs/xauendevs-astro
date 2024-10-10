@@ -5,7 +5,7 @@ export function formatDate(date: Date): string {
     month: "2-digit",
   };
 
-  return date
+  return new Date(date)
     .toLocaleDateString("es-ES", options)
     .replace(/^(\w+)\. (\d+)\/(\d+)$/, "$1. $2\\$3");
 }

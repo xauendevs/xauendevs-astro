@@ -7,8 +7,9 @@ interface Props {
 }
 
 const { name, logo, url } = Astro.props;
+const { STRAPI_HOST } = import.meta.env;
 ---
 
 <a href={url} class="h-full">
-  <img src={`/img/partners/${logo}`} alt={`Logo de ${name}`} class="h-full" />
+  <img src={`${STRAPI_HOST}${logo}`} alt={`Logo de ${name}`} class="h-full" />
 </a>

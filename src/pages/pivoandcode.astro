@@ -1,0 +1,34 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ArrowRight from "@/components/icons/ArrowRight.astro";
+import PivoCard from "@/components/PivoCard.astro";
+import SectionTitle from "@/components/SectionTitle.astro";
+import { getPivosStrapi } from "@/lib/get-info-pivos";
+import type { Pivo } from "@/types/Pivo";
+export const prerender = true;
+
+const pivos = await getPivosStrapi();
+---
+
+<Layout
+  title="XauenDevs 🫒 Desarrollo en Jaén"
+  description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
+>
+  <section class="grid grid-cols-4 gap-12">
+    {
+      pivos.map(
+        ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
+          <PivoCard
+            id={id}
+            title={title}
+            image={image}
+            speakers={speakers}
+            place={place}
+            date={date}
+            videoId={videoId}
+          />
+        )
+      )
+    }
+  </section>
+</Layout>

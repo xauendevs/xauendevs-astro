@@ -9,5 +9,6 @@ export interface Pivo {
   date: Date;
   charlanteIds?: string[];
   speakers?: Charlante[];
-  location?: string;
+  place?: string;
+  videoId?: string;
 }
