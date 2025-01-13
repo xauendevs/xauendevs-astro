@@ -11,10 +11,12 @@ export function formatDate(date: Date): string {
 }
 
 export function formatTime(date: Date): string {
-  return `:${date.getHours().toString().padStart(2, "0")}.${date
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
+  const timeString = new Intl.DateTimeFormat("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+
+  return `:${timeString.replace(":", ".")}`;
 }
 
 export function formatDateTime(date: Date): string {
