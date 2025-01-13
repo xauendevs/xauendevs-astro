@@ -9,4 +9,10 @@ export default defineConfig({
   adapter: vercel({
     webAnalytics: { enabled: true },
   }),
+  redirects: {
+    "/proxima-pivo": {
+      status: 302,
+      destination: "https://saraos.tech",
+    },
+  },
 });
