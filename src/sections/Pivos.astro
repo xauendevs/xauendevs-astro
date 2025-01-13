@@ -49,6 +49,7 @@ const pastPivos = pivos
         <div>
           <h3 class="text-xl font-semibold mt-4 mb-2">Próxima charla</h3>
           <PivoCard
+            server:defer
             id={nextEvent.id}
             title={nextEvent.title}
             image={nextEvent.image}
@@ -57,7 +58,9 @@ const pastPivos = pivos
             date={nextEvent.date}
             videoId={nextEvent.videoId}
             isNext
-          />
+          >
+            <span slot="fallback">Pruebas</span>
+          </PivoCard>
         </div>
       )
     }
