@@ -13,7 +13,11 @@ export function formatDate(date: Date): string {
 }
 
 export function formatTime(date: Date): string {
-  return `:${format(date, "HH.mm", "es")}`;
+  return `:${format({
+    date,
+    format: "HH.mm",
+    tz: "Europe/Madrid",
+  })}`;
 }
 
 export function formatDateTime(date: Date): string {
