@@ -15,6 +15,7 @@
     "@astrojs/vercel": "^8.0.0-beta.2",
     "@fontsource-variable/roboto-flex": "^5.0.14",
     "@fontsource/roboto": "^5.0.12",
+    "@formkit/tempo": "^0.1.2",
     "@justinribeiro/lite-youtube": "^1.5.0",
     "@libsql/client": "^0.6.2",
     "@vercel/analytics": "^1.2.2",

@@ -1,3 +1,5 @@
+import { format } from "@formkit/tempo";
+
 export function formatDate(date: Date): string {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "short",
@@ -11,12 +13,7 @@ export function formatDate(date: Date): string {
 }
 
 export function formatTime(date: Date): string {
-  const timeString = new Intl.DateTimeFormat("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-
-  return `:${timeString.replace(":", ".")}`;
+  return `:${format(date, "HH.mm", "es")}`;
 }
 
 export function formatDateTime(date: Date): string {
