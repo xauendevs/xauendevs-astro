@@ -11,4 +11,5 @@ export interface Pivo {
   speakers?: Charlante[];
   place?: string;
   videoId?: string;
+  saraosLink?: string;
 }

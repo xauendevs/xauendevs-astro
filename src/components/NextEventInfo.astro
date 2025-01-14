@@ -3,6 +3,7 @@ import { formatDateTime } from "@/lib/format-date";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 const pivos = await getPivosStrapi();
 const nextEvent = pivos?.find((pivo) => {
+  console.log(pivo.saraosLink);
   return pivo.date.getTime() > new Date().getTime();
 });
 ---
@@ -13,15 +14,17 @@ const nextEvent = pivos?.find((pivo) => {
       <span class="ml-2">
         <img src="/img/calendar_today.svg" class="size-4 lg:size-5" />
       </span>
-      <div class="flex flex-col ml-2 max-w-60">
-        <span
-          class="font-bold text-ellipsis whitespace-nowrap overflow-hidden"
-          title="Tras los píxeles, Descifrando el código de la Realidad Virtual y Aumentada"
-        >
-          {nextEvent.title}
-        </span>
-        <span> {formatDateTime(nextEvent.date)} </span>
-      </div>
+      <a href={nextEvent.saraosLink} target="_blank" rel="noopener">
+        <div class="flex flex-col ml-2 max-w-60">
+          <span
+            class="font-bold text-ellipsis whitespace-nowrap overflow-hidden"
+            title={nextEvent.title}
+          >
+            {nextEvent.title}
+          </span>
+          <span> {formatDateTime(nextEvent.date)} </span>
+        </div>
+      </a>
     </>
   )
 }
