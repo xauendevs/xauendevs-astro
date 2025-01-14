@@ -1,4 +1,4 @@
-<section class="grid grid-cols-1 md:grid-cols-[40%_60%]">
+<section class="grid grid-cols-1 md:grid-cols-[40%_60%]" id="own-mission">
   <div class="bg-black/5 rounded-3xl p-7 lg:p-10 md:mr-8 mb-8 md:mb-0">
     <h1 class="font-bold text-2xl">Nuestra misión</h1>
     <section class="mt-4">
@@ -43,7 +43,24 @@
 
 <style>
   summary {
-    list-style: none;
+    display: flex;
+  }
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details {
+    overflow: clip;
+    cursor: pointer;
+  }
+  details::details-content {
+    height: 0;
+    transition:
+      height 0.3s,
+      content-visibility 0.3s allow-discrete;
+  }
+
+  details[open]::details-content {
+    height: auto;
   }
 
   hr {

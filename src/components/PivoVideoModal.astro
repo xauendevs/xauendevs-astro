@@ -9,7 +9,7 @@
     <iframe
       class="yt-iframe block aspect-video h-full w-full overflow-hidden rounded bg-transparent"
       src=""
-      title="Video de la Pivo&Code"
+      title="Clips de la presentación de La Velada"
       allow="autoplay"
     >
     </iframe>
@@ -58,7 +58,8 @@
 
 <script>
   import { $, $$ } from "@/lib/dom-selector";
-  (() => {
+
+  document.addEventListener("astro:page-load", () => {
     const $clipContainer = $$(".clip-container");
     const $clipDialog = $(".clip-dialog") as HTMLDialogElement;
     const $closeButton = $(".close-dialog");
@@ -77,14 +78,10 @@
 
     $closeButton?.addEventListener("click", () => {
       $clipDialog.close();
-      if ($ytFrame !== null) {
-        $ytFrame.remove();
-      } else {
-        ytFrameCopy?.remove();
-      }
     });
 
     $clipDialog.addEventListener("click", (event) => {
+      console.log("wwwwwww");
       const target = event.target as HTMLElement;
       if (target === $clipDialog) $clipDialog.close();
     });
@@ -106,5 +103,5 @@
         $clipDialog.showModal();
       });
     });
-  })();
+  });
 </script>

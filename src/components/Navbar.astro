@@ -7,10 +7,12 @@ import NextEvent from "./NextEvent.astro";
 <header class="h-auto max-w-[100vw] p-10 z-20 bg-white/85">
   <nav class="lg:flex justify-between text-nowrap hidden">
     <div class="flex items-center gap-10">
-      <Logo
-        width="230"
-        class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
-      />
+      <a href="/">
+        <Logo
+          width="230"
+          class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+        />
+      </a>
       <div class="flex items-center gap-5">
         <a href="/#own-mission">Nuestra misión</a>
         <a href="/#pivos">Charlas</a>
@@ -61,9 +63,9 @@ import NextEvent from "./NextEvent.astro";
           <a class="hover:text-accent transition duration-300" href="#pivos"
             >Charlas</a
           >
-          <a class="hover:text-accent transition duration-300" href="#blog"
+          <!-- <a class="hover:text-accent transition duration-300" href="#blog"
             >Blog</a
-          >
+          > -->
         </div>
         <hr class="h-[1px] w-1/2 border-t-0 mb-12" style="background:white" />
         <NextEvent class="z-[888]" />

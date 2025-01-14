@@ -6,11 +6,14 @@ import FromFor from "../components/FromFor.astro";
 <div
   class="h-[calc(100vh-140px)] rounded-3xl bg-black flex flex-col justify-end p-8 md:p-10 gap-8 md:gap-10 overflow-hidden relative"
 >
-  <FromFor class="z-10" />
+  <div class="z-10 flex">
+    <FromFor />
+  </div>
   <div class="flex justify-between items-center z-10">
-    <button class="bg-white rounded-xl text-black px-10 h-12 font-semibold">
+    <!-- <button class="bg-white rounded-xl text-black px-10 h-12 font-semibold">
       Descubre más
-    </button>
+    </button> -->
+    <span></span>
     <MouseDown />
   </div>
   <div

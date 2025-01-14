@@ -13,20 +13,30 @@ interface Props {
   videoId?: string;
   date: Date;
   isNext?: boolean;
+  customClass?: string;
 }
 
-const { id, title, image, isNext, speakers, place, date, videoId } =
-  Astro.props;
+const {
+  id,
+  title,
+  image,
+  isNext,
+  speakers,
+  place,
+  date,
+  videoId,
+  customClass,
+} = Astro.props;
 console.log(videoId);
 ---
 
 <PivoVideoModal />
 <article
   data-url={`https://www.youtube.com/embed/${videoId}?si=NjLzFU-ifS-QmXD6`}
-  id={id.toString()}
+  data-clip-item
   class=`clip-container relative bg-[#356154] flex flex-col justify-end p-2 md:p-5 cursor-pointer
   min-w-[200px] max-w-[200px] min-h-[350px] max-h-[350px] rounded-3xl group overflow-hidden ${isNext ? 'next-pivo' : ''} select-none
-  md:min-w-[330px]  md:max-w-[330px]  md:min-h-[460px] md:max-h-[460px] 
+  md:min-w-[330px]  md:max-w-[330px]  md:min-h-[460px] md:max-h-[460px] ${customClass}
     `
 >
   <div

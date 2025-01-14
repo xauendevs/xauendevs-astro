@@ -14,7 +14,9 @@ const pivos = await getPivosStrapi();
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >
-  <section class="grid grid-cols-4 gap-12">
+  <section
+    class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2 xl:grid-cols-4"
+  >
     {
       pivos.map(
         ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
@@ -26,6 +28,7 @@ const pivos = await getPivosStrapi();
             place={place}
             date={date}
             videoId={videoId}
+            customClass="justify-self-center !max-w-none !w-full !min-w-fit"
           />
         )
       )
