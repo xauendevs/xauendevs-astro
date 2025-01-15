@@ -3,7 +3,6 @@ import { formatDateTime } from "@/lib/format-date";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 const pivos = await getPivosStrapi();
 const nextEvent = pivos?.find((pivo) => {
-  console.log(pivo.saraosLink);
   return pivo.date.getTime() > new Date().getTime();
 });
 ---

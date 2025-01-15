@@ -89,29 +89,25 @@ import NextEvent from "./NextEvent.astro";
 </style>
 <script>
   import { $ } from "@/lib/dom-selector";
-  function toggleMenu(
-    nav: HTMLElement | null,
-    menuMobileContent: HTMLElement | null
-  ) {
+  function toggleMenu(menuMobileContent: HTMLElement | null) {
     menuMobileContent?.classList.toggle("open");
     innerMenuButton?.classList.toggle("open");
     document.body.classList.toggle("overflow-hidden");
     document.body.classList.toggle("lg:overflow-auto");
   }
 
-  const nav = $("nav");
   const menuButton = $("#menuButton");
   const innerMenuButton = $("#innerMenuButton");
   const menuMobileContext = $("#menuMobileContent");
 
   menuButton?.addEventListener("hamburgerButtonClicked", () =>
-    toggleMenu(nav, menuMobileContext)
+    toggleMenu(menuMobileContext)
   );
   innerMenuButton?.addEventListener("hamburgerButtonClicked", () =>
-    toggleMenu(nav, menuMobileContext)
+    toggleMenu(menuMobileContext)
   );
 
   if (menuMobileContext?.classList.contains("open")) {
-    toggleMenu(nav, menuMobileContext);
+    toggleMenu(menuMobileContext);
   }
 </script>

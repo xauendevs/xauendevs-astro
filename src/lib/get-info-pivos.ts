@@ -6,11 +6,9 @@ export async function getPivosStrapi(): Promise<Pivo[]> {
     "pivos?fields[0]=title&fields[1]=place&fields[2]=date&fields[3]=videoId&fields[4]=saraosLink&populate[image][fields][0]=url&populate[speakers][populate][photo][fields][0]=url&populate[speakers][populate]=socialNetwork&sort=date:desc"
   )
     .then((data) => {
-      console.log(data);
       return {
         ...data,
         data: data.data?.map((item: any) => {
-          console.log(item);
           return {
             ...item,
             date: new Date(item.date),

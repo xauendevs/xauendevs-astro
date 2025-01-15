@@ -18,7 +18,7 @@ export default {
     animations,
     function ({ addVariant }) {
       // Agregamos la variante group-active
-      addVariant("group-active", ({ modifySelectors, separator }) => {
+      addVariant("group-active", ({ modifySelectors }) => {
         modifySelectors(({ className }) => {
           return `.group:active .${className}`;
         });

@@ -58,48 +58,48 @@
 
 <script>
   import { $, $$ } from "@/lib/dom-selector";
+  (function () {
+    const $clipContainer = $$(".clip-container");
+    const $clipDialog = $(".clip-dialog") as HTMLDialogElement;
+    const $closeButton = $(".close-dialog");
+    let $ytFrame = $(".yt-iframe");
+    const ytFrameCopy = $ytFrame;
 
-  const $clipContainer = $$(".clip-container");
-  const $clipDialog = $(".clip-dialog") as HTMLDialogElement;
-  const $closeButton = $(".close-dialog");
-  let $ytFrame = $(".yt-iframe");
-  const ytFrameCopy = $ytFrame;
+    if (!$clipDialog) return;
 
-  if (!$clipDialog) return;
-
-  $clipDialog.addEventListener("close", () => {
-    if ($ytFrame !== null) {
-      $ytFrame.setAttribute("src", "");
-    } else {
-      ytFrameCopy?.setAttribute("src", "");
-    }
-  });
-
-  $closeButton?.addEventListener("click", () => {
-    $clipDialog.close();
-  });
-
-  $clipDialog.addEventListener("click", (event) => {
-    console.log("wwwwwww");
-    const target = event.target as HTMLElement;
-    if (target === $clipDialog) $clipDialog.close();
-  });
-
-  $clipContainer?.forEach((el) => {
-    el.addEventListener("click", async (event) => {
-      const currentTarget = event.currentTarget as HTMLElement;
-      const { url } = currentTarget.dataset;
-      if (!url) return;
-      $ytFrame = $(".yt-iframe") as HTMLIFrameElement;
+    $clipDialog.addEventListener("close", () => {
       if ($ytFrame !== null) {
-        $ytFrame.setAttribute("src", `${url}&autoplay=1`);
+        $ytFrame.setAttribute("src", "");
       } else {
-        if (ytFrameCopy) {
-          $clipDialog?.querySelector("div")?.prepend(ytFrameCopy);
-          ytFrameCopy.setAttribute("src", `${url}&autoplay=1`);
-        }
+        ytFrameCopy?.setAttribute("src", "");
       }
-      $clipDialog.showModal();
     });
-  });
+
+    $closeButton?.addEventListener("click", () => {
+      $clipDialog.close();
+    });
+
+    $clipDialog.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+      if (target === $clipDialog) $clipDialog.close();
+    });
+
+    $clipContainer?.forEach((el) => {
+      el.addEventListener("click", async (event) => {
+        const currentTarget = event.currentTarget as HTMLElement;
+        const { url } = currentTarget.dataset;
+        if (!url) return;
+        $ytFrame = $(".yt-iframe") as HTMLIFrameElement;
+        if ($ytFrame !== null) {
+          $ytFrame.setAttribute("src", `${url}&autoplay=1`);
+        } else {
+          if (ytFrameCopy) {
+            $clipDialog?.querySelector("div")?.prepend(ytFrameCopy);
+            ytFrameCopy.setAttribute("src", `${url}&autoplay=1`);
+          }
+        }
+        $clipDialog.showModal();
+      });
+    });
+  })();
 </script>
