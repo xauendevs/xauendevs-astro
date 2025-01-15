@@ -19,6 +19,7 @@ jobs:
       - name: Build the project
         env:
           STRAPI_HOST: ${{ secrets.STRAPI_HOST }}
+          STRAPI_API_KEY: ${{ secrets.STRAPI_API_KEY }}
         run: npm run build # Cambia esto según tu script de build
 
       - name: Deploy to Vercel
