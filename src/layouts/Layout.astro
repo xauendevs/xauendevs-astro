@@ -130,5 +130,5 @@ const { title, description } = Astro.props;
     });
   };
 
-  document.addEventListener("astro:page-load", initializeClipHandlers);
+  document.addEventListener("astro:after-swap", initializeClipHandlers);
 </script>
