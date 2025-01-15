@@ -59,7 +59,7 @@
 <script>
   import { $, $$ } from "@/lib/dom-selector";
 
-  document.addEventListener("astro:page-load", () => {
+  document.addEventListener("astro:after-scripts", () => {
     const $clipContainer = $$(".clip-container");
     const $clipDialog = $(".clip-dialog") as HTMLDialogElement;
     const $closeButton = $(".close-dialog");
