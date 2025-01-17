@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
@@ -9,10 +9,4 @@ export default defineConfig({
   adapter: vercel({
     webAnalytics: { enabled: true },
   }),
-  redirects: {
-    "/proxima-pivo": {
-      status: 302,
-      destination: "https://saraos.tech",
-    },
-  },
 });
