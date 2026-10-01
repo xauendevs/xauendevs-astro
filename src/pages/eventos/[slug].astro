@@ -98,6 +98,11 @@ const icsContent = [
   "END:VCALENDAR",
 ].join("\r\n");
 const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
+const eventUrl = new URL(Astro.url.pathname, Astro.site).href;
+const shareUrl = encodeURIComponent(eventUrl);
+const shareText = encodeURIComponent(`Mira este evento: ${event.title}`);
+const whatsappUrl = `https://wa.me/?text=${shareText}%20${shareUrl}`;
+const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
 ---
 
 <Layout title={title} description={description} image={eventImage}>
@@ -275,6 +280,40 @@ const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent
             </div>
           </div>
 
+          <div class="mt-2 border-t border-black/10 pt-4">
+            <span class="text-xs font-bold uppercase tracking-[0.14em]">
+              Compartir evento
+            </span>
+            <p class="mt-2 text-sm leading-relaxed text-black/60">
+              Pásalo a quien pueda interesarle.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+              >
+                WhatsApp
+              </a>
+              <a
+                href={linkedInUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+              >
+                LinkedIn
+              </a>
+              <button
+                type="button"
+                data-copy-event-url={eventUrl}
+                class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10"
+              >
+                Copiar enlace
+              </button>
+            </div>
+          </div>
+
           {event.place && (
             <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
               <div class="h-64 w-full md:h-72">
@@ -326,4 +365,27 @@ const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent
       )
     }
   </main>
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-event-url]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const url = button.dataset.copyEventUrl;
+      if (!url) return;
+
+      try {
+        await navigator.clipboard.writeText(url);
+        const originalText = button.textContent;
+        button.textContent = "Enlace copiado ✓";
+        window.setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      } catch {
+        button.textContent = "No se pudo copiar";
+        window.setTimeout(() => {
+          button.textContent = "Copiar enlace";
+        }, 2000);
+      }
+    });
+  });
+</script>
+
 </Layout>
