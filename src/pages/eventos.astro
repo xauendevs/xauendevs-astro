@@ -115,6 +115,28 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
       )
     }
 
+    <section class="relative overflow-hidden rounded-[2rem] bg-accent px-7 py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
+      <div class="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-white/30 blur-3xl"></div>
+      <div class="relative">
+        <span class="text-xs font-bold uppercase tracking-[0.16em]">
+          ¿Falta tu evento?
+        </span>
+        <h2 class="mt-2 text-2xl font-black md:text-3xl">
+          Propón un evento para la agenda.
+        </h2>
+        <p class="mt-2 max-w-2xl text-sm text-primary/65">
+          Si organizas algo relacionado con tecnología en Jaén, cuéntanoslo y
+          lo revisamos.
+        </p>
+      </div>
+      <a
+        href="/proponer-evento"
+        class="relative mt-6 inline-flex shrink-0 rounded-full bg-primary px-6 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg md:mt-0"
+      >
+        Proponer evento →
+      </a>
+    </section>
+
     {
       pastEvents.length > 0 && (
         <section class="border-t border-primary/10 pt-12">
