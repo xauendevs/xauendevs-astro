@@ -62,7 +62,7 @@ const description =
     : `Charla de XauenDevs: ${event.title}.`);
 
 const title = `${event.title} · XauenDevs`;
-const locationQuery = [event.place, "Jaén, España"].filter(Boolean).join(", ");
+const locationQuery = (isExternal ? externalEvent.mapQuery : undefined) || [event.place, "Jaén, España"].filter(Boolean).join(", ");
 const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`;
 const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(locationQuery)}&output=embed`;
 const eventImage = isExternal
