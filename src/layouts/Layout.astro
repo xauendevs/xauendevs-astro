@@ -76,7 +76,7 @@ const { title, description } = Astro.props;
 <script>
   import { $, $$ } from "@/lib/dom-selector";
 
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(() => {
     const $clipContainer = $$(".clip-container");
     if ($clipContainer) {
       initializeClipHandlers();

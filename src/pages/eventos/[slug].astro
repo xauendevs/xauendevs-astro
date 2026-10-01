@@ -1,0 +1,211 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { getPivoTags } from "@/lib/get-pivo-tags";
+import { externalEvents } from "@/data/external-events";
+import { slugify } from "@/lib/event-slug";
+import type { Pivo } from "@/types/Pivo";
+import type { ExternalEvent } from "@/data/external-events";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const events = (await getPivosStrapi()) ?? [];
+
+  return [
+    ...events.map((event) => ({
+      params: { slug: slugify(event.title) },
+      props: {
+        kind: "pivo" as const,
+        event: { ...event, tags: getPivoTags(event.title) },
+      },
+    })),
+    ...externalEvents.map((event) => ({
+      params: { slug: slugify(event.id) },
+      props: {
+        kind: "external" as const,
+        event,
+      },
+    })),
+  ];
+}
+
+interface Props {
+  kind: "pivo" | "external";
+  event: Pivo | ExternalEvent;
+}
+
+const { kind, event } = Astro.props;
+const isExternal = kind === "external";
+const pivoEvent = event as Pivo;
+const externalEvent = event as ExternalEvent;
+const tags = "tags" in event ? (event.tags ?? []) : getPivoTags(event.title);
+const date = event.date;
+
+const formattedDate = date.toLocaleDateString("es-ES", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+const formattedTime = date.toLocaleTimeString("es-ES", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const description =
+  event.description ||
+  (isExternal
+    ? "Evento tecnológico en Jaén."
+    : `Charla de XauenDevs: ${event.title}.`);
+
+const title = `${event.title} · XauenDevs`;
+---
+
+<Layout title={title} description={description}>
+  <main class="flex flex-col gap-10 pb-16">
+    <a
+      href="/eventos"
+      class="inline-flex w-fit items-center gap-2 text-sm font-semibold text-primary/55 transition-colors hover:text-primary"
+    >
+      ← Volver a eventos
+    </a>
+
+    <article class="overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025]">
+      <div class="relative overflow-hidden bg-primary px-7 py-10 text-white md:px-12 md:py-14">
+        <div class="pointer-events-none absolute -right-24 -top-32 h-96 w-96 rounded-full bg-accent/80 blur-3xl"></div>
+
+        <div class="relative max-w-5xl">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+              {isExternal ? "Evento externo" : "XauenDevs"}
+            </span>
+            {tags.map((tag) => (
+              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <h1 class="mt-7 max-w-5xl text-4xl font-black tracking-tight md:text-6xl">
+            {event.title}
+          </h1>
+
+          <p class="mt-6 max-w-3xl text-lg leading-relaxed text-white/70 md:text-xl">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid gap-10 p-7 md:p-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div class="flex flex-col gap-8">
+          <section>
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              Cuándo
+            </span>
+            <p class="mt-2 text-2xl font-bold capitalize">{formattedDate}</p>
+            <p class="mt-1 text-primary/55">A las {formattedTime}</p>
+          </section>
+
+          <section>
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              Dónde
+            </span>
+            <p class="mt-2 text-xl font-semibold">{event.place || "Por confirmar"}</p>
+          </section>
+
+          <section>
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              Organiza
+            </span>
+            <p class="mt-2 text-xl font-semibold">
+              {isExternal ? externalEvent.organizer : "XauenDevs"}
+            </p>
+          </section>
+
+          {
+            !isExternal && pivoEvent.speakers && pivoEvent.speakers.length > 0 && (
+              <section>
+                <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+                  Ponentes
+                </span>
+                <div class="mt-4 flex flex-wrap gap-4">
+                  {pivoEvent.speakers?.map((speaker) => (
+                    <div class="flex items-center gap-3 rounded-2xl border border-primary/10 px-4 py-3">
+                      <img
+                        src={`${import.meta.env.STRAPI_HOST}${speaker.photo}`}
+                        alt={speaker.name}
+                        class="size-10 rounded-full object-cover"
+                      />
+                      <span class="font-semibold">{speaker.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )
+          }
+        </div>
+
+        <aside class="flex h-fit flex-col gap-4 rounded-[2rem] bg-accent p-6">
+          <span class="text-xs font-bold uppercase tracking-[0.16em]">
+            {isExternal ? "Evento externo" : "XauenDevs"}
+          </span>
+
+          <h2 class="text-2xl font-black leading-tight">
+            {isExternal
+              ? "Consulta todos los detalles del evento."
+              : "Descubre esta charla."}
+          </h2>
+
+          {
+            isExternal ? (
+              <a
+                href={externalEvent.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
+              >
+                Web del evento ↗
+              </a>
+            ) : pivoEvent.saraosLink ? (
+              <a
+                href={pivoEvent.saraosLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
+              >
+                Más información ↗
+              </a>
+            ) : null
+          }
+        </aside>
+      </div>
+    </article>
+
+    {
+      !isExternal && pivoEvent.videoId && (
+        <section class="overflow-hidden rounded-[2.5rem] bg-primary p-4 md:p-6">
+          <div class="mb-5 px-2">
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              Vídeo
+            </span>
+            <h2 class="mt-1 text-2xl font-bold text-white">
+              Revive la charla
+            </h2>
+          </div>
+          <div class="aspect-video overflow-hidden rounded-2xl">
+            <iframe
+              class="size-full"
+              src={`https://www.youtube.com/embed/${pivoEvent.videoId}`}
+              title={event.title}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </section>
+      )
+    }
+  </main>
+</Layout>
