@@ -68,9 +68,7 @@ const endDay = event.endDate
   </div>
 
   <a
-    href={event.url}
-    target="_blank"
-    rel="noopener noreferrer"
+    href={`/eventos/${event.id}`}
     class="mt-5 inline-flex w-fit items-center gap-2 font-semibold underline decoration-accent decoration-2 underline-offset-4 transition-all group-hover:gap-3"
   >
     Ver evento <span aria-hidden="true">↗</span>
