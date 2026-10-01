@@ -39,7 +39,7 @@ const { kind, event } = Astro.props;
 const isExternal = kind === "external";
 const pivoEvent = event as Pivo;
 const externalEvent = event as ExternalEvent;
-const tags = "tags" in event ? event.tags : getPivoTags(event.title);
+const tags = "tags" in event ? (event.tags ?? []) : getPivoTags(event.title);
 const date = event.date;
 
 const formattedDate = date.toLocaleDateString("es-ES", {
