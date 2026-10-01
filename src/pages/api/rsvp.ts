@@ -53,9 +53,10 @@ export const POST: APIRoute = async ({ request }) => {
     const eventId = String(body.eventId ?? "").trim();
     const name = normalizeName(body.name);
     const email = normalizeEmail(body.email);
+    const consent = body.consent === true;
 
-    if (!eventId || !name || !email) {
-      return new Response(JSON.stringify({ error: "Nombre y email son obligatorios." }), {
+    if (!eventId || !name || !email || !consent) {
+      return new Response(JSON.stringify({ error: "Nombre, email y consentimiento son obligatorios." }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
