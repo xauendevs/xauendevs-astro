@@ -157,11 +157,11 @@ const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`
 
     <article class="overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025]">
       {eventImage && (
-        <div class="relative aspect-[1200/630] overflow-hidden bg-primary">
+        <div class="relative aspect-[1200/630] overflow-hidden bg-primary md:h-[26rem] md:aspect-auto">
           <img
             src={eventImage}
             alt=""
-            class="size-full object-cover"
+            class="size-full object-cover object-bottom"
             loading="eager"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/35 to-transparent"></div>
