@@ -58,23 +58,35 @@ const pastEvents = events
 
     {
       pastEvents.length > 0 && (
-        <section class="flex flex-col gap-6">
-          <h2 class="text-3xl font-semibold">Eventos anteriores</h2>
-          <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2">
-            {pastEvents.map(
-              ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
-                <PivoCard
-                  id={id}
-                  title={title}
-                  image={image}
-                  speakers={speakers}
-                  place={place}
-                  date={date}
-                  videoId={videoId}
-                  customClass="justify-self-center !max-w-none !w-full !min-w-fit"
-                />
-              )
-            )}
+        <section class="flex flex-col gap-5 border-t border-primary/10 pt-10">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-2xl font-semibold">Eventos anteriores</h2>
+            <p class="text-primary/60">
+              Un vistazo a las actividades que ya han pasado.
+            </p>
+          </div>
+
+          <div class="flex flex-col divide-y divide-primary/10">
+            {pastEvents.map(({ title, speakers, place, date }: Pivo) => (
+              <article class="flex flex-col gap-2 py-5 md:flex-row md:items-center md:justify-between">
+                <div class="flex flex-col gap-1">
+                  <h3 class="font-semibold text-lg">{title}</h3>
+                  <span class="text-primary/60">
+                    {speakers?.map((speaker) => speaker.name).join(" · ")}
+                  </span>
+                </div>
+                <div class="flex flex-col md:items-end gap-1 text-sm text-primary/60">
+                  <span>
+                    {date.toLocaleDateString("es-ES", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                  {place && <span>{place}</span>}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       )
