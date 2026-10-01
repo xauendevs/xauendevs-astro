@@ -12,8 +12,8 @@ interface Props {
 }
 
 const { title, description, image = "/img/og-xauendevs.svg" } = Astro.props;
-const canonicalUrl = Astro.url.href;
-const socialImage = new URL(image, Astro.url).href;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const socialImage = new URL(image, Astro.site).href;
 ---
 
 <!doctype html>
