@@ -1,0 +1,51 @@
+---
+import type { ExternalEvent } from "@/data/external-events";
+
+interface Props {
+  event: ExternalEvent;
+}
+
+const { event } = Astro.props;
+---
+
+<article class="flex h-full flex-col rounded-3xl border border-primary/10 bg-primary/[0.03] p-6">
+  <div class="mb-5 flex items-center justify-between gap-3">
+    <span class="text-accent text-sm font-semibold uppercase tracking-wide">
+      Evento externo
+    </span>
+    <time class="text-sm text-primary/60" datetime={event.date.toISOString()}>
+      {event.date.toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "short",
+      })}
+    </time>
+  </div>
+
+  <div class="flex flex-1 flex-col gap-3">
+    <h3 class="text-2xl font-semibold leading-tight">{event.title}</h3>
+    <p class="text-primary/70">{event.description}</p>
+  </div>
+
+  <div class="mt-6 flex flex-col gap-1 border-t border-primary/10 pt-4 text-sm text-primary/60">
+    <span>{event.organizer}</span>
+    <span>{event.place}</span>
+    {event.endDate && (
+      <span>
+        Hasta{" "}
+        {event.endDate.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "short",
+        })}
+      </span>
+    )}
+  </div>
+
+  <a
+    href={event.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="mt-5 inline-flex w-fit items-center font-semibold underline decoration-accent decoration-2 underline-offset-4"
+  >
+    Más información →
+  </a>
+</article>
