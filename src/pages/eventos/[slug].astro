@@ -71,6 +71,20 @@ const eventImage = isExternal
     ? `${STRAPI_HOST}${pivoEvent.image}`
     : undefined;
 
+const ogParams = new URLSearchParams({
+  title: event.title,
+  date: `${formattedDate} · ${formattedTime}`,
+  place: event.place || "Jaén",
+  organizer: isExternal ? externalEvent.organizer : "XauenDevs",
+  label: isExternal ? "EVENTO EXTERNO" : "PIVO&CODE",
+});
+
+if (tags.length > 0) {
+  ogParams.set("tags", tags.slice(0, 3).join(" · "));
+}
+
+const socialImage = `/api/og.png?${ogParams.toString()}`;
+
 const calendarEnd = "endDate" in event && event.endDate
   ? event.endDate
   : new Date(date.getTime() + 60 * 60 * 1000);
@@ -128,7 +142,7 @@ const encodedShareMessage = encodeURIComponent(shareMessage);
 const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`;
 ---
 
-<Layout title={title} description={description} image={eventImage}>
+<Layout title={title} description={description} image={socialImage} imageType="image/png">
   <main class="flex flex-col gap-10 pb-16">
     <a
       href="/eventos"
