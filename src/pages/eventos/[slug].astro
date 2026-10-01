@@ -70,6 +70,34 @@ const eventImage = isExternal
   : pivoEvent.image
     ? `${STRAPI_HOST}${pivoEvent.image}`
     : undefined;
+
+const calendarEnd = "endDate" in event && event.endDate
+  ? event.endDate
+  : new Date(date.getTime() + 60 * 60 * 1000);
+const calendarStart = date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+const calendarEndValue = calendarEnd.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+const calendarLocation = encodeURIComponent(event.place || "Jaén, España");
+const calendarTitle = encodeURIComponent(event.title);
+const calendarDescription = encodeURIComponent(description);
+const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calendarTitle}&dates=${calendarStart}/${calendarEndValue}&details=${calendarDescription}&location=${calendarLocation}`;
+const escapeIcs = (value: string) =>
+  value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+const icsContent = [
+  "BEGIN:VCALENDAR",
+  "VERSION:2.0",
+  "PRODID:-//XauenDevs//Eventos//ES",
+  "BEGIN:VEVENT",
+  `UID:${slugify(event.title)}@xauendevs.io`,
+  `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}`,
+  `DTSTART:${calendarStart}`,
+  `DTEND:${calendarEndValue}`,
+  `SUMMARY:${escapeIcs(event.title)}`,
+  `DESCRIPTION:${escapeIcs(description)}`,
+  `LOCATION:${escapeIcs(event.place || "Jaén, España")}`,
+  "END:VEVENT",
+  "END:VCALENDAR",
+].join("\r\n");
+const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
 ---
 
 <Layout title={title} description={description} image={eventImage}>
@@ -114,9 +142,6 @@ const eventImage = isExternal
             {event.title}
           </h1>
 
-          <p class="mt-6 max-w-3xl text-lg leading-relaxed text-white/70 md:text-xl">
-            {description}
-          </p>
         </div>
       </div>
 
@@ -156,6 +181,15 @@ const eventImage = isExternal
             </p>
           </section>
 
+          <section class="rounded-[2rem] border border-primary/10 bg-primary/[0.025] p-6 md:p-7">
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              Sobre el evento
+            </span>
+            <p class="mt-3 max-w-3xl text-base leading-relaxed text-primary/65 md:text-lg">
+              {description}
+            </p>
+          </section>
+
           {
             !isExternal && pivoEvent.speakers && pivoEvent.speakers.length > 0 && (
               <section>
@@ -190,6 +224,12 @@ const eventImage = isExternal
               : "Descubre esta charla."}
           </h2>
 
+          <p class="text-sm leading-relaxed text-black/65">
+            {isExternal
+              ? "Fecha, ubicación, programa e información actualizada directamente en la web oficial del evento."
+              : "Consulta los detalles de la charla y, si quieres asistir, añade el evento directamente a tu calendario."}
+          </p>
+
           {
             isExternal ? (
               <a
@@ -211,6 +251,29 @@ const eventImage = isExternal
               </a>
             ) : null
           }
+
+          <div class="mt-2 border-t border-black/10 pt-4">
+            <span class="text-xs font-bold uppercase tracking-[0.14em]">
+              Añadir al calendario
+            </span>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <a
+                href={googleCalendarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+              >
+                Google Calendar
+              </a>
+              <a
+                href={icsUrl}
+                download={`${slugify(event.title)}.ics`}
+                class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10"
+              >
+                Descargar .ics
+              </a>
+            </div>
+          </div>
 
           {event.place && (
             <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
