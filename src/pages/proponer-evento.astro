@@ -1,0 +1,166 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout
+  title="Propón un evento · XauenDevs"
+  description="Propón un evento tecnológico para incluirlo en la agenda de Jaén Tech Events."
+>
+  <main class="flex flex-col gap-12">
+    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary px-7 py-10 text-white md:px-12 md:py-14">
+      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/90 blur-3xl"></div>
+
+      <div class="relative max-w-3xl">
+        <span class="text-accent text-sm font-bold uppercase tracking-[0.16em]">
+          JAÉN TECH EVENTS
+        </span>
+        <h1 class="mt-5 text-4xl font-black tracking-tight md:text-6xl">
+          ¿Organizas algo tech en Jaén?
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/70 md:text-xl">
+          Cuéntanos qué estás preparando y valoraremos añadirlo a la agenda de
+          la comunidad.
+        </p>
+      </div>
+    </header>
+
+    <section class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <form
+        id="event-proposal-form"
+        class="flex flex-col gap-7 rounded-[2rem] border border-primary/10 p-6 md:p-8"
+      >
+        <div>
+          <h2 class="text-2xl font-bold">Cuéntanos sobre el evento</h2>
+          <p class="mt-2 text-primary/60">
+            Rellena los datos básicos. Al enviar se abrirá tu cliente de correo
+            con la propuesta preparada.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Nombre del evento *</span>
+            <input
+              required
+              name="title"
+              type="text"
+              placeholder="Ej. Meetup de JavaScript"
+              class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </label>
+
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Organizador *</span>
+            <input
+              required
+              name="organizer"
+              type="text"
+              placeholder="Comunidad, empresa..."
+              class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </label>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Fecha *</span>
+            <input
+              required
+              name="date"
+              type="date"
+              class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </label>
+
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Lugar *</span>
+            <input
+              required
+              name="place"
+              type="text"
+              placeholder="Jaén, Universidad de Jaén..."
+              class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-2">
+          <span class="text-sm font-semibold">Web del evento</span>
+          <input
+            name="url"
+            type="url"
+            placeholder="https://..."
+            class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+        </label>
+
+        <label class="flex flex-col gap-2">
+          <span class="text-sm font-semibold">Cuéntanos un poco más *</span>
+          <textarea
+            required
+            name="description"
+            rows="5"
+            placeholder="¿De qué trata? ¿A quién va dirigido? ¿Qué tipo de evento es?"
+            class="resize-y rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          ></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="w-fit rounded-full bg-accent px-6 py-3 font-bold transition hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          Preparar propuesta →
+        </button>
+      </form>
+
+      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7">
+        <span class="text-xs font-bold uppercase tracking-[0.16em]">
+          ¿Qué buscamos?
+        </span>
+        <h2 class="text-2xl font-black leading-tight">
+          Cosas que muevan la comunidad tech de Jaén.
+        </h2>
+        <ul class="flex flex-col gap-3 text-sm leading-relaxed">
+          <li>→ Charlas y meetups</li>
+          <li>→ Talleres y workshops</li>
+          <li>→ Hackathons y retos</li>
+          <li>→ Conferencias</li>
+          <li>→ Actividades de comunidades tech</li>
+        </ul>
+        <p class="border-t border-primary/15 pt-5 text-sm text-primary/65">
+          Revisaremos cada propuesta antes de incorporarla a la agenda.
+        </p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const form = document.querySelector<HTMLFormElement>("#event-proposal-form");
+
+    form?.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const data = new FormData(form);
+      const title = String(data.get("title") ?? "");
+      const organizer = String(data.get("organizer") ?? "");
+      const date = String(data.get("date") ?? "");
+      const place = String(data.get("place") ?? "");
+      const url = String(data.get("url") ?? "");
+      const description = String(data.get("description") ?? "");
+
+      const subject = encodeURIComponent(`Propuesta para Jaén Tech Events: ${title}`);
+      const body = encodeURIComponent(
+        `Nombre del evento: ${title}
+Organizador: ${organizer}
+Fecha: ${date}
+Lugar: ${place}
+Web: ${url || "No indicada"}
+
+Descripción:
+${description}`,
+      );
+
+      window.location.href = `mailto:hola@xauendevs.io?subject=${subject}&body=${body}`;
+    });
+  </script>
+</Layout>
