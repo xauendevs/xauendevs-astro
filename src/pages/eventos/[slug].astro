@@ -99,7 +99,6 @@ const icsContent = [
 ].join("\r\n");
 const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
 const eventUrl = new URL(Astro.url.pathname, Astro.site).href;
-const shareUrl = encodeURIComponent(eventUrl);
 const eventDate = date.toLocaleDateString("es-ES", {
   day: "numeric",
   month: "long",
@@ -127,7 +126,6 @@ const shareMessage = [
 ].join("\n");
 const encodedShareMessage = encodeURIComponent(shareMessage);
 const whatsappUrl = `https://wa.me/?text=${encodedShareMessage}`;
-const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
 ---
 
 <Layout title={title} description={description} image={eventImage}>
@@ -415,12 +413,27 @@ const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${share
 
   document.querySelectorAll<HTMLButtonElement>("[data-linkedin-share]").forEach((button) => {
     button.addEventListener("click", async () => {
-      window.open("https://www.linkedin.com/sharing/share-offsite/?url=" + "" + encodeURIComponent(window.location.href), "_blank", "noopener,noreferrer");
+      const message = button.dataset.linkedinShare;
+      if (!message) return;
+
+      window.open(
+        "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(window.location.href),
+        "_blank",
+        "noopener,noreferrer",
+      );
 
       try {
-        await navigator.clipboard.writeText("" + "");
+        await navigator.clipboard.writeText(message);
+        const originalText = button.textContent;
+        button.textContent = "Texto copiado ✓";
+        window.setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
       } catch {
-        // El botón de copiar mensaje sigue disponible como alternativa.
+        button.textContent = "No se pudo copiar";
+        window.setTimeout(() => {
+          button.textContent = "LinkedIn";
+        }, 2000);
       }
     });
   });
