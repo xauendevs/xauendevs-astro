@@ -1,10 +1,25 @@
 import type { APIRoute } from "astro";
-import { ImageResponse } from "@vercel/og";
+import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
+import satori from "satori";
+import { Resvg } from "@resvg/resvg-js";
+
+const require = createRequire(import.meta.url);
+
+const robotoRegular = readFileSync(
+  require.resolve("@fontsource/roboto/files/roboto-latin-400-normal.woff")
+);
+const robotoBold = readFileSync(
+  require.resolve("@fontsource/roboto/files/roboto-latin-700-normal.woff")
+);
 
 const clamp = (value: string | null, maxLength: number, fallback: string) =>
   (value?.trim() || fallback).slice(0, maxLength);
 
-const textNode = (text: string, style: Record<string, string | number>) => ({
+const textNode = (
+  text: string,
+  style: Record<string, string | number>
+) => ({
   type: "div",
   props: {
     style: {
@@ -16,9 +31,8 @@ const textNode = (text: string, style: Record<string, string | number>) => ({
 });
 
 export const prerender = false;
-export const config = { runtime: "edge" };
 
-export const GET: APIRoute = ({ url }) => {
+export const GET: APIRoute = async ({ url }) => {
   const params = url.searchParams;
   const title = clamp(params.get("title"), 140, "Eventos en Jaén");
   const date = clamp(params.get("date"), 90, "Próximamente");
@@ -41,7 +55,6 @@ export const GET: APIRoute = ({ url }) => {
         padding: "64px",
         backgroundColor: "#0d0d0d",
         color: "#ffffff",
-        fontFamily: "Noto Sans",
         overflow: "hidden",
       },
       children: [
@@ -57,17 +70,19 @@ export const GET: APIRoute = ({ url }) => {
             },
             children: [
               textNode("XauenDevs", {
+                fontFamily: "Roboto",
                 fontSize: 30,
-                fontWeight: 900,
+                fontWeight: 700,
                 letterSpacing: "-0.04em",
               }),
               textNode(label, {
+                fontFamily: "Roboto",
                 padding: "10px 18px",
                 borderRadius: 999,
                 backgroundColor: "#f6b703",
                 color: "#0d0d0d",
                 fontSize: 18,
-                fontWeight: 800,
+                fontWeight: 700,
                 letterSpacing: "0.12em",
               }),
             ],
@@ -85,25 +100,28 @@ export const GET: APIRoute = ({ url }) => {
             },
             children: [
               textNode(title, {
+                fontFamily: "Roboto",
                 fontSize: 62,
                 lineHeight: 1.08,
-                fontWeight: 900,
+                fontWeight: 700,
                 letterSpacing: "-0.045em",
               }),
               description
                 ? textNode(description, {
+                    fontFamily: "Roboto",
                     fontSize: 21,
                     lineHeight: 1.3,
-                    fontWeight: 500,
+                    fontWeight: 400,
                     color: "rgba(255,255,255,0.72)",
                     maxWidth: "980px",
                   })
                 : null,
               tags
                 ? textNode(tags, {
+                    fontFamily: "Roboto",
                     fontSize: 22,
                     lineHeight: 1.2,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     color: "#f6b703",
                   })
                 : null,
@@ -125,8 +143,9 @@ export const GET: APIRoute = ({ url }) => {
             },
             children: [
               textNode(date, {
+                fontFamily: "Roboto",
                 fontSize: 25,
-                fontWeight: 800,
+                fontWeight: 700,
               }),
               {
                 type: "div",
@@ -140,12 +159,15 @@ export const GET: APIRoute = ({ url }) => {
                   },
                   children: [
                     textNode(place, {
+                      fontFamily: "Roboto",
                       fontSize: 21,
                       fontWeight: 700,
                       textAlign: "right",
                     }),
                     textNode(organizer, {
+                      fontFamily: "Roboto",
                       fontSize: 18,
+                      fontWeight: 400,
                       color: "rgba(255,255,255,0.62)",
                       textAlign: "right",
                     }),
@@ -174,8 +196,31 @@ export const GET: APIRoute = ({ url }) => {
     },
   };
 
-  return new ImageResponse(element as any, {
+  const svg = await satori(element, {
     width: 1200,
     height: 630,
+    fonts: [
+      {
+        name: "Roboto",
+        data: robotoRegular,
+        weight: 400,
+        style: "normal",
+      },
+      {
+        name: "Roboto",
+        data: robotoBold,
+        weight: 700,
+        style: "normal",
+      },
+    ],
+  });
+
+  const png = new Resvg(svg).render().asPng();
+
+  return new Response(png, {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=3600, s-maxage=86400",
+    },
   });
 };
