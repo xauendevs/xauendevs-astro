@@ -39,13 +39,13 @@ const normalizeEmail = (value: unknown) => {
   if (!localPart || !domain) return email;
 
   if (domain === "gmail.com" || domain === "googlemail.com") {
-    return localPart.split("+")[0].replace(/\\./g, "") + "@gmail.com";
+    return localPart.split("+")[0].replace(/\./g, "") + "@gmail.com";
   }
 
   return email;
 };
 
-const normalizeName = (value: unknown) => String(value ?? "").trim().replace(/\\s+/g, " ");
+const normalizeName = (value: unknown) => String(value ?? "").trim().replace(/\s+/g, " ");
 
 const getClientIp = (request: Request) => {
   const trustedVercelIp = request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    if (name.length > 100 || email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    if (name.length > 100 || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ error: "Revisa los datos introducidos." }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
