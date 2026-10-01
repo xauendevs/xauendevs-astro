@@ -211,41 +211,32 @@ const eventImage = isExternal
               </a>
             ) : null
           }
-        </aside>
-      </div>
-    </article>
 
-    {
-      event.place && (
-        <section class="overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025]">
-          <div class="flex flex-col gap-2 px-7 pt-7 md:px-10 md:pt-9">
-            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
-              Ubicación
-            </span>
-            <div class="flex flex-col gap-1 md:flex-row md:items-end md:justify-between md:gap-6">
-              <h2 class="text-2xl font-bold tracking-tight">{event.place}</h2>
+          {event.place && (
+            <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
+              <div class="aspect-[16/9] w-full">
+                <iframe
+                  src={mapsEmbedUrl}
+                  title={`Mapa de ${event.place}`}
+                  class="size-full border-0"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
               <a
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex w-fit shrink-0 rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-primary transition-transform hover:-translate-y-0.5"
+                class="flex items-center justify-between px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-white/30"
               >
-                Cómo llegar ↗
+                <span>Cómo llegar</span>
+                <span aria-hidden="true">↗</span>
               </a>
             </div>
-          </div>
-          <div class="mt-6 aspect-[16/7] min-h-64 w-full bg-primary/5">
-            <iframe
-              src={mapsEmbedUrl}
-              title={`Mapa de ${event.place}`}
-              class="size-full border-0"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </section>
-      )
-    }
+          )}
+        </aside>
+      </div>
+    </article>
 
     {
       !isExternal && pivoEvent.videoId && (
