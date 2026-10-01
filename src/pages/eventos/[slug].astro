@@ -125,7 +125,7 @@ const shareMessage = [
   eventUrl,
 ].join("\n");
 const encodedShareMessage = encodeURIComponent(shareMessage);
-const whatsappUrl = `https://wa.me/?text=${encodedShareMessage}`;
+const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`;
 ---
 
 <Layout title={title} description={description} image={eventImage}>
