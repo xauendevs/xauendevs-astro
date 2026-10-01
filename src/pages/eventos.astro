@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { getPivoTags } from "@/lib/get-pivo-tags";
 import { externalEvents } from "@/data/external-events";
 import type { Pivo } from "@/types/Pivo";
 
@@ -13,17 +14,28 @@ const now = new Date();
 
 const upcomingEvents = events
   .filter((event) => event.date >= now)
-  .sort((a, b) => a.date.getTime() - b.date.getTime());
+  .sort((a, b) => a.date.getTime() - b.date.getTime())
+  .map((event) => ({ ...event, tags: getPivoTags(event.title) }));
 
 const pastEvents = events
   .filter((event) => event.date < now)
-  .sort((a, b) => b.date.getTime() - a.date.getTime());
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .map((event) => ({ ...event, tags: getPivoTags(event.title) }));
 
 const upcomingExternalEvents = externalEvents
   .filter((event) => event.date >= now)
   .sort((a, b) => a.date.getTime() - b.date.getTime());
 
 const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
+
+const availableTags = Array.from(
+  new Set([
+    "Charlas",
+    ...upcomingEvents.flatMap((event) => event.tags),
+    ...pastEvents.flatMap((event) => event.tags),
+    ...externalEvents.flatMap((event) => event.tags),
+  ]),
+);
 ---
 
 <Layout
@@ -58,9 +70,38 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
       </div>
     </header>
 
+    <nav
+      aria-label="Filtrar eventos por tecnología"
+      class="flex flex-col gap-3"
+    >
+      <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">
+        Filtrar por tecnología
+      </span>
+      <div class="flex gap-2 overflow-x-auto pb-2">
+        <button
+          type="button"
+          data-tag-filter="all"
+          aria-pressed="true"
+          class="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/80"
+        >
+          Todos
+        </button>
+        {availableTags.map((tag) => (
+          <button
+            type="button"
+            data-tag-filter={tag}
+            aria-pressed="false"
+            class="shrink-0 rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary"
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+    </nav>
+
     {
       upcomingEvents.length > 0 && (
-        <section class="flex flex-col gap-7">
+        <section data-event-section class="flex flex-col gap-7">
           <div class="flex flex-col gap-1">
             <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
               XauenDevs
@@ -70,7 +111,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
-              ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
+              ({ id, title, image, speakers, place, date, videoId, tags }: Pivo) => (
                 <PivoCard
                   id={id}
                   title={title}
@@ -79,6 +120,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
                   place={place}
                   date={date}
                   videoId={videoId}
+                  tags={tags}
                   customClass="justify-self-center !max-w-none !w-full !min-w-fit"
                 />
               )
@@ -90,7 +132,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 
     {
       upcomingExternalEvents.length > 0 && (
-        <section class="flex flex-col gap-7">
+        <section data-event-section class="flex flex-col gap-7">
           <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div class="flex flex-col gap-1">
               <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
@@ -139,7 +181,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 
     {
       pastEvents.length > 0 && (
-        <section class="border-t border-primary/10 pt-12">
+        <section data-event-section class="border-t border-primary/10 pt-12">
           <div class="mb-6 flex flex-col gap-1">
             <span class="text-primary/35 text-xs font-bold uppercase tracking-[0.16em]">
               Archivo
@@ -148,8 +190,9 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
           </div>
 
           <div class="overflow-hidden rounded-3xl border border-primary/10">
-            {pastEvents.map(({ title, speakers, place, date }, index) => (
+            {pastEvents.map(({ title, speakers, place, date, tags }, index) => (
               <article
+                data-event-tags={tags.join(",")}
                 class:list={[
                   "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] md:flex-row md:items-center md:px-6",
                   index > 0 && "border-t border-primary/10",
@@ -162,15 +205,20 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
                       month: "short",
                     })}
                   </span>
-                  <span class="text-xs text-primary/40">
-                    {date.getFullYear()}
-                  </span>
+                  <span class="text-xs text-primary/40">{date.getFullYear()}</span>
                 </time>
 
                 <div class="min-w-0 flex-1">
-                  <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70">
-                    {title}
-                  </h3>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70">
+                      {title}
+                    </h3>
+                    {tags.map((tag) => (
+                      <span class="rounded-full bg-primary/[0.05] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary/45">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                   <p class="mt-1 truncate text-sm text-primary/50">
                     {speakers?.map((speaker) => speaker.name).join(" · ")}
                     {place && speakers?.length ? " · " : ""}
@@ -188,4 +236,48 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
       )
     }
   </main>
+
+  <script>
+    const buttons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("[data-tag-filter]"),
+    );
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-event-section]"),
+    );
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-event-tags]"),
+    );
+
+    const activeButtonClass =
+      "shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/80";
+    const inactiveButtonClass =
+      "shrink-0 rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary";
+
+    const updateFilter = (tag: string) => {
+      cards.forEach((card) => {
+        const tags = (card.dataset.eventTags ?? "").split(",").filter(Boolean);
+        const visible = tag === "all" || tags.includes(tag);
+        card.classList.toggle("hidden", !visible);
+      });
+
+      sections.forEach((section) => {
+        const visibleCards = section.querySelectorAll(
+          '[data-event-tags]:not(.hidden)',
+        );
+        section.classList.toggle("hidden", visibleCards.length === 0);
+      });
+
+      buttons.forEach((button) => {
+        const active = button.dataset.tagFilter === tag;
+        button.setAttribute("aria-pressed", String(active));
+        button.className = active ? activeButtonClass : inactiveButtonClass;
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        updateFilter(button.dataset.tagFilter ?? "all");
+      });
+    });
+  </script>
 </Layout>
