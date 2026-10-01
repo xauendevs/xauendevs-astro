@@ -5,6 +5,7 @@ import { getPivoTags } from "@/lib/get-pivo-tags";
 import { externalEvents } from "@/data/external-events";
 import { slugify } from "@/lib/event-slug";
 import type { Pivo } from "@/types/Pivo";
+import type { ExternalEvent } from "@/data/external-events";
 
 export const prerender = true;
 
@@ -31,11 +32,13 @@ export async function getStaticPaths() {
 
 interface Props {
   kind: "pivo" | "external";
-  event: Pivo | (typeof externalEvents)[number];
+  event: Pivo | ExternalEvent;
 }
 
 const { kind, event } = Astro.props;
 const isExternal = kind === "external";
+const pivoEvent = event as Pivo;
+const externalEvent = event as ExternalEvent;
 const tags = "tags" in event ? event.tags : getPivoTags(event.title);
 const date = event.date;
 
@@ -117,18 +120,18 @@ const title = `${event.title} · XauenDevs`;
               Organiza
             </span>
             <p class="mt-2 text-xl font-semibold">
-              {isExternal ? event.organizer : "XauenDevs"}
+              {isExternal ? externalEvent.organizer : "XauenDevs"}
             </p>
           </section>
 
           {
-            !isExternal && event.speakers && event.speakers.length > 0 && (
+            !isExternal && pivoEvent.speakers && pivoEvent.speakers.length > 0 && (
               <section>
                 <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
                   Ponentes
                 </span>
                 <div class="mt-4 flex flex-wrap gap-4">
-                  {event.speakers.map((speaker) => (
+                  {pivoEvent.speakers?.map((speaker) => (
                     <div class="flex items-center gap-3 rounded-2xl border border-primary/10 px-4 py-3">
                       <img
                         src={`${import.meta.env.STRAPI_HOST}${speaker.photo}`}
@@ -158,16 +161,16 @@ const title = `${event.title} · XauenDevs`;
           {
             isExternal ? (
               <a
-                href={event.url}
+                href={externalEvent.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
               >
                 Web del evento ↗
               </a>
-            ) : event.saraosLink ? (
+            ) : pivoEvent.saraosLink ? (
               <a
-                href={event.saraosLink}
+                href={pivoEvent.saraosLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
@@ -181,7 +184,7 @@ const title = `${event.title} · XauenDevs`;
     </article>
 
     {
-      !isExternal && event.videoId && (
+      !isExternal && pivoEvent.videoId && (
         <section class="overflow-hidden rounded-[2.5rem] bg-primary p-4 md:p-6">
           <div class="mb-5 px-2">
             <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
@@ -194,7 +197,7 @@ const title = `${event.title} · XauenDevs`;
           <div class="aspect-video overflow-hidden rounded-2xl">
             <iframe
               class="size-full"
-              src={`https://www.youtube.com/embed/${event.videoId}`}
+              src={`https://www.youtube.com/embed/${pivoEvent.videoId}`}
               title={event.title}
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
