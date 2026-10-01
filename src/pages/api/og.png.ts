@@ -15,6 +15,9 @@ const textNode = (text: string, style: Record<string, string | number>) => ({
   },
 });
 
+export const prerender = false;
+export const config = { runtime: "edge" };
+
 export const GET: APIRoute = ({ url }) => {
   const params = url.searchParams;
   const title = clamp(params.get("title"), 140, "Eventos en Jaén");
