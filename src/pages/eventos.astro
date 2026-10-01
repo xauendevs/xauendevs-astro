@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { getPivoTags } from "@/lib/get-pivo-tags";
 import { externalEvents } from "@/data/external-events";
 import type { Pivo } from "@/types/Pivo";
 
@@ -13,17 +14,28 @@ const now = new Date();
 
 const upcomingEvents = events
   .filter((event) => event.date >= now)
-  .sort((a, b) => a.date.getTime() - b.date.getTime());
+  .sort((a, b) => a.date.getTime() - b.date.getTime())
+  .map((event) => ({ ...event, tags: getPivoTags(event.title) }));
 
 const pastEvents = events
   .filter((event) => event.date < now)
-  .sort((a, b) => b.date.getTime() - a.date.getTime());
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .map((event) => ({ ...event, tags: getPivoTags(event.title) }));
 
 const upcomingExternalEvents = externalEvents
   .filter((event) => event.date >= now)
   .sort((a, b) => a.date.getTime() - b.date.getTime());
 
 const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
+
+const availableTags = Array.from(
+  new Set([
+    "Charlas",
+    ...upcomingEvents.flatMap((event) => event.tags),
+    ...pastEvents.flatMap((event) => event.tags),
+    ...externalEvents.flatMap((event) => event.tags),
+  ]),
+);
 ---
 
 <Layout
@@ -58,9 +70,48 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
       </div>
     </header>
 
+    <nav
+      aria-label="Filtrar eventos por tecnología"
+      class="flex flex-col gap-3"
+    >
+      <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">
+        Filtrar por tecnología
+      </span>
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          data-tag-filter="all"
+          aria-pressed="true"
+          class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors"
+        >
+          Todos
+        </button>
+        {availableTags.map((tag) => (
+          <button
+            type="button"
+            data-tag-filter={tag}
+            aria-pressed="false"
+            class="rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary"
+          >
+            {tag}
+          </button>
+        ))}
+        <button
+          type="button"
+          data-clear-filters
+          class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 underline underline-offset-4 hover:text-primary"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+      <p data-filter-status class="hidden text-xs font-semibold text-primary/45">
+        Filtros activos: <span data-filter-count>0</span>
+      </p>
+    </nav>
+
     {
       upcomingEvents.length > 0 && (
-        <section class="flex flex-col gap-7">
+        <section data-event-section class="flex flex-col gap-7">
           <div class="flex flex-col gap-1">
             <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
               XauenDevs
@@ -70,7 +121,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
-              ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
+              ({ id, title, image, speakers, place, date, videoId, tags }: Pivo) => (
                 <PivoCard
                   id={id}
                   title={title}
@@ -79,6 +130,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
                   place={place}
                   date={date}
                   videoId={videoId}
+                  tags={tags}
                   customClass="justify-self-center !max-w-none !w-full !min-w-fit"
                 />
               )
@@ -90,7 +142,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 
     {
       upcomingExternalEvents.length > 0 && (
-        <section class="flex flex-col gap-7">
+        <section data-event-section class="flex flex-col gap-7">
           <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div class="flex flex-col gap-1">
               <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
@@ -139,7 +191,7 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 
     {
       pastEvents.length > 0 && (
-        <section class="border-t border-primary/10 pt-12">
+        <section data-event-section class="border-t border-primary/10 pt-12">
           <div class="mb-6 flex flex-col gap-1">
             <span class="text-primary/35 text-xs font-bold uppercase tracking-[0.16em]">
               Archivo
@@ -148,8 +200,9 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
           </div>
 
           <div class="overflow-hidden rounded-3xl border border-primary/10">
-            {pastEvents.map(({ title, speakers, place, date }, index) => (
+            {pastEvents.map(({ title, speakers, place, date, tags }, index) => (
               <article
+                data-event-tags={tags.join(",")}
                 class:list={[
                   "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] md:flex-row md:items-center md:px-6",
                   index > 0 && "border-t border-primary/10",
@@ -162,15 +215,20 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
                       month: "short",
                     })}
                   </span>
-                  <span class="text-xs text-primary/40">
-                    {date.getFullYear()}
-                  </span>
+                  <span class="text-xs text-primary/40">{date.getFullYear()}</span>
                 </time>
 
                 <div class="min-w-0 flex-1">
-                  <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70">
-                    {title}
-                  </h3>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70">
+                      {title}
+                    </h3>
+                    {tags.map((tag) => (
+                      <span class="rounded-full bg-primary/[0.05] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary/45">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                   <p class="mt-1 truncate text-sm text-primary/50">
                     {speakers?.map((speaker) => speaker.name).join(" · ")}
                     {place && speakers?.length ? " · " : ""}
@@ -188,4 +246,85 @@ const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
       )
     }
   </main>
+
+  <script>
+    const buttons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("[data-tag-filter]"),
+    );
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-event-section]"),
+    );
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-event-tags]"),
+    );
+    const clearButton = document.querySelector<HTMLButtonElement>(
+      "[data-clear-filters]",
+    );
+    const filterStatus = document.querySelector<HTMLElement>(
+      "[data-filter-status]",
+    );
+    const filterCount = document.querySelector<HTMLElement>(
+      "[data-filter-count]",
+    );
+    const selectedTags = new Set<string>();
+
+    const activeButtonClass =
+      "rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors";
+    const inactiveButtonClass =
+      "rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary";
+
+    const updateFilter = () => {
+      const filters = [...selectedTags];
+
+      cards.forEach((card) => {
+        const tags = (card.dataset.eventTags ?? "").split(",").filter(Boolean);
+        const visible =
+          filters.length === 0 || filters.some((filter) => tags.includes(filter));
+        card.classList.toggle("hidden", !visible);
+      });
+
+      sections.forEach((section) => {
+        const visibleCards = section.querySelectorAll(
+          '[data-event-tags]:not(.hidden)',
+        );
+        section.classList.toggle("hidden", visibleCards.length === 0);
+      });
+
+      buttons.forEach((button) => {
+        const tag = button.dataset.tagFilter;
+        const active =
+          tag === "all" ? selectedTags.size === 0 : selectedTags.has(tag ?? "");
+        button.setAttribute("aria-pressed", String(active));
+        button.className = active ? activeButtonClass : inactiveButtonClass;
+      });
+
+      const hasFilters = selectedTags.size > 0;
+      clearButton?.classList.toggle("hidden", !hasFilters);
+      filterStatus?.classList.toggle("hidden", !hasFilters);
+      if (filterCount) filterCount.textContent = String(selectedTags.size);
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const tag = button.dataset.tagFilter;
+
+        if (tag === "all") {
+          selectedTags.clear();
+        } else if (tag) {
+          if (selectedTags.has(tag)) {
+            selectedTags.delete(tag);
+          } else {
+            selectedTags.add(tag);
+          }
+        }
+
+        updateFilter();
+      });
+    });
+
+    clearButton?.addEventListener("click", () => {
+      selectedTags.clear();
+      updateFilter();
+    });
+  </script>
 </Layout>

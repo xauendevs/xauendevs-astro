@@ -7,6 +7,7 @@ export interface ExternalEvent {
   place: string;
   organizer: string;
   url: string;
+  tags: string[];
 }
 
 export const externalEvents: ExternalEvent[] = [
@@ -19,6 +20,7 @@ export const externalEvents: ExternalEvent[] = [
     place: "Banco de España, Jaén",
     organizer: "Jaén Tech",
     url: "https://www.jaentech.com/",
+    tags: ["Comunidad", "Tecnología"],
   },
   {
     id: "caepia-2026",
@@ -30,6 +32,7 @@ export const externalEvents: ExternalEvent[] = [
     place: "Antigua Escuela de Magisterio, Jaén",
     organizer: "Universidad de Jaén",
     url: "https://simidat.ujaen.es/caepia26/",
+    tags: ["IA", "Datos", "Investigación"],
   },
   {
     id: "science-week-uja-2026",
@@ -41,5 +44,6 @@ export const externalEvents: ExternalEvent[] = [
     place: "Campus de Jaén y Linares",
     organizer: "Universidad de Jaén",
     url: "https://www.ujaen.es/servicios/ucc/eventos/xxvi-semana-de-la-ciencia",
+    tags: ["Ciencia", "Datos", "IA"],
   },
 ];
