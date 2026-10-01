@@ -4,6 +4,7 @@ import PivoCard from "@/components/PivoCard.astro";
 import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { getPivoTags } from "@/lib/get-pivo-tags";
+import { slugify } from "@/lib/event-slug";
 import { externalEvents } from "@/data/external-events";
 import type { Pivo } from "@/types/Pivo";
 
@@ -131,6 +132,7 @@ const availableTags = Array.from(
                   date={date}
                   videoId={videoId}
                   tags={tags}
+                  detailUrl={`/eventos/${slugify(title)}`}
                   customClass="justify-self-center !max-w-none !w-full !min-w-fit"
                 />
               )
@@ -201,7 +203,8 @@ const availableTags = Array.from(
 
           <div class="overflow-hidden rounded-3xl border border-primary/10">
             {pastEvents.map(({ title, speakers, place, date, tags }, index) => (
-              <article
+              <a
+                href={`/eventos/${slugify(title)}`}
                 data-event-tags={tags.join(",")}
                 class:list={[
                   "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] md:flex-row md:items-center md:px-6",
@@ -239,7 +242,7 @@ const availableTags = Array.from(
                 <span class="hidden text-primary/25 transition-transform group-hover:translate-x-1 md:block">
                   ↗
                 </span>
-              </article>
+              </a>
             ))}
           </div>
         </section>
