@@ -77,12 +77,12 @@ const availableTags = Array.from(
       <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">
         Filtrar por tecnología
       </span>
-      <div class="flex gap-2 overflow-x-auto pb-2">
+      <div class="flex flex-wrap items-center gap-2">
         <button
           type="button"
           data-tag-filter="all"
           aria-pressed="true"
-          class="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/80"
+          class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors"
         >
           Todos
         </button>
@@ -91,12 +91,22 @@ const availableTags = Array.from(
             type="button"
             data-tag-filter={tag}
             aria-pressed="false"
-            class="shrink-0 rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary"
+            class="rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary"
           >
             {tag}
           </button>
         ))}
+        <button
+          type="button"
+          data-clear-filters
+          class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 underline underline-offset-4 hover:text-primary"
+        >
+          Limpiar filtros
+        </button>
       </div>
+      <p data-filter-status class="hidden text-xs font-semibold text-primary/45">
+        Filtros activos: <span data-filter-count>0</span>
+      </p>
     </nav>
 
     {
@@ -247,16 +257,29 @@ const availableTags = Array.from(
     const cards = Array.from(
       document.querySelectorAll<HTMLElement>("[data-event-tags]"),
     );
+    const clearButton = document.querySelector<HTMLButtonElement>(
+      "[data-clear-filters]",
+    );
+    const filterStatus = document.querySelector<HTMLElement>(
+      "[data-filter-status]",
+    );
+    const filterCount = document.querySelector<HTMLElement>(
+      "[data-filter-count]",
+    );
+    const selectedTags = new Set<string>();
 
     const activeButtonClass =
-      "shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/80";
+      "rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors";
     const inactiveButtonClass =
-      "shrink-0 rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary";
+      "rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary";
 
-    const updateFilter = (tag: string) => {
+    const updateFilter = () => {
+      const filters = [...selectedTags];
+
       cards.forEach((card) => {
         const tags = (card.dataset.eventTags ?? "").split(",").filter(Boolean);
-        const visible = tag === "all" || tags.includes(tag);
+        const visible =
+          filters.length === 0 || filters.some((filter) => tags.includes(filter));
         card.classList.toggle("hidden", !visible);
       });
 
@@ -268,16 +291,40 @@ const availableTags = Array.from(
       });
 
       buttons.forEach((button) => {
-        const active = button.dataset.tagFilter === tag;
+        const tag = button.dataset.tagFilter;
+        const active =
+          tag === "all" ? selectedTags.size === 0 : selectedTags.has(tag ?? "");
         button.setAttribute("aria-pressed", String(active));
         button.className = active ? activeButtonClass : inactiveButtonClass;
       });
+
+      const hasFilters = selectedTags.size > 0;
+      clearButton?.classList.toggle("hidden", !hasFilters);
+      filterStatus?.classList.toggle("hidden", !hasFilters);
+      if (filterCount) filterCount.textContent = String(selectedTags.size);
     };
 
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
-        updateFilter(button.dataset.tagFilter ?? "all");
+        const tag = button.dataset.tagFilter;
+
+        if (tag === "all") {
+          selectedTags.clear();
+        } else if (tag) {
+          if (selectedTags.has(tag)) {
+            selectedTags.delete(tag);
+          } else {
+            selectedTags.add(tag);
+          }
+        }
+
+        updateFilter();
       });
+    });
+
+    clearButton?.addEventListener("click", () => {
+      selectedTags.clear();
+      updateFilter();
     });
   </script>
 </Layout>
