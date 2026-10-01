@@ -26,6 +26,7 @@ export const GET: APIRoute = ({ url }) => {
   const organizer = clamp(params.get("organizer"), 80, "XauenDevs");
   const label = clamp(params.get("label"), 30, "EVENTO");
   const tags = clamp(params.get("tags"), 90, "");
+  const description = clamp(params.get("description"), 180, "");
 
   const element = {
     type: "div",
@@ -89,6 +90,15 @@ export const GET: APIRoute = ({ url }) => {
                 fontWeight: 900,
                 letterSpacing: "-0.045em",
               }),
+              description
+                ? textNode(description, {
+                    fontSize: 21,
+                    lineHeight: 1.3,
+                    fontWeight: 500,
+                    color: "rgba(255,255,255,0.72)",
+                    maxWidth: "980px",
+                  })
+                : null,
               tags
                 ? textNode(tags, {
                     fontSize: 22,
