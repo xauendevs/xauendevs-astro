@@ -8,6 +8,7 @@ export interface ExternalEvent {
   organizer: string;
   url: string;
   tags: string[];
+  image?: string;
 }
 
 export const externalEvents: ExternalEvent[] = [
@@ -21,6 +22,7 @@ export const externalEvents: ExternalEvent[] = [
     organizer: "Jaén Tech",
     url: "https://www.jaentech.com/",
     tags: ["Comunidad", "Tecnología"],
+    image: "/img/events/jaen-tech-2026.svg",
   },
   {
     id: "caepia-2026",
@@ -33,6 +35,7 @@ export const externalEvents: ExternalEvent[] = [
     organizer: "Universidad de Jaén",
     url: "https://simidat.ujaen.es/caepia26/",
     tags: ["IA", "Datos", "Investigación"],
+    image: "/img/events/caepia-2026.svg",
   },
   {
     id: "science-week-uja-2026",
@@ -45,5 +48,6 @@ export const externalEvents: ExternalEvent[] = [
     organizer: "Universidad de Jaén",
     url: "https://www.ujaen.es/servicios/ucc/eventos/xxvi-semana-de-la-ciencia",
     tags: ["Ciencia", "Datos", "IA"],
+    image: "/img/events/semana-ciencia-uja-2026.svg",
   },
 ];
