@@ -157,7 +157,7 @@ const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`
 
     <article class="overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025]">
       {eventImage && (
-        <div class="relative h-64 overflow-hidden bg-primary md:h-[30rem]">
+        <div class="relative aspect-[1200/630] overflow-hidden bg-primary md:h-[30rem] md:aspect-auto">
           <img
             src={eventImage}
             alt=""
@@ -197,7 +197,7 @@ const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`
             <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
               Cuándo
             </span>
-            <p class="mt-2 text-2xl font-bold capitalize">{formattedDate}</p>
+            <p class="mt-2 text-2xl font-bold">{formattedDate}</p>
             <p class="mt-1 text-primary/55">A las {formattedTime}</p>
           </section>
 
