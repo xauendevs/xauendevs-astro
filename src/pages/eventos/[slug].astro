@@ -53,6 +53,7 @@ const formattedDate = date.toLocaleDateString("es-ES", {
 const formattedTime = date.toLocaleTimeString("es-ES", {
   hour: "2-digit",
   minute: "2-digit",
+  timeZone: "Europe/Madrid",
 });
 
 const description =
@@ -76,6 +77,7 @@ const ogParams = new URLSearchParams({
   date: `${formattedDate} · ${formattedTime}`,
   place: event.place || "Jaén",
   organizer: isExternal ? externalEvent.organizer : "XauenDevs",
+  description: description,
   label: isExternal ? "EVENTO EXTERNO" : "PIVO&CODE",
 });
 
@@ -121,6 +123,7 @@ const eventDate = date.toLocaleDateString("es-ES", {
 const eventTime = date.toLocaleTimeString("es-ES", {
   hour: "2-digit",
   minute: "2-digit",
+  timeZone: "Europe/Madrid",
 });
 const shareMessage = [
   "🚨 Ojo con esto…",
