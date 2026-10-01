@@ -98,6 +98,34 @@ const icsContent = [
   "END:VCALENDAR",
 ].join("\r\n");
 const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
+const eventUrl = new URL(Astro.url.pathname, Astro.site).href;
+const eventDate = date.toLocaleDateString("es-ES", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const eventTime = date.toLocaleTimeString("es-ES", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const shareMessage = [
+  "🚨 Ojo con esto…",
+  "",
+  `¿Te apuntas a *${event.title}*? 👀`,
+  "",
+  description,
+  "",
+  `📆 ${eventDate}, ${eventTime}`,
+  `📍 ${event.place || "Jaén"}`,
+  "",
+  "Organizado por:",
+  `📣 ${isExternal ? externalEvent.organizer : "XauenDevs"}`,
+  "",
+  "Más información y apuntes:",
+  eventUrl,
+].join("\n");
+const encodedShareMessage = encodeURIComponent(shareMessage);
+const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`;
 ---
 
 <Layout title={title} description={description} image={eventImage}>
@@ -297,6 +325,41 @@ const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent
               </a>
             </div>
           )}
+
+          <div class="mt-2 border-t border-black/10 pt-5">
+            <span class="text-xs font-bold uppercase tracking-[0.14em]">
+              Compartir evento
+            </span>
+            <p class="mt-2 text-sm leading-relaxed text-black/60">
+              WhatsApp lleva el texto listo. En LinkedIn copiamos el mensaje y abrimos el editor para que solo tengas que pegarlo.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+              >
+                WhatsApp
+              </a>
+              <button
+                type="button"
+                data-linkedin-share={shareMessage}
+                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+              >
+                LinkedIn
+              </button>
+              <button
+                type="button"
+                data-copy-share-message={shareMessage}
+                class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10"
+              >
+                Copiar mensaje
+              </button>
+            </div>
+          </div>
+
+
         </aside>
       </div>
     </article>
@@ -326,4 +389,54 @@ const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent
       )
     }
   </main>
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-share-message]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const message = button.dataset.copyShareMessage;
+      if (!message) return;
+
+      try {
+        await navigator.clipboard.writeText(message);
+        const originalText = button.textContent;
+        button.textContent = "Mensaje copiado ✓";
+        window.setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      } catch {
+        button.textContent = "No se pudo copiar";
+        window.setTimeout(() => {
+          button.textContent = "Copiar mensaje";
+        }, 2000);
+      }
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>("[data-linkedin-share]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const message = button.dataset.linkedinShare;
+      if (!message) return;
+
+      window.open(
+        "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(window.location.href),
+        "_blank",
+        "noopener,noreferrer",
+      );
+
+      try {
+        await navigator.clipboard.writeText(message);
+        const originalText = button.textContent;
+        button.textContent = "Texto copiado ✓";
+        window.setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      } catch {
+        button.textContent = "No se pudo copiar";
+        window.setTimeout(() => {
+          button.textContent = "LinkedIn";
+        }, 2000);
+      }
+    });
+  });
+</script>
+
 </Layout>
