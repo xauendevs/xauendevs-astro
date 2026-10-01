@@ -1,7 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import PivoCard from "@/components/PivoCard.astro";
+import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { externalEvents } from "@/data/external-events";
 import type { Pivo } from "@/types/Pivo";
 
 export const prerender = true;
@@ -16,6 +18,10 @@ const upcomingEvents = events
 const pastEvents = events
   .filter((event) => event.date < now)
   .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+const upcomingExternalEvents = externalEvents
+  .filter((event) => event.date >= now)
+  .sort((a, b) => a.date.getTime() - b.date.getTime());
 ---
 
 <Layout
@@ -35,7 +41,7 @@ const pastEvents = events
     {
       upcomingEvents.length > 0 && (
         <section class="flex flex-col gap-6">
-          <h2 class="text-3xl font-semibold">Próximos eventos</h2>
+          <h2 class="text-3xl font-semibold">Próximos eventos XauenDevs</h2>
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2">
             {upcomingEvents.map(
               ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
@@ -51,6 +57,26 @@ const pastEvents = events
                 />
               )
             )}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      upcomingExternalEvents.length > 0 && (
+        <section class="flex flex-col gap-6">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-3xl font-semibold">Otros eventos tecnológicos</h2>
+            <p class="text-primary/60">
+              También recogemos actividades de otras comunidades, empresas y
+              organizaciones de Jaén.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {upcomingExternalEvents.map((event) => (
+              <ExternalEventCard event={event} />
+            ))}
           </div>
         </section>
       )
