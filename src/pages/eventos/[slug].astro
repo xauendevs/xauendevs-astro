@@ -1,6 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Rsvp from "@/components/events/Rsvp.astro";
+import EventSidebar from "@/components/events/EventSidebar.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { getPivoTags } from "@/lib/get-pivo-tags";
 import { externalEvents } from "@/data/external-events";
@@ -262,128 +262,21 @@ const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`
           }
         </div>
 
-        <aside class="flex h-fit flex-col gap-4 rounded-[2rem] bg-accent p-6">
-          <span class="text-xs font-bold uppercase tracking-[0.16em]">
-            {isExternal ? "Evento externo" : "XauenDevs"}
-          </span>
-
-          <h2 class="text-2xl font-black leading-tight">
-            {isExternal
-              ? "Consulta todos los detalles del evento."
-              : "Descubre esta charla."}
-          </h2>
-
-          <p class="text-sm leading-relaxed text-black/65">
-            {isExternal
-              ? "Fecha, ubicación, programa e información actualizada directamente en la web oficial del evento."
-              : "Consulta los detalles de la charla y, si quieres asistir, añade el evento directamente a tu calendario."}
-          </p>
-
-          {
-            isExternal ? (
-              <a
-                href={externalEvent.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
-              >
-                Web del evento ↗
-              </a>
-            ) : pivoEvent.saraosLink ? (
-              <a
-                href={pivoEvent.saraosLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
-              >
-                Más información ↗
-              </a>
-            ) : null
-          }
-
-          {!isExternal && !isPast && <Rsvp eventId={eventId} />}
-
-          <div class="mt-2 border-t border-black/10 pt-4">
-            <span class="text-xs font-bold uppercase tracking-[0.14em]">
-              Añadir al calendario
-            </span>
-            <div class="mt-3 flex flex-wrap gap-2">
-              <a
-                href={googleCalendarUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
-              >
-                Google Calendar
-              </a>
-              <a
-                href={icsUrl}
-                download={`${slugify(event.title)}.ics`}
-                class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10"
-              >
-                Descargar .ics
-              </a>
-            </div>
-          </div>
-
-          {event.place && (
-            <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
-              <div class="h-64 w-full md:h-72">
-                <iframe
-                  src={mapsEmbedUrl}
-                  title={`Mapa de ${event.place}`}
-                  class="size-full border-0"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center justify-between px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-white/30"
-              >
-                <span>Cómo llegar</span>
-                <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          )}
-
-          <div class="mt-2 border-t border-black/10 pt-5">
-            <span class="text-xs font-bold uppercase tracking-[0.14em]">
-              Compartir evento
-            </span>
-            <p class="mt-2 text-sm leading-relaxed text-black/60">
-              WhatsApp lleva el texto listo. En LinkedIn copiamos el mensaje y abrimos el editor para que solo tengas que pegarlo.
-            </p>
-            <div class="mt-3 flex flex-wrap gap-2">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
-              >
-                WhatsApp
-              </a>
-              <button
-                type="button"
-                data-linkedin-share={shareMessage}
-                class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
-              >
-                LinkedIn
-              </button>
-              <button
-                type="button"
-                data-copy-share-message={shareMessage}
-                class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10"
-              >
-                Copiar mensaje
-              </button>
-            </div>
-          </div>
-
-
-        </aside>
+        <EventSidebar
+          isExternal={isExternal}
+          externalUrl={isExternal ? externalEvent.url : undefined}
+          externalOrganizer={isExternal ? externalEvent.organizer : undefined}
+          saraosLink={!isExternal ? pivoEvent.saraosLink : undefined}
+          eventId={eventId}
+          isPast={isPast}
+          googleCalendarUrl={googleCalendarUrl}
+          icsUrl={icsUrl}
+          icsFilename={`${slugify(event.title)}.ics`}
+          eventPlace={event.place}
+          mapsEmbedUrl={mapsEmbedUrl}
+          mapsUrl={mapsUrl}
+          shareMessage={shareMessage}
+        />
       </div>
     </article>
 
