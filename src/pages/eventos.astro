@@ -22,27 +22,53 @@ const pastEvents = events
 const upcomingExternalEvents = externalEvents
   .filter((event) => event.date >= now)
   .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+const totalUpcoming = upcomingEvents.length + upcomingExternalEvents.length;
 ---
 
 <Layout
   title="Eventos tech en Jaén · XauenDevs"
   description="Agenda de eventos de tecnología y desarrollo en Jaén. Charlas, meetups y actividades de la comunidad."
 >
-  <main class="flex flex-col gap-12">
-    <header class="flex flex-col gap-4">
-      <span class="text-accent font-semibold text-lg">JAÉN TECH EVENTS</span>
-      <h1 class="text-4xl md:text-6xl font-bold">Tecnología en Jaén</h1>
-      <p class="text-xl max-w-3xl">
-        Una agenda para descubrir qué está pasando en la comunidad tecnológica
-        de Jaén.
-      </p>
+  <main class="flex flex-col gap-14">
+    <header class="relative overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025] px-7 py-10 md:px-12 md:py-14">
+      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl"></div>
+
+      <div class="relative flex flex-col gap-5">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-accent text-sm font-bold uppercase tracking-[0.16em]">
+            JAÉN TECH EVENTS
+          </span>
+          {totalUpcoming > 0 && (
+            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold">
+              {totalUpcoming} próximos
+            </span>
+          )}
+        </div>
+
+        <h1 class="max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
+          Tecnología en Jaén.
+          <span class="text-primary/35">Todo en un mismo sitio.</span>
+        </h1>
+
+        <p class="max-w-2xl text-lg leading-relaxed text-primary/65 md:text-xl">
+          Charlas, meetups, talleres y eventos para descubrir qué está pasando
+          en la comunidad tecnológica de Jaén.
+        </p>
+      </div>
     </header>
 
     {
       upcomingEvents.length > 0 && (
-        <section class="flex flex-col gap-6">
-          <h2 class="text-3xl font-semibold">Próximos eventos XauenDevs</h2>
-          <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2">
+        <section class="flex flex-col gap-7">
+          <div class="flex flex-col gap-1">
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              XauenDevs
+            </span>
+            <h2 class="text-3xl font-bold tracking-tight">Próximamente</h2>
+          </div>
+
+          <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
               ({ id, title, image, speakers, place, date, videoId }: Pivo) => (
                 <PivoCard
@@ -64,16 +90,23 @@ const upcomingExternalEvents = externalEvents
 
     {
       upcomingExternalEvents.length > 0 && (
-        <section class="flex flex-col gap-6">
-          <div class="flex flex-col gap-1">
-            <h2 class="text-3xl font-semibold">Otros eventos tecnológicos</h2>
-            <p class="text-primary/60">
-              También recogemos actividades de otras comunidades, empresas y
-              organizaciones de Jaén.
+        <section class="flex flex-col gap-7">
+          <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div class="flex flex-col gap-1">
+              <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+                Comunidad tech
+              </span>
+              <h2 class="text-3xl font-bold tracking-tight">
+                También está pasando
+              </h2>
+            </div>
+            <p class="max-w-md text-sm leading-relaxed text-primary/55 md:text-right">
+              Eventos de otras comunidades, empresas y organizaciones que
+              pueden interesarte.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingExternalEvents.map((event) => (
               <ExternalEventCard event={event} />
             ))}
@@ -84,33 +117,48 @@ const upcomingExternalEvents = externalEvents
 
     {
       pastEvents.length > 0 && (
-        <section class="flex flex-col gap-5 border-t border-primary/10 pt-10">
-          <div class="flex flex-col gap-1">
-            <h2 class="text-2xl font-semibold">Eventos anteriores</h2>
-            <p class="text-primary/60">
-              Un vistazo a las actividades que ya han pasado.
-            </p>
+        <section class="border-t border-primary/10 pt-12">
+          <div class="mb-6 flex flex-col gap-1">
+            <span class="text-primary/35 text-xs font-bold uppercase tracking-[0.16em]">
+              Archivo
+            </span>
+            <h2 class="text-2xl font-bold">Eventos anteriores</h2>
           </div>
 
-          <div class="flex flex-col divide-y divide-primary/10">
-            {pastEvents.map(({ title, speakers, place, date }: Pivo) => (
-              <article class="flex flex-col gap-2 py-5 md:flex-row md:items-center md:justify-between">
-                <div class="flex flex-col gap-1">
-                  <h3 class="font-semibold text-lg">{title}</h3>
-                  <span class="text-primary/60">
-                    {speakers?.map((speaker) => speaker.name).join(" · ")}
-                  </span>
-                </div>
-                <div class="flex flex-col md:items-end gap-1 text-sm text-primary/60">
-                  <span>
+          <div class="overflow-hidden rounded-3xl border border-primary/10">
+            {pastEvents.map(({ title, speakers, place, date }, index) => (
+              <article
+                class:list={[
+                  "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] md:flex-row md:items-center md:px-6",
+                  index > 0 && "border-t border-primary/10",
+                ]}
+              >
+                <time class="flex shrink-0 flex-col md:w-28" datetime={date.toISOString()}>
+                  <span class="text-sm font-bold">
                     {date.toLocaleDateString("es-ES", {
                       day: "2-digit",
                       month: "short",
-                      year: "numeric",
                     })}
                   </span>
-                  {place && <span>{place}</span>}
+                  <span class="text-xs text-primary/40">
+                    {date.getFullYear()}
+                  </span>
+                </time>
+
+                <div class="min-w-0 flex-1">
+                  <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70">
+                    {title}
+                  </h3>
+                  <p class="mt-1 truncate text-sm text-primary/50">
+                    {speakers?.map((speaker) => speaker.name).join(" · ")}
+                    {place && speakers?.length ? " · " : ""}
+                    {place}
+                  </p>
                 </div>
+
+                <span class="hidden text-primary/25 transition-transform group-hover:translate-x-1 md:block">
+                  ↗
+                </span>
               </article>
             ))}
           </div>
