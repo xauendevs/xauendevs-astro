@@ -62,6 +62,9 @@ const description =
     : `Charla de XauenDevs: ${event.title}.`);
 
 const title = `${event.title} · XauenDevs`;
+const locationQuery = [event.place, "Jaén, España"].filter(Boolean).join(", ");
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`;
+const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(locationQuery)}&output=embed`;
 const eventImage = isExternal
   ? externalEvent.image
   : pivoEvent.image
@@ -132,6 +135,16 @@ const eventImage = isExternal
               Dónde
             </span>
             <p class="mt-2 text-xl font-semibold">{event.place || "Por confirmar"}</p>
+            {event.place && (
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-3 inline-flex items-center gap-2 text-sm font-bold text-primary/60 underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-primary"
+              >
+                Cómo llegar ↗
+              </a>
+            )}
           </section>
 
           <section>
@@ -201,6 +214,38 @@ const eventImage = isExternal
         </aside>
       </div>
     </article>
+
+    {
+      event.place && (
+        <section class="overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025]">
+          <div class="flex flex-col gap-2 px-7 pt-7 md:px-10 md:pt-9">
+            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+              Ubicación
+            </span>
+            <div class="flex flex-col gap-1 md:flex-row md:items-end md:justify-between md:gap-6">
+              <h2 class="text-2xl font-bold tracking-tight">{event.place}</h2>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex w-fit shrink-0 rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-primary transition-transform hover:-translate-y-0.5"
+              >
+                Cómo llegar ↗
+              </a>
+            </div>
+          </div>
+          <div class="mt-6 aspect-[16/7] min-h-64 w-full bg-primary/5">
+            <iframe
+              src={mapsEmbedUrl}
+              title={`Mapa de ${event.place}`}
+              class="size-full border-0"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </section>
+      )
+    }
 
     {
       !isExternal && pivoEvent.videoId && (
