@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0a0c00"/>
+  <rect x="70" y="70" width="1060" height="490" rx="36" fill="#111"/>
+  <circle cx="1030" cy="170" r="150" fill="#f6b703" opacity=".95"/>
+  <circle cx="1030" cy="170" r="82" fill="#0a0c00"/>
+  <text x="110" y="275" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="700">XauenDevs</text>
+  <text x="114" y="350" fill="#f6b703" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="600">Desarrollo · Tecnología · Jaén</text>
+  <text x="114" y="430" fill="#aaa" font-family="Arial, Helvetica, sans-serif" font-size="28">Comunidad tech de Jaén</text>
+</svg>
