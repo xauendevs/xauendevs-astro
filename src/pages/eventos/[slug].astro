@@ -62,6 +62,9 @@ const description =
     : `Charla de XauenDevs: ${event.title}.`);
 
 const title = `${event.title} · XauenDevs`;
+const locationQuery = (isExternal ? externalEvent.mapQuery : undefined) || [event.place, "Jaén, España"].filter(Boolean).join(", ");
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`;
+const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(locationQuery)}&output=embed`;
 const eventImage = isExternal
   ? externalEvent.image
   : pivoEvent.image
@@ -132,6 +135,16 @@ const eventImage = isExternal
               Dónde
             </span>
             <p class="mt-2 text-xl font-semibold">{event.place || "Por confirmar"}</p>
+            {event.place && (
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-3 inline-flex items-center gap-2 text-sm font-bold text-primary/60 underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-primary"
+              >
+                Cómo llegar ↗
+              </a>
+            )}
           </section>
 
           <section>
@@ -198,6 +211,29 @@ const eventImage = isExternal
               </a>
             ) : null
           }
+
+          {event.place && (
+            <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
+              <div class="h-64 w-full md:h-72">
+                <iframe
+                  src={mapsEmbedUrl}
+                  title={`Mapa de ${event.place}`}
+                  class="size-full border-0"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center justify-between px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-white/30"
+              >
+                <span>Cómo llegar</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          )}
         </aside>
       </div>
     </article>

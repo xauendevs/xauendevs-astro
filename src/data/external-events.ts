@@ -9,6 +9,7 @@ export interface ExternalEvent {
   url: string;
   tags: string[];
   image?: string;
+  mapQuery?: string;
 }
 
 export const externalEvents: ExternalEvent[] = [
@@ -23,6 +24,7 @@ export const externalEvents: ExternalEvent[] = [
     url: "https://www.jaentech.com/",
     tags: ["Comunidad", "Tecnología"],
     image: "/img/events/jaen-tech-2026.svg",
+    mapQuery: "Calle Juan Montilla 7, 23002 Jaén, España",
   },
   {
     id: "caepia-2026",
@@ -36,6 +38,7 @@ export const externalEvents: ExternalEvent[] = [
     url: "https://simidat.ujaen.es/caepia26/",
     tags: ["IA", "Datos", "Investigación"],
     image: "/img/events/caepia-2026.svg",
+    mapQuery: "Antigua Escuela de Magisterio, Calle Virgen de la Cabeza 2C, 23008 Jaén, España",
   },
   {
     id: "science-week-uja-2026",
@@ -49,5 +52,6 @@ export const externalEvents: ExternalEvent[] = [
     url: "https://www.ujaen.es/servicios/ucc/eventos/xxvi-semana-de-la-ciencia",
     tags: ["Ciencia", "Datos", "IA"],
     image: "/img/events/semana-ciencia-uja-2026.svg",
+    mapQuery: "Campus Las Lagunillas, 23071 Jaén, España",
   },
 ];
