@@ -12,4 +12,5 @@ export interface Pivo {
   place?: string;
   videoId?: string;
   saraosLink?: string;
+  tags?: string[];
 }
