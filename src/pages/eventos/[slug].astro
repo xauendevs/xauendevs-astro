@@ -100,8 +100,33 @@ const icsContent = [
 const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
 const eventUrl = new URL(Astro.url.pathname, Astro.site).href;
 const shareUrl = encodeURIComponent(eventUrl);
-const shareText = encodeURIComponent(`Mira este evento: ${event.title}`);
-const whatsappUrl = `https://wa.me/?text=${shareText}%20${shareUrl}`;
+const eventDate = date.toLocaleDateString("es-ES", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const eventTime = date.toLocaleTimeString("es-ES", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const shareMessage = [
+  "🚨 Ojo con esto…",
+  "",
+  `¿Te apuntas a *${event.title}*? 👀`,
+  "",
+  description,
+  "",
+  `📆 ${eventDate}, ${eventTime}`,
+  `📍 ${event.place || "Jaén"}`,
+  "",
+  "Organizado por:",
+  `📣 ${isExternal ? externalEvent.organizer : "XauenDevs"}`,
+  "",
+  "Más información y apuntes:",
+  eventUrl,
+].join("\n");
+const encodedShareMessage = encodeURIComponent(shareMessage);
+const whatsappUrl = `https://wa.me/?text=${encodedShareMessage}`;
 const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
 ---
 
@@ -280,12 +305,12 @@ const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${share
             </div>
           </div>
 
-          <div class="mt-2 border-t border-black/10 pt-4">
+          <div class="mt-2 border-t border-black/10 pt-5">
             <span class="text-xs font-bold uppercase tracking-[0.14em]">
               Compartir evento
             </span>
             <p class="mt-2 text-sm leading-relaxed text-black/60">
-              Pásalo a quien pueda interesarle.
+              Pásalo a quien pueda interesarle con un mensaje listo para enviar.
             </p>
             <div class="mt-3 flex flex-wrap gap-2">
               <a
@@ -306,10 +331,10 @@ const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${share
               </a>
               <button
                 type="button"
-                data-copy-event-url={eventUrl}
+                data-copy-share-message={shareMessage}
                 class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10"
               >
-                Copiar enlace
+                Copiar mensaje
               </button>
             </div>
           </div>
@@ -366,22 +391,22 @@ const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${share
     }
   </main>
 <script>
-  document.querySelectorAll<HTMLButtonElement>("[data-copy-event-url]").forEach((button) => {
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-share-message]").forEach((button) => {
     button.addEventListener("click", async () => {
-      const url = button.dataset.copyEventUrl;
-      if (!url) return;
+      const message = button.dataset.copyShareMessage;
+      if (!message) return;
 
       try {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(message);
         const originalText = button.textContent;
-        button.textContent = "Enlace copiado ✓";
+        button.textContent = "Mensaje copiado ✓";
         window.setTimeout(() => {
           button.textContent = originalText;
         }, 2000);
       } catch {
         button.textContent = "No se pudo copiar";
         window.setTimeout(() => {
-          button.textContent = "Copiar enlace";
+          button.textContent = "Copiar mensaje";
         }, 2000);
       }
     });
