@@ -114,7 +114,8 @@ const icsContent = [
   "END:VCALENDAR",
 ].join("\r\n");
 const icsUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
-const eventOrigin = import.meta.env.PROD ? Astro.site : new URL(Astro.url.origin);\nconst eventUrl = new URL(Astro.url.pathname, eventOrigin).href;
+const eventOrigin = import.meta.env.PROD ? Astro.site : new URL(Astro.url.origin);
+const eventUrl = new URL(Astro.url.pathname, eventOrigin).href;
 const eventDate = date.toLocaleDateString("es-ES", {
   day: "numeric",
   month: "long",
