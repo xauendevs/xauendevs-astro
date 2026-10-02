@@ -22,6 +22,8 @@ const escapeIcs = (value: string) =>
     .replace(/,/g, "\\,")
     .replace(/\r?\n/g, "\\n");
 
+const ICS_CRLF = String.fromCharCode(13, 10);
+
 export const buildRsvpIcs = ({
   eventId,
   eventTitle,
@@ -60,5 +62,5 @@ export const buildRsvpIcs = ({
     `URL:${escapeIcs(eventUrl)}`,
     "END:VEVENT",
     "END:VCALENDAR",
-  ].join("\r\n");
+  ].join(ICS_CRLF);
 };
