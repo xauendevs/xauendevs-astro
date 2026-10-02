@@ -207,7 +207,8 @@ export const POST: APIRoute = async ({ request }) => {
                       buildRsvpIcs({
                         eventId,
                         eventTitle,
-                        eventDate: eventStart,
+                        eventStart,
+                        eventEnd,
                         eventPlace: eventPlace || "Jaén, España",
                         eventUrl,
                       }),
