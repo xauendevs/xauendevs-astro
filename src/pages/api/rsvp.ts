@@ -242,6 +242,7 @@ export const POST: APIRoute = async ({ request }) => {
           eventPlace,
           eventUrl,
           calendarUrl,
+          cancelUrl: `${new URL("/rsvp/cancelar", eventUrl).toString()}?rsvpid=${rsvpCode}`,
         });
         const icsContent =
           eventStart && eventEnd
