@@ -45,9 +45,13 @@ export const buildRsvpIcs = ({
     "PRODID:-//XauenDevs//Pivo&Code//ES",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
+    "X-WR-CALNAME:XauenDevs Pivo&Code",
     "BEGIN:VEVENT",
     `UID:rsvp-${eventId}@xauendevs.io`,
     `DTSTAMP:${now}`,
+    "SEQUENCE:0",
+    "STATUS:CONFIRMED",
+    "TRANSP:OPAQUE",
     `DTSTART:${eventStart}`,
     `DTEND:${eventEnd}`,
     `SUMMARY:${escapeIcs(eventTitle)}`,
@@ -56,5 +60,5 @@ export const buildRsvpIcs = ({
     `URL:${escapeIcs(eventUrl)}`,
     "END:VEVENT",
     "END:VCALENDAR",
-  ].join("\\r\\n");
+  ].join("\r\n");
 };
