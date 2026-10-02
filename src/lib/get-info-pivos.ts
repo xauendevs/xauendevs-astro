@@ -3,7 +3,7 @@ import { query } from "./strapi";
 
 export async function getPivosStrapi(): Promise<Pivo[]> {
   return query(
-    "pivos?fields[0]=title&fields[1]=description&fields[2]=place&fields[3]=date&fields[4]=videoId&fields[5]=saraosLink&populate[image][fields][0]=url&populate[speakers][populate][photo][fields][0]=url&populate[speakers][populate]=socialNetwork&sort=date:desc"
+    "pivos?fields[0]=title&fields[1]=description&fields[2]=place&fields[3]=date&fields[4]=videoId&fields[5]=saraosLink&populate[image][fields][0]=url&populate[speakers][populate][photo][fields][0]=url&populate[speakers][populate][socialNetwork]=true&sort=date:desc"
   )
     .then((data) => {
       return {
@@ -29,7 +29,7 @@ export async function getPivosStrapi(): Promise<Pivo[]> {
 
 export async function getNextPivo(): Promise<Pivo[]> {
   return query(
-    "pivos?fields[0]=title&fields[1]=description&fields[2]=place&fields[3]=date&populate[image][fields][0]=url&populate[speakers][populate][photo][fields][0]=url&populate[speakers][populate]=socialNetwork"
+    "pivos?fields[0]=title&fields[1]=description&fields[2]=place&fields[3]=date&populate[image][fields][0]=url&populate[speakers][populate][photo][fields][0]=url&populate[speakers][populate][socialNetwork]=true"
   )
     .then((data) => {
       return {
