@@ -4,7 +4,6 @@ import Rsvp from "@/components/events/Rsvp.astro";
 interface Props {
   isExternal: boolean;
   externalUrl?: string;
-  externalOrganizer?: string;
   saraosLink?: string;
   eventId: string;
   isPast: boolean;
@@ -20,7 +19,6 @@ interface Props {
 const {
   isExternal,
   externalUrl,
-  externalOrganizer,
   saraosLink,
   eventId,
   isPast,

@@ -36,12 +36,12 @@ interface Props {
   event: Pivo | ExternalEvent;
 }
 
-const { kind, event } = Astro.props;
+const { kind, event } = Astro.props as Props;
 const STRAPI_HOST = import.meta.env.STRAPI_HOST;
 const isExternal = kind === "external";
 const pivoEvent = event as Pivo;
 const externalEvent = event as ExternalEvent;
-const tags = "tags" in event ? (event.tags ?? []) : getPivoTags(event.title);
+const tags = isExternal ? externalEvent.tags : getPivoTags(pivoEvent.title);
 const date = event.date;
 
 const formattedDate = date.toLocaleDateString("es-ES", {
@@ -145,8 +145,6 @@ const shareMessage = [
   "Más información y apuntes:",
   eventUrl,
 ].join("\n");
-const encodedShareMessage = encodeURIComponent(shareMessage);
-const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`;
 ---
 
 <Layout title={title} description={description} image={socialImage} imageType="image/png">
@@ -265,7 +263,6 @@ const whatsappUrl = `https://api.whatsapp.com/send/?text=${encodedShareMessage}`
         <EventSidebar
           isExternal={isExternal}
           externalUrl={isExternal ? externalEvent.url : undefined}
-          externalOrganizer={isExternal ? externalEvent.organizer : undefined}
           saraosLink={!isExternal ? pivoEvent.saraosLink : undefined}
           eventId={eventId}
           isPast={isPast}
