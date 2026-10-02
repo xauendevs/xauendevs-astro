@@ -102,31 +102,6 @@ export const GET: APIRoute = async ({ url }) => {
 
   try {
     await ensureTables();
-    let emailSent = false;
-    const resendApiKey = import.meta.env.RESEND_API_KEY;
-    const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
-
-    if (resendApiKey && resendFromEmail && eventTitle && eventDate && eventUrl) {
-      try {
-        const resend = new Resend(resendApiKey);
-        const { error } = await resend.emails.send(
-          {
-            from: resendFromEmail,
-            to: [email],
-            subject: `¡Plaza confirmada! ${eventTitle} · XauenDevs`,
-            html: buildRsvpConfirmationEmail({ name, eventTitle, eventDate, eventTime, eventPlace, eventUrl, calendarUrl }),
-          },
-          { idempotencyKey: `rsvp-confirmation/${eventId}/${email}` },
-        );
-        if (error) console.error("RSVP confirmation email error:", error);
-        else emailSent = true;
-      } catch (error) {
-        console.error("RSVP confirmation email error:", error);
-      }
-    } else {
-      console.warn("RSVP confirmation email skipped: missing Resend configuration or event details.");
-    }
-
     const result = await turso.execute({
       sql: "SELECT COUNT(*) AS count FROM event_rsvps WHERE event_id = ?",
       args: [eventId],
@@ -208,6 +183,31 @@ export const POST: APIRoute = async ({ request }) => {
       sql: "INSERT INTO event_rsvps (event_id, name, email) VALUES (?, ?, ?)",
       args: [eventId, name, email],
     });
+
+    let emailSent = false;
+    const resendApiKey = import.meta.env.RESEND_API_KEY;
+    const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
+
+    if (resendApiKey && resendFromEmail && eventTitle && eventDate && eventUrl) {
+      try {
+        const resend = new Resend(resendApiKey);
+        const { error } = await resend.emails.send(
+          {
+            from: resendFromEmail,
+            to: [email],
+            subject: `¡Plaza confirmada! ${eventTitle} · XauenDevs`,
+            html: buildRsvpConfirmationEmail({ name, eventTitle, eventDate, eventTime, eventPlace, eventUrl, calendarUrl }),
+          },
+          { idempotencyKey: `rsvp-confirmation/${eventId}/${email}` },
+        );
+        if (error) console.error("RSVP confirmation email error:", error);
+        else emailSent = true;
+      } catch (error) {
+        console.error("RSVP confirmation email error:", error);
+      }
+    } else {
+      console.warn("RSVP confirmation email skipped: missing Resend configuration or event details.");
+    }
 
     const result = await turso.execute({
       sql: "SELECT COUNT(*) AS count FROM event_rsvps WHERE event_id = ?",
