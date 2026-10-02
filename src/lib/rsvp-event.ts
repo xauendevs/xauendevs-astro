@@ -8,7 +8,7 @@ export const getEventDetails = async (eventId: string, requestUrl: string) => {
   if (!event) return null;
 
   const eventStartDate = event.date;
-  const eventEndDate = event.endDate ?? new Date(eventStartDate.getTime() + 60 * 60 * 1000);
+  const eventEndDate = new Date(eventStartDate.getTime() + 60 * 60 * 1000);
   const eventDate = eventStartDate.toLocaleDateString("es-ES", {
     day: "numeric",
     month: "long",
