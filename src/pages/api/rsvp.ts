@@ -175,7 +175,25 @@ export const GET: APIRoute = async ({ url }) => {
       if (result.rows.length === 0) {
         return new Response(JSON.stringify({ error: "La inscripción no existe o ya ha sido cancelada." }), { status: 404, headers: { "Content-Type": "application/json" } });
       }
-      return new Response(JSON.stringify({ ok: true, name: result.rows[0].name, eventId: result.rows[0].event_id }), { headers: { "Content-Type": "application/json" } });
+
+      const eventId = String(result.rows[0].event_id);
+      const eventDetails = await getEventDetails(eventId, url.origin);
+      if (!eventDetails) {
+        return new Response(JSON.stringify({ error: "El evento ya no está disponible." }), { status: 404, headers: { "Content-Type": "application/json" } });
+      }
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          name: result.rows[0].name,
+          eventId,
+          eventTitle: eventDetails.eventTitle,
+          eventDate: eventDetails.eventDate,
+          eventTime: eventDetails.eventTime,
+          eventPlace: eventDetails.eventPlace,
+        }),
+        { headers: { "Content-Type": "application/json" } },
+      );
     } catch (error) {
       console.error("RSVP lookup error:", error);
       return new Response(JSON.stringify({ error: "No se pudo consultar la inscripción." }), { status: 500, headers: { "Content-Type": "application/json" } });
