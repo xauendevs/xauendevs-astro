@@ -33,14 +33,13 @@ const {
 } = Astro.props;
 ---
 
-<PivoVideoModal />
+{videoId && !detailUrl && <PivoVideoModal />}
 <article
   id={id.toString()}
-  data-url={`https://www.youtube.com/embed/${videoId}?si=NjLzFU-ifS-QmXD6`}
-  data-clip-item
+  {...(videoId && !detailUrl ? { data-url: `https://www.youtube.com/embed/${videoId}?si=NjLzFU-ifS-QmXD6`, "data-clip-item": true } : {})}
   data-event-tags={tags.join(",")}
   class=`clip-container relative bg-[#356154] flex flex-col justify-end p-2 md:p-5 cursor-pointer
-  min-w-[200px] max-w-[200px] min-h-[350px] max-h-[350px] rounded-3xl group overflow-hidden ${isNext ? 'next-pivo' : ''} select-none
+  min-w-[200px] max-w-[200px] min-h-[350px] max-h-[350px] rounded-3xl group overflow-hidden ${isNext ? 'next-pivo' : ''} ${videoId && !detailUrl ? 'cursor-pointer' : ''} select-none
   md:min-w-[330px] md:max-w-[330px] md:min-h-[460px] md:max-h-[460px] ${customClass}`
 >
   <div
@@ -66,7 +65,7 @@ const {
 
     <h3
       id="title-pivo"
-      class="font-bold text-xl md:text-2xl group-hover:translate-y-0 translate-y-10 transition-transform duration-500"
+      class="min-h-[3.5rem] line-clamp-2 font-bold text-xl leading-tight md:text-2xl group-hover:translate-y-0 translate-y-10 transition-transform duration-500"
     >
       {title}
     </h3>
@@ -118,12 +117,18 @@ const {
   </div>
 
   {detailUrl && (
-    <a
-      href={detailUrl}
-      class="absolute bottom-5 right-5 z-20 rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-primary opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 hover:bg-accent"
-    >
-      Ver evento ↗
-    </a>
+    <>
+      <a
+        href={detailUrl}
+        aria-label={`Ver evento: ${title}`}
+        class="absolute inset-0 z-20"
+      >
+        <span class="sr-only">Ver evento: {title}</span>
+      </a>
+      <span class="pointer-events-none absolute bottom-5 right-5 z-30 rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-primary backdrop-blur-sm transition-all group-hover:bg-accent">
+        Ver evento ↗
+      </span>
+    </>
   )}
 </article>
 <style>
