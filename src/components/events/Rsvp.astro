@@ -1,26 +1,6 @@
 ---
-interface Props {
-  eventId: string;
-  eventTitle: string;
-  eventDate: string;
-  eventTime: string;
-  eventPlace: string;
-  eventUrl: string;
-  calendarUrl: string;
-  eventStart: string;
-  eventEnd: string;
-}
-const {
-  eventId,
-  eventTitle,
-  eventDate,
-  eventTime,
-  eventPlace,
-  eventUrl,
-  calendarUrl,
-  eventStart,
-  eventEnd,
-} = Astro.props;
+interface Props { eventId: string; }
+const { eventId } = Astro.props;
 ---
 
 <section
