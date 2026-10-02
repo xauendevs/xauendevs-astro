@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { Resend } from "resend";
-import { buildRsvpConfirmationEmail } from "@/lib/rsvp-email";
+import { buildRsvpConfirmationEmail, buildRsvpIcs } from "@/lib/rsvp-email";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
@@ -133,6 +133,8 @@ export const POST: APIRoute = async ({ request }) => {
     const eventPlace = String(body.eventPlace ?? "").trim();
     const eventUrl = String(body.eventUrl ?? "").trim();
     const calendarUrl = String(body.calendarUrl ?? "").trim();
+    const eventStart = String(body.eventStart ?? "").trim();
+    const eventEnd = String(body.eventEnd ?? "").trim();
 
     if (!eventId || !name || !email || !consent) {
       return new Response(JSON.stringify({ error: "Nombre, email y consentimiento son obligatorios." }), {
@@ -197,6 +199,22 @@ export const POST: APIRoute = async ({ request }) => {
             to: [email],
             subject: `¡Plaza confirmada! ${eventTitle} · XauenDevs`,
             html: buildRsvpConfirmationEmail({ name, eventTitle, eventDate, eventTime, eventPlace, eventUrl, calendarUrl }),
+            attachments: eventStart && eventEnd
+              ? [
+                  {
+                    filename: `${eventId}.ics`,
+                    content: Buffer.from(
+                      buildRsvpIcs({
+                        eventId,
+                        eventTitle,
+                        eventDate: eventStart,
+                        eventPlace: eventPlace || "Jaén, España",
+                        eventUrl,
+                      }),
+                    ).toString("base64"),
+                  },
+                ]
+              : undefined,
           },
           { idempotencyKey: `rsvp-confirmation/${eventId}/${email}` },
         );
