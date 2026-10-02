@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { getEventDetails } from "@/lib/rsvp-event";
-import { hashValue } from "./rsvp";
+import { hashValue } from "../rsvp";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
