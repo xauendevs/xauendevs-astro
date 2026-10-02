@@ -220,7 +220,7 @@ export const POST: APIRoute = async ({ request }) => {
             }
           : undefined;
         const idempotencyKey = `rsvp-confirmation/${eventId}/${await hashValue(
-          html + icsContent,
+          email + "\n" + html + "\n" + icsContent,
         )}`;
         const { error } = await resend.emails.send(
           {
