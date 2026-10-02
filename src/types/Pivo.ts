@@ -8,7 +8,7 @@ export interface Pivo {
   socialImage: string;
   date: Date;
   endDate?: Date;
-    charlanteIds?: string[];
+  charlanteIds?: string[];
   speakers?: Charlante[];
   place?: string;
   videoId?: string;
