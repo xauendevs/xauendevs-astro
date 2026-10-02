@@ -14,6 +14,11 @@ interface Props {
   mapsEmbedUrl: string;
   mapsUrl: string;
   shareMessage: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+  eventUrl: string;
+  calendarUrl: string;
 }
 
 const {
@@ -29,6 +34,11 @@ const {
   mapsEmbedUrl,
   mapsUrl,
   shareMessage,
+  eventTitle,
+  eventDate,
+  eventTime,
+  eventUrl,
+  calendarUrl,
 } = Astro.props;
 ---
 
@@ -71,7 +81,7 @@ const {
     ) : null
   }
 
-  {!isExternal && !isPast && <Rsvp eventId={eventId} />}
+  {!isExternal && !isPast && <Rsvp eventId={eventId} eventTitle={eventTitle} eventDate={eventDate} eventTime={eventTime} eventPlace={eventPlace || "Jaén"} eventUrl={eventUrl} calendarUrl={calendarUrl} />}
 
   <div class="mt-2 border-t border-black/10 pt-4">
     <span class="text-xs font-bold uppercase tracking-[0.14em]">
