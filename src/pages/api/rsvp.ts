@@ -118,7 +118,9 @@ export const GET: APIRoute = async ({ url }) => {
         args: [codeHash],
       });
       if (result.rows.length === 0) return json({ error: "La inscripción no existe o ya ha sido cancelada." }, 404);
-      return json({ ok: true, name: result.rows[0].name, eventId: result.rows[0].event_id, status: result.rows[0].status });
+      const event = await getEventDetails(String(result.rows[0].event_id), url.toString());
+      if (!event) return json({ error: "El evento ya no está disponible." }, 404);
+      return json({ ok: true, name: result.rows[0].name, eventId: result.rows[0].event_id, status: result.rows[0].status, ...event });
     } catch (error) {
       console.error("RSVP lookup error:", error);
       return json({ error: "No se pudo consultar la inscripción." }, 500);
