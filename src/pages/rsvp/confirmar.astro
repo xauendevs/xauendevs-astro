@@ -1,0 +1,115 @@
+---
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Confirmar inscripción · XauenDevs</title>
+  </head>
+  <body class="m-0">
+    <main class="min-h-screen bg-[#f3f1eb] px-4 py-10 text-black sm:py-16">
+      <div class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-xl items-center justify-center sm:min-h-[calc(100vh-8rem)]">
+        <section class="w-full overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+          <div class="h-2 bg-[#f4d400]"></div>
+          <div class="p-7 sm:p-10">
+            <div class="flex items-center justify-between gap-4">
+              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-black/50">XauenDevs · Pivo&Code</p>
+              <span class="rounded-full bg-black/5 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-black/50">RSVP</span>
+            </div>
+
+            <div class="mt-8">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f4d400] text-xl font-black" aria-hidden="true">✓</div>
+              <h1 class="text-3xl font-black tracking-tight sm:text-4xl">Confirmar asistencia</h1>
+              <p class="mt-3 text-sm leading-6 text-black/60" data-message>Comprobando tu inscripción…</p>
+            </div>
+
+            <div class="mt-7 hidden rounded-3xl border border-black/10 bg-[#f7f6f2] p-6" data-card>
+              <p class="text-[10px] font-black uppercase tracking-[0.16em] text-black/40">Tu inscripción</p>
+              <p class="mt-3 text-xl font-black" data-name></p>
+              <p class="mt-2 text-sm text-black/60">Evento</p>
+              <p class="mt-1 font-bold" data-event></p>
+              <div class="mt-6 border-t border-black/10 pt-5 text-sm leading-6 text-black/60">
+                <p><span class="font-bold">📅</span> <span data-date></span></p>
+                <p><span class="font-bold">⏰</span> <span data-time></span></p>
+                <p><span class="font-bold">📍</span> <span data-place></span></p>
+              </div>
+              <button type="button" class="mt-6 w-full rounded-2xl bg-black px-5 py-3.5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-black/85 disabled:cursor-wait disabled:opacity-50 sm:w-auto" data-confirm>
+                Confirmar mi asistencia
+              </button>
+            </div>
+
+            <a href="/" class="mt-7 inline-flex items-center gap-2 text-sm font-bold underline decoration-black/30 underline-offset-4 transition hover:decoration-black">
+              <span aria-hidden="true">←</span> Volver a XauenDevs
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const code = params.get("rsvpid")?.trim().toUpperCase();
+      const message = document.querySelector<HTMLElement>("[data-message]");
+      const card = document.querySelector<HTMLElement>("[data-card]");
+      const name = document.querySelector<HTMLElement>("[data-name]");
+      const event = document.querySelector<HTMLElement>("[data-event]");
+      const date = document.querySelector<HTMLElement>("[data-date]");
+      const time = document.querySelector<HTMLElement>("[data-time]");
+      const place = document.querySelector<HTMLElement>("[data-place]");
+      const confirm = document.querySelector<HTMLButtonElement>("[data-confirm]");
+
+      const showError = (error: unknown) => {
+        message.textContent = error instanceof Error ? error.message : "No se pudo consultar la inscripción.";
+        card?.classList.add("hidden");
+      };
+
+      if (!code) {
+        showError(new Error("Falta el código de confirmación."));
+      } else {
+        fetch("/api/rsvp/confirmar?rsvpid=" + encodeURIComponent(code))
+          .then(async (response) => {
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "No se pudo consultar la inscripción.");
+            name.textContent = data.name;
+            event.textContent = data.eventTitle;
+            date.textContent = data.eventDate;
+            time.textContent = data.eventTime;
+            place.textContent = data.eventPlace;
+            card.classList.remove("hidden");
+            message.textContent = "Comprueba los datos y confirma tu asistencia.";
+          })
+          .catch(showError);
+      }
+
+      confirm?.addEventListener("click", async () => {
+        confirm.setAttribute("disabled", "true");
+        try {
+          const response = await fetch("/api/rsvp/confirmar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rsvpid: code }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "No se pudo confirmar la inscripción.");
+
+          card.classList.add("hidden");
+          message.innerHTML = "¡Listo! <strong>Tu asistencia está confirmada.</strong> Ya puedes añadir el evento a tu calendario.";
+          if (data.calendarUrl) {
+            const link = document.createElement("a");
+            link.href = data.calendarUrl;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = "Añadir al calendario →";
+            link.className = "mt-5 inline-flex rounded-full bg-black px-5 py-3 text-sm font-black text-white no-underline";
+            message.appendChild(link);
+          }
+        } catch (error) {
+          message.textContent = error instanceof Error ? error.message : "No se pudo confirmar la inscripción.";
+          confirm.removeAttribute("disabled");
+        }
+      });
+    </script>
+  </body>
+</html>
