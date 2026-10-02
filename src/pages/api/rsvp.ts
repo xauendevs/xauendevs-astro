@@ -109,6 +109,26 @@ const registerRateAttempt = async (ipHash: string) => {
 };
 
 export const GET: APIRoute = async ({ url }) => {
+  const rsvpCode = url.searchParams.get("rsvpid")?.trim().toUpperCase();
+
+  if (rsvpCode) {
+    if (!/^[A-Z2-9]{10}$/.test(rsvpCode)) {
+      return new Response(JSON.stringify({ error: "Código de inscripción no válido." }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+    try {
+      await ensureTables();
+      const codeHash = await hashValue(rsvpCode);
+      const result = await turso.execute({ sql: "SELECT name, event_id FROM event_rsvps WHERE rsvp_code_hash = ? LIMIT 1", args: [codeHash] });
+      if (result.rows.length === 0) {
+        return new Response(JSON.stringify({ error: "La inscripción no existe o ya ha sido cancelada." }), { status: 404, headers: { "Content-Type": "application/json" } });
+      }
+      return new Response(JSON.stringify({ ok: true, name: result.rows[0].name, eventId: result.rows[0].event_id }), { headers: { "Content-Type": "application/json" } });
+    } catch (error) {
+      console.error("RSVP lookup error:", error);
+      return new Response(JSON.stringify({ error: "No se pudo consultar la inscripción." }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
+  }
+
   const eventId = url.searchParams.get("eventId")?.trim();
 
   if (!eventId) {
