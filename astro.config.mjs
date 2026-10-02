@@ -16,9 +16,12 @@ export default defineConfig({
   },
   adapter: vercel({
     webAnalytics: { enabled: true },
+    // @astrojs/vercel resolves each entry with realpath(), so these
+    // must be concrete files rather than glob patterns.
     includeFiles: [
-      "node_modules/harfbuzzjs/**",
-      "node_modules/@fontsource/roboto/files/**",
+      "node_modules/harfbuzzjs/hb.wasm",
+      "node_modules/@fontsource/roboto/files/roboto-latin-400-normal.woff",
+      "node_modules/@fontsource/roboto/files/roboto-latin-700-normal.woff",
     ],
   }),
 });
