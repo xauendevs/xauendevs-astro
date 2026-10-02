@@ -39,7 +39,7 @@
 
               <p class="mt-3 text-xl font-black" data-name></p>
               <p class="mt-2 text-sm text-black/60">Evento</p>
-              <p class="mt-1 font-bold" data-event></p>
+              <p class="mt-1 font-bold" data-event></p><p class="mt-2 text-sm text-black/60" data-details></p>
 
               <div class="mt-6 border-t border-black/10 pt-5">
                 <p class="text-sm leading-6 text-black/60">
@@ -75,6 +75,7 @@
       const confirm = document.querySelector<HTMLElement>("[data-confirm]");
       const name = document.querySelector<HTMLElement>("[data-name]");
       const event = document.querySelector<HTMLElement>("[data-event]");
+      const details = document.querySelector<HTMLElement>("[data-details]");
       const cancel = document.querySelector<HTMLButtonElement>("[data-cancel]");
 
       if (!code) {
@@ -88,7 +89,8 @@
             }
 
             name.textContent = data.name;
-            event.textContent = data.eventId;
+            event.textContent = data.eventTitle;
+            details.textContent = `📅 ${data.eventDate} · ⏰ ${data.eventTime} · 📍 ${data.eventPlace}`;
             confirm.classList.remove("hidden");
             message.textContent = "Hemos encontrado tu inscripción. Comprueba los datos antes de cancelarla.";
           })
