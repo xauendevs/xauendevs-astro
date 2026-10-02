@@ -44,6 +44,8 @@ const ensureTables = async () => {
     },
   ]);
 
+  await turso.execute({ sql: "DELETE FROM event_rsvps WHERE status = 'pending' AND expires_at IS NOT NULL AND expires_at <= CURRENT_TIMESTAMP" });
+
   for (const statement of [
     "ALTER TABLE event_rsvps ADD COLUMN rsvp_code_hash TEXT",
     "ALTER TABLE event_rsvps ADD COLUMN confirm_code_hash TEXT",
