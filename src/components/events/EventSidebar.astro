@@ -19,6 +19,8 @@ interface Props {
   eventTime: string;
   eventUrl: string;
   calendarUrl: string;
+  eventStart: string;
+  eventEnd: string;
 }
 
 const {
@@ -39,6 +41,8 @@ const {
   eventTime,
   eventUrl,
   calendarUrl,
+  eventStart,
+  eventEnd,
 } = Astro.props;
 ---
 
@@ -81,7 +85,7 @@ const {
     ) : null
   }
 
-  {!isExternal && !isPast && <Rsvp eventId={eventId} eventTitle={eventTitle} eventDate={eventDate} eventTime={eventTime} eventPlace={eventPlace || "Jaén"} eventUrl={eventUrl} calendarUrl={calendarUrl} />}
+  {!isExternal && !isPast && <Rsvp eventId={eventId} eventTitle={eventTitle} eventDate={eventDate} eventTime={eventTime} eventPlace={eventPlace || "Jaén"} eventUrl={eventUrl} calendarUrl={calendarUrl} eventStart={eventStart} eventEnd={eventEnd} />}
 
   <div class="mt-2 border-t border-black/10 pt-4">
     <span class="text-xs font-bold uppercase tracking-[0.14em]">
