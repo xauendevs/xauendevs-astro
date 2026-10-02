@@ -193,31 +193,44 @@ export const POST: APIRoute = async ({ request }) => {
     if (resendApiKey && resendFromEmail && eventTitle && eventDate && eventUrl) {
       try {
         const resend = new Resend(resendApiKey);
+        const html = buildRsvpConfirmationEmail({
+          name,
+          eventTitle,
+          eventDate,
+          eventTime,
+          eventPlace,
+          eventUrl,
+          calendarUrl,
+        });
+        const icsContent =
+          eventStart && eventEnd
+            ? buildRsvpIcs({
+                eventId,
+                eventTitle,
+                eventStart,
+                eventEnd,
+                eventPlace: eventPlace || "Jaén, España",
+                eventUrl,
+              })
+            : "";
+        const attachment = icsContent
+          ? {
+              filename: `${eventId}.ics`,
+              content: Buffer.from(icsContent).toString("base64"),
+            }
+          : undefined;
+        const idempotencyKey = `rsvp-confirmation/${eventId}/${await hashValue(
+          html + icsContent,
+        )}`;
         const { error } = await resend.emails.send(
           {
             from: resendFromEmail,
             to: [email],
             subject: `¡Plaza confirmada! ${eventTitle} · XauenDevs`,
-            html: buildRsvpConfirmationEmail({ name, eventTitle, eventDate, eventTime, eventPlace, eventUrl, calendarUrl }),
-            attachments: eventStart && eventEnd
-              ? [
-                  {
-                    filename: `${eventId}.ics`,
-                    content: Buffer.from(
-                      buildRsvpIcs({
-                        eventId,
-                        eventTitle,
-                        eventStart,
-                        eventEnd,
-                        eventPlace: eventPlace || "Jaén, España",
-                        eventUrl,
-                      }),
-                    ).toString("base64"),
-                  },
-                ]
-              : undefined,
+            html,
+            attachments: attachment ? [attachment] : undefined,
           },
-          { idempotencyKey: `rsvp-confirmation/${eventId}/${email}` },
+          { idempotencyKey },
         );
         if (error) console.error("RSVP confirmation email error:", error);
         else emailSent = true;
