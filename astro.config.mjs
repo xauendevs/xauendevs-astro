@@ -9,5 +9,6 @@ export default defineConfig({
   output: "server",
   adapter: vercel({
     webAnalytics: { enabled: true },
+    includeFiles: ["node_modules/harfbuzzjs/**"],
   }),
 });
