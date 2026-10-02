@@ -7,10 +7,10 @@ import { Resvg } from "@resvg/resvg-js";
 const require = createRequire(import.meta.url);
 
 const robotoRegular = readFileSync(
-  require.resolve("@fontsource/roboto/files/roboto-latin-400-normal.woff2")
+  require.resolve("@fontsource/roboto/files/roboto-latin-400-normal.woff")
 );
 const robotoBold = readFileSync(
-  require.resolve("@fontsource/roboto/files/roboto-latin-700-normal.woff2")
+  require.resolve("@fontsource/roboto/files/roboto-latin-700-normal.woff")
 );
 
 const clamp = (value: string | null, maxLength: number, fallback: string) =>
