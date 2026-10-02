@@ -5,6 +5,8 @@ import { buildRsvpConfirmationEmail, buildRsvpIcs } from "@/lib/rsvp-email";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
+const RSVP_CODE_LENGTH = 10;
+const RSVP_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 const ensureTables = async () => {
   await turso.batch([
@@ -15,6 +17,7 @@ const ensureTables = async () => {
           event_id TEXT NOT NULL,
           name TEXT NOT NULL,
           email TEXT NOT NULL,
+          rsvp_code_hash TEXT,
           created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
           UNIQUE(event_id, email)
         )
@@ -57,6 +60,12 @@ const getClientIp = (request: Request) => {
   if (forwardedIp) return forwardedIp;
 
   return request.headers.get("x-real-ip")?.trim() || "unknown";
+};
+
+const generateRsvpCode = () => {
+  const bytes = new Uint8Array(RSVP_CODE_LENGTH);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => RSVP_CODE_ALPHABET[byte % RSVP_CODE_ALPHABET.length]).join("");
 };
 
 const hashValue = async (value: string) => {
@@ -152,6 +161,9 @@ export const POST: APIRoute = async ({ request }) => {
 
     await ensureTables();
 
+    const rsvpCode = generateRsvpCode();
+    const rsvpCodeHash = await hashValue(rsvpCode);
+
     const ipHash = await hashValue(getClientIp(request));
 
     if (await isRateLimited(ipHash)) {
@@ -182,8 +194,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     await turso.execute({
-      sql: "INSERT INTO event_rsvps (event_id, name, email) VALUES (?, ?, ?)",
-      args: [eventId, name, email],
+      sql: "INSERT INTO event_rsvps (event_id, name, email, rsvp_code_hash) VALUES (?, ?, ?, ?)",
+      args: [eventId, name, email, rsvpCodeHash],
     });
 
     let emailSent = false;
@@ -256,5 +268,23 @@ export const POST: APIRoute = async ({ request }) => {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
+  }
+};
+
+
+export const DELETE: APIRoute = async ({ request }) => {
+  try {
+    const body = await request.json();
+    const rsvpCode = String(body.rsvpid ?? "").trim().toUpperCase();
+    if (!/^[A-Z2-9]{10}$/.test(rsvpCode)) return new Response(JSON.stringify({ error: "Código de inscripción no válido." }), { status: 400, headers: { "Content-Type": "application/json" } });
+    await ensureTables();
+    const codeHash = await hashValue(rsvpCode);
+    const result = await turso.execute({ sql: "SELECT id FROM event_rsvps WHERE rsvp_code_hash = ? LIMIT 1", args: [codeHash] });
+    if (result.rows.length === 0) return new Response(JSON.stringify({ error: "La inscripción no existe o ya ha sido cancelada." }), { status: 404, headers: { "Content-Type": "application/json" } });
+    await turso.execute({ sql: "DELETE FROM event_rsvps WHERE id = ?", args: [result.rows[0].id] });
+    return new Response(JSON.stringify({ ok: true }), { headers: { "Content-Type": "application/json" } });
+  } catch (error) {
+    console.error("RSVP cancellation error:", error);
+    return new Response(JSON.stringify({ error: "No se pudo cancelar la inscripción." }), { status: 500, headers: { "Content-Type": "application/json" } });
   }
 };
