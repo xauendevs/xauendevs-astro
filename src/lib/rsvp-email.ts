@@ -25,7 +25,8 @@ const escapeIcs = (value: string) =>
 export const buildRsvpIcs = ({
   eventId,
   eventTitle,
-  eventDate,
+  eventStart,
+  eventEnd,
   eventPlace,
   eventUrl,
 }: {
@@ -47,12 +48,12 @@ export const buildRsvpIcs = ({
     "BEGIN:VEVENT",
     `UID:rsvp-${eventId}@xauendevs.io`,
     `DTSTAMP:${now}`,
-    `DTSTART:${eventDate}`,
-    `DTEND:${eventPlace}`,
+    `DTSTART:${eventStart}`,
+    `DTEND:${eventEnd}`,
     `SUMMARY:${escapeIcs(eventTitle)}`,
     `DESCRIPTION:${escapeIcs(eventUrl)}`,
     `LOCATION:${escapeIcs(eventPlace)}`,
-    `URL:${eventUrl}`,
+    `URL:${escapeIcs(eventUrl)}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\\r\\n");
