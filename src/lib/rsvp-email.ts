@@ -31,7 +31,8 @@ export const buildRsvpIcs = ({
 }: {
   eventId: string;
   eventTitle: string;
-  eventDate: string;
+  eventStart: string;
+  eventEnd: string;
   eventPlace: string;
   eventUrl: string;
 }) => {
