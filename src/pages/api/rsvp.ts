@@ -34,7 +34,16 @@ const ensureTables = async () => {
       `,
       args: [],
     },
+    {
+      sql: "CREATE TABLE IF NOT EXISTS rsvp_cancel_rate_limits (id INTEGER PRIMARY KEY AUTOINCREMENT, ip_hash TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+      args: [],
+    },
   ]);
+
+  try {
+    await turso.execute({ sql: "ALTER TABLE event_rsvps ADD COLUMN rsvp_code_hash TEXT", args: [] });
+  } catch {}
+  await turso.execute({ sql: "CREATE UNIQUE INDEX IF NOT EXISTS idx_event_rsvps_code_hash ON event_rsvps(rsvp_code_hash)", args: [] });
 };
 
 const normalizeEmail = (value: unknown) => {
@@ -278,6 +287,10 @@ export const DELETE: APIRoute = async ({ request }) => {
     const rsvpCode = String(body.rsvpid ?? "").trim().toUpperCase();
     if (!/^[A-Z2-9]{10}$/.test(rsvpCode)) return new Response(JSON.stringify({ error: "Código de inscripción no válido." }), { status: 400, headers: { "Content-Type": "application/json" } });
     await ensureTables();
+    const ipHash = await hashValue(getClientIp(request));
+    const attempts = await turso.execute({ sql: "SELECT COUNT(*) AS count FROM rsvp_cancel_rate_limits WHERE ip_hash = ? AND created_at >= datetime('now', ?)", args: [ipHash, `-${RATE_WINDOW_MINUTES} minutes`] });
+    if (Number(attempts.rows[0]?.count ?? 0) >= RATE_LIMIT) return new Response(JSON.stringify({ error: "Demasiados intentos. Espera unos minutos y vuelve a intentarlo." }), { status: 429, headers: { "Content-Type": "application/json", "Retry-After": String(RATE_WINDOW_MINUTES * 60) } });
+    await turso.execute({ sql: "INSERT INTO rsvp_cancel_rate_limits (ip_hash) VALUES (?)", args: [ipHash] });
     const codeHash = await hashValue(rsvpCode);
     const result = await turso.execute({ sql: "SELECT id FROM event_rsvps WHERE rsvp_code_hash = ? LIMIT 1", args: [codeHash] });
     if (result.rows.length === 0) return new Response(JSON.stringify({ error: "La inscripción no existe o ya ha sido cancelada." }), { status: 404, headers: { "Content-Type": "application/json" } });
