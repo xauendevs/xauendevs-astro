@@ -12,6 +12,7 @@ export async function getPivosStrapi(): Promise<Pivo[]> {
           return {
             ...item,
             date: new Date(item.date),
+            endDate: item.endDate ? new Date(item.endDate) : undefined,
             image: item.image?.url,
             speakers: item.speakers.map((speaker: any) => {
               return {
