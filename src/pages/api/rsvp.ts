@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
+import { Resend } from "resend";
+import { buildRsvpConfirmationEmail } from "@/lib/rsvp-email";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
@@ -100,6 +102,31 @@ export const GET: APIRoute = async ({ url }) => {
 
   try {
     await ensureTables();
+    let emailSent = false;
+    const resendApiKey = import.meta.env.RESEND_API_KEY;
+    const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
+
+    if (resendApiKey && resendFromEmail && eventTitle && eventDate && eventUrl) {
+      try {
+        const resend = new Resend(resendApiKey);
+        const { error } = await resend.emails.send(
+          {
+            from: resendFromEmail,
+            to: [email],
+            subject: `¡Plaza confirmada! ${eventTitle} · XauenDevs`,
+            html: buildRsvpConfirmationEmail({ name, eventTitle, eventDate, eventTime, eventPlace, eventUrl, calendarUrl }),
+          },
+          { idempotencyKey: `rsvp-confirmation/${eventId}/${email}` },
+        );
+        if (error) console.error("RSVP confirmation email error:", error);
+        else emailSent = true;
+      } catch (error) {
+        console.error("RSVP confirmation email error:", error);
+      }
+    } else {
+      console.warn("RSVP confirmation email skipped: missing Resend configuration or event details.");
+    }
+
     const result = await turso.execute({
       sql: "SELECT COUNT(*) AS count FROM event_rsvps WHERE event_id = ?",
       args: [eventId],
@@ -125,6 +152,12 @@ export const POST: APIRoute = async ({ request }) => {
     const name = normalizeName(body.name);
     const email = normalizeEmail(body.email);
     const consent = body.consent === true;
+    const eventTitle = String(body.eventTitle ?? "").trim();
+    const eventDate = String(body.eventDate ?? "").trim();
+    const eventTime = String(body.eventTime ?? "").trim();
+    const eventPlace = String(body.eventPlace ?? "").trim();
+    const eventUrl = String(body.eventUrl ?? "").trim();
+    const calendarUrl = String(body.calendarUrl ?? "").trim();
 
     if (!eventId || !name || !email || !consent) {
       return new Response(JSON.stringify({ error: "Nombre, email y consentimiento son obligatorios." }), {
@@ -182,7 +215,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     return new Response(
-      JSON.stringify({ ok: true, count: Number(result.rows[0]?.count ?? 0) }),
+      JSON.stringify({ ok: true, count: Number(result.rows[0]?.count ?? 0), emailSent }),
       { status: 201, headers: { "Content-Type": "application/json" } },
     );
   } catch (error) {
