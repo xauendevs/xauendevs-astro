@@ -2,6 +2,8 @@ import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { Resend } from "resend";
 import { buildRsvpConfirmationEmail, buildRsvpIcs } from "@/lib/rsvp-email";
+import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { slugify } from "@/lib/event-slug";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
@@ -60,6 +62,57 @@ const normalizeEmail = (value: unknown) => {
 };
 
 const normalizeName = (value: unknown) => String(value ?? "").trim().replace(/\s+/g, " ");
+
+const getEventDetails = async (eventId: string, requestUrl: string) => {
+  const events = (await getPivosStrapi()) ?? [];
+  const event = events.find((item) => slugify(item.title) === eventId);
+
+  if (!event) return null;
+
+  const eventDate = event.date;
+  const eventEnd =
+    "endDate" in event && event.endDate
+      ? event.endDate
+      : new Date(eventDate.getTime() + 60 * 60 * 1000);
+
+  const eventDateLabel = eventDate.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const eventTimeLabel = eventDate.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Madrid",
+  });
+  const eventStart = eventDate
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
+  const eventEndValue = eventEnd
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
+  const eventUrl = new URL(`/eventos/${eventId}`, requestUrl).toString();
+  const calendarTitle = encodeURIComponent(event.title);
+  const calendarDescription = encodeURIComponent(
+    event.description || `Charla de XauenDevs: ${event.title}.`,
+  );
+  const calendarLocation = encodeURIComponent(event.place || "Jaén, España");
+  const calendarUrl =
+    `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calendarTitle}&dates=${eventStart}/${eventEndValue}&details=${calendarDescription}&location=${calendarLocation}`;
+
+  return {
+    eventTitle: event.title,
+    eventDate: eventDateLabel,
+    eventTime: eventTimeLabel,
+    eventPlace: event.place || "Jaén",
+    eventUrl,
+    calendarUrl,
+    eventStart,
+    eventEnd: eventEndValue,
+  };
+};
 
 const getClientIp = (request: Request) => {
   const trustedVercelIp = request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
@@ -122,7 +175,25 @@ export const GET: APIRoute = async ({ url }) => {
       if (result.rows.length === 0) {
         return new Response(JSON.stringify({ error: "La inscripción no existe o ya ha sido cancelada." }), { status: 404, headers: { "Content-Type": "application/json" } });
       }
-      return new Response(JSON.stringify({ ok: true, name: result.rows[0].name, eventId: result.rows[0].event_id }), { headers: { "Content-Type": "application/json" } });
+
+      const eventId = String(result.rows[0].event_id);
+      const eventDetails = await getEventDetails(eventId, url.origin);
+      if (!eventDetails) {
+        return new Response(JSON.stringify({ error: "El evento ya no está disponible." }), { status: 404, headers: { "Content-Type": "application/json" } });
+      }
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          name: result.rows[0].name,
+          eventId,
+          eventTitle: eventDetails.eventTitle,
+          eventDate: eventDetails.eventDate,
+          eventTime: eventDetails.eventTime,
+          eventPlace: eventDetails.eventPlace,
+        }),
+        { headers: { "Content-Type": "application/json" } },
+      );
     } catch (error) {
       console.error("RSVP lookup error:", error);
       return new Response(JSON.stringify({ error: "No se pudo consultar la inscripción." }), { status: 500, headers: { "Content-Type": "application/json" } });
@@ -165,15 +236,6 @@ export const POST: APIRoute = async ({ request }) => {
     const name = normalizeName(body.name);
     const email = normalizeEmail(body.email);
     const consent = body.consent === true;
-    const eventTitle = String(body.eventTitle ?? "").trim();
-    const eventDate = String(body.eventDate ?? "").trim();
-    const eventTime = String(body.eventTime ?? "").trim();
-    const eventPlace = String(body.eventPlace ?? "").trim();
-    const eventUrl = String(body.eventUrl ?? "").trim();
-    const calendarUrl = String(body.calendarUrl ?? "").trim();
-    const eventStart = String(body.eventStart ?? "").trim();
-    const eventEnd = String(body.eventEnd ?? "").trim();
-
     if (!eventId || !name || !email || !consent) {
       return new Response(JSON.stringify({ error: "Nombre, email y consentimiento son obligatorios." }), {
         status: 400,
@@ -189,6 +251,25 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     await ensureTables();
+
+    const eventDetails = await getEventDetails(eventId, request.url);
+    if (!eventDetails) {
+      return new Response(JSON.stringify({ error: "El evento no existe o no está disponible." }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const {
+      eventTitle,
+      eventDate,
+      eventTime,
+      eventPlace,
+      eventUrl,
+      calendarUrl,
+      eventStart,
+      eventEnd,
+    } = eventDetails;
 
     const rsvpCode = generateRsvpCode();
     const rsvpCodeHash = await hashValue(rsvpCode);
