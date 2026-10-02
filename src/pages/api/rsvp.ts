@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { Resend } from "resend";
-import { buildRsvpConfirmationEmail } from "@/lib/rsvp-email";
+import { buildRsvpConfirmationEmail, buildRsvpIcs } from "@/lib/rsvp-email";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
@@ -133,6 +133,8 @@ export const POST: APIRoute = async ({ request }) => {
     const eventPlace = String(body.eventPlace ?? "").trim();
     const eventUrl = String(body.eventUrl ?? "").trim();
     const calendarUrl = String(body.calendarUrl ?? "").trim();
+    const eventStart = String(body.eventStart ?? "").trim();
+    const eventEnd = String(body.eventEnd ?? "").trim();
 
     if (!eventId || !name || !email || !consent) {
       return new Response(JSON.stringify({ error: "Nombre, email y consentimiento son obligatorios." }), {
@@ -191,14 +193,44 @@ export const POST: APIRoute = async ({ request }) => {
     if (resendApiKey && resendFromEmail && eventTitle && eventDate && eventUrl) {
       try {
         const resend = new Resend(resendApiKey);
+        const html = buildRsvpConfirmationEmail({
+          name,
+          eventTitle,
+          eventDate,
+          eventTime,
+          eventPlace,
+          eventUrl,
+          calendarUrl,
+        });
+        const icsContent =
+          eventStart && eventEnd
+            ? buildRsvpIcs({
+                eventId,
+                eventTitle,
+                eventStart,
+                eventEnd,
+                eventPlace: eventPlace || "Jaén, España",
+                eventUrl,
+              })
+            : "";
+        const attachment = icsContent
+          ? {
+              filename: `${eventId}.ics`,
+              content: Buffer.from(icsContent).toString("base64"),
+            }
+          : undefined;
+        const idempotencyKey = `rsvp-confirmation/${eventId}/${await hashValue(
+          email + "\n" + html + "\n" + icsContent,
+        )}`;
         const { error } = await resend.emails.send(
           {
             from: resendFromEmail,
             to: [email],
             subject: `¡Plaza confirmada! ${eventTitle} · XauenDevs`,
-            html: buildRsvpConfirmationEmail({ name, eventTitle, eventDate, eventTime, eventPlace, eventUrl, calendarUrl }),
+            html,
+            attachments: attachment ? [attachment] : undefined,
           },
-          { idempotencyKey: `rsvp-confirmation/${eventId}/${email}` },
+          { idempotencyKey },
         );
         if (error) console.error("RSVP confirmation email error:", error);
         else emailSent = true;

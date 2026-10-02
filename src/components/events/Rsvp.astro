@@ -7,6 +7,8 @@ interface Props {
   eventPlace: string;
   eventUrl: string;
   calendarUrl: string;
+  eventStart: string;
+  eventEnd: string;
 }
 const {
   eventId,
@@ -16,6 +18,8 @@ const {
   eventPlace,
   eventUrl,
   calendarUrl,
+  eventStart,
+  eventEnd,
 } = Astro.props;
 ---
 
@@ -29,6 +33,8 @@ const {
   data-event-place={eventPlace}
   data-event-url={eventUrl}
   data-calendar-url={calendarUrl}
+  data-event-start={eventStart}
+  data-event-end={eventEnd}
 >
   <span class="text-xs font-bold uppercase tracking-[0.14em]">Asistencia</span>
   <h3 class="mt-2 text-xl font-black">¿Te apuntas?</h3>
@@ -104,6 +110,8 @@ const {
     const eventPlace = rsvp.dataset.eventPlace ?? "";
     const eventUrl = rsvp.dataset.eventUrl ?? "";
     const calendarUrl = rsvp.dataset.calendarUrl ?? "";
+    const eventStart = rsvp.dataset.eventStart ?? "";
+    const eventEnd = rsvp.dataset.eventEnd ?? "";
     const form = rsvp.querySelector<HTMLFormElement>("[data-rsvp-form]");
     const count = rsvp.querySelector<HTMLElement>("[data-rsvp-count]");
     const toast = rsvp.querySelector<HTMLElement>("[data-rsvp-toast]");
@@ -177,6 +185,8 @@ const {
             eventPlace,
             eventUrl,
             calendarUrl,
+            eventStart,
+            eventEnd,
             name: formData.get("name"),
             email: formData.get("email"),
             consent: formData.get("consent") === "on",
