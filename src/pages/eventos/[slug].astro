@@ -198,6 +198,7 @@ const shareMessage = [
           <EventFacts
             date={formattedDate}
             time={formattedTime}
+            duration={!isExternal ? "Duración estimada · 1 h" : undefined}
             place={event.place}
             organizer={isExternal ? externalEvent.organizer : "XauenDevs"}
             mapsUrl={mapsUrl}
