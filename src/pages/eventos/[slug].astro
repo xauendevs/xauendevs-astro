@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import EventSidebar from "@/components/events/EventSidebar.astro";
+import EventFacts from "@/components/events/EventFacts.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { getPivoTags } from "@/lib/get-pivo-tags";
 import { externalEvents } from "@/data/external-events";
@@ -194,39 +195,13 @@ const shareMessage = [
 
       <div class="grid gap-10 p-7 md:p-10 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div class="flex flex-col gap-8">
-          <section>
-            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
-              Cuándo
-            </span>
-            <p class="mt-2 text-2xl font-bold">{formattedDate}</p>
-            <p class="mt-1 text-primary/55">A las {formattedTime}</p>
-          </section>
-
-          <section>
-            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
-              Dónde
-            </span>
-            <p class="mt-2 text-xl font-semibold">{event.place || "Por confirmar"}</p>
-            {event.place && (
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mt-3 inline-flex items-center gap-2 text-sm font-bold text-primary/60 underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-primary"
-              >
-                Cómo llegar ↗
-              </a>
-            )}
-          </section>
-
-          <section>
-            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
-              Organiza
-            </span>
-            <p class="mt-2 text-xl font-semibold">
-              {isExternal ? externalEvent.organizer : "XauenDevs"}
-            </p>
-          </section>
+          <EventFacts
+            date={formattedDate}
+            time={formattedTime}
+            place={event.place}
+            organizer={isExternal ? externalEvent.organizer : "XauenDevs"}
+            mapsUrl={mapsUrl}
+          />
 
           <section class="rounded-[2rem] border border-primary/10 bg-primary/[0.025] p-6 md:p-7">
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
