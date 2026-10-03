@@ -130,25 +130,22 @@ const eventLabel = isNext ? "Próximo evento" : "Pivo&Code";
           </span>
         )}
       </div>
+
+      {
+        detailUrl && (
+          <div class="flex justify-end pt-1">
+            <a
+              href={detailUrl}
+              aria-label={`Ver evento: ${title}`}
+              class="inline-flex items-center rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-primary shadow-md backdrop-blur-sm transition-colors hover:bg-accent focus-visible:bg-accent"
+            >
+              Ver evento <span aria-hidden="true" class="ml-1">↗</span>
+            </a>
+          </div>
+        )
+      }
     </div>
   </div>
-
-  {
-    detailUrl && (
-      <>
-        <a
-          href={detailUrl}
-          aria-label={`Ver evento: ${title}`}
-          class="absolute inset-0 z-20"
-        >
-          <span class="sr-only">Ver evento: {title}</span>
-        </a>
-        <span class="pointer-events-none absolute bottom-4 right-4 z-30 rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-primary shadow-lg backdrop-blur-sm transition-colors group-hover:bg-accent">
-          Ver evento ↗
-        </span>
-      </>
-    )
-  }
 </article>
 
 <style>
