@@ -1,9 +1,8 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { Resend } from "resend";
-import { buildRsvpConfirmationEmail, buildRsvpIcs } from "@/lib/rsvp-email";
-import { getPivosStrapi } from "@/lib/get-info-pivos";
-import { slugify } from "@/lib/event-slug";
+import { buildRsvpConfirmationEmail } from "@/lib/rsvp-email";
+import { getEventDetails } from "@/lib/rsvp-event";
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MINUTES = 10;
@@ -114,15 +113,11 @@ const getEventDetails = async (eventId: string, requestUrl: string) => {
   };
 };
 
-const getClientIp = (request: Request) => {
-  const trustedVercelIp = request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
-  if (trustedVercelIp) return trustedVercelIp;
-
-  const forwardedIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  if (forwardedIp) return forwardedIp;
-
-  return request.headers.get("x-real-ip")?.trim() || "unknown";
-};
+const getClientIp = (request: Request) =>
+  request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
+  request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+  request.headers.get("x-real-ip")?.trim() ||
+  "unknown";
 
 const generateRsvpCode = () => {
   const bytes = new Uint8Array(RSVP_CODE_LENGTH);
@@ -136,30 +131,20 @@ const hashValue = async (value: string) => {
   return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
-const isRateLimited = async (ipHash: string) => {
+const rateLimited = async (table: string, ipHash: string) => {
   const result = await turso.execute({
-    sql: `
-      SELECT COUNT(*) AS count
-      FROM rsvp_rate_limits
-      WHERE ip_hash = ?
-        AND created_at >= datetime('now', ?)
-    `,
+    sql: `SELECT COUNT(*) AS count FROM ${table} WHERE ip_hash = ? AND created_at >= datetime('now', ?)`,
     args: [ipHash, `-${RATE_WINDOW_MINUTES} minutes`],
   });
-
   return Number(result.rows[0]?.count ?? 0) >= RATE_LIMIT;
 };
 
-const registerRateAttempt = async (ipHash: string) => {
-  await turso.execute({
-    sql: "INSERT INTO rsvp_rate_limits (ip_hash) VALUES (?)",
-    args: [ipHash],
-  });
-
-  await turso.execute({
-    sql: "DELETE FROM rsvp_rate_limits WHERE created_at < datetime('now', '-1 day')",
-  });
+const registerRateAttempt = async (table: string, ipHash: string) => {
+  await turso.execute({ sql: `INSERT INTO ${table} (ip_hash) VALUES (?)`, args: [ipHash] });
+  await turso.execute({ sql: `DELETE FROM ${table} WHERE created_at < datetime('now', '-1 day')` });
 };
+
+const toSqlDate = (date: Date) => date.toISOString().replace("T", " ").replace(/\.\d{3}Z$/, "");
 
 export const GET: APIRoute = async ({ url }) => {
   const rsvpCode = url.searchParams.get("rsvpid")?.trim().toUpperCase();
