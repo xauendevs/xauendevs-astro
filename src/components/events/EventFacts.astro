@@ -6,9 +6,10 @@ interface Props {
   place?: string;
   organizer: string;
   mapsUrl?: string;
+  registrationStatus?: "open" | "closed";
 }
 
-const { date, time, duration, place, organizer, mapsUrl } = Astro.props;
+const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = Astro.props;
 ---
 
 <section aria-labelledby="event-facts-title">
@@ -41,9 +42,23 @@ const { date, time, duration, place, organizer, mapsUrl } = Astro.props;
       }
     </div>
 
-    <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5 sm:col-span-2">
+    <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
       <span class="text-xs font-semibold uppercase tracking-wide text-primary/45">Organiza</span>
       <p class="mt-2 text-lg font-bold">{organizer}</p>
     </div>
+
+    {registrationStatus && (
+      <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
+        <span class="text-xs font-semibold uppercase tracking-wide text-primary/45">Inscripción</span>
+        <p class="mt-2 text-lg font-bold">
+          {registrationStatus === "open" ? "Inscripción abierta" : "Inscripción cerrada"}
+        </p>
+        <p class="mt-1 text-sm text-primary/55">
+          {registrationStatus === "open"
+            ? "La asistencia se confirma mediante el enlace que recibirás por email."
+            : "Este evento ya ha terminado y no admite nuevas inscripciones."}
+        </p>
+      </div>
+    )}
   </div>
 </section>
