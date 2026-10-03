@@ -76,7 +76,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const codeHash = await hashValue(code);
     const current = await turso.execute({
-      sql: "SELECT name, event_id, status, expires_at FROM event_rsvps WHERE confirm_code_hash = ? LIMIT 1",
+      sql: "SELECT name, email, event_id, status, expires_at FROM event_rsvps WHERE confirm_code_hash = ? LIMIT 1",
       args: [codeHash],
     });
 
