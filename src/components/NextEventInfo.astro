@@ -1,6 +1,7 @@
 ---
 import { formatDateTime } from "@/lib/format-date";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { slugify } from "@/lib/event-slug";
 const pivos = await getPivosStrapi();
 const nextEvent = pivos?.find((pivo) => {
   return pivo.date.getTime() > new Date().getTime();
@@ -13,7 +14,10 @@ const nextEvent = pivos?.find((pivo) => {
       <span class="ml-2">
         <img src="/img/calendar_today.svg" class="size-4 lg:size-5" />
       </span>
-      <a href={nextEvent.saraosLink} target="_blank" rel="noopener">
+      <a
+        href={`/eventos/${slugify(nextEvent.title)}`}
+        aria-label={`Ver próximo evento: ${nextEvent.title}`}
+      >
         <div class="flex flex-col ml-2 max-w-60">
           <span
             class="font-bold text-ellipsis whitespace-nowrap overflow-hidden"
