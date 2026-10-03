@@ -3,7 +3,9 @@ import { formatDate, formatTime } from "@/lib/format-date";
 import type { Charlante } from "@/types/Charlante";
 import LocationPin from "./icons/LocationPin.astro";
 import PivoVideoModal from "./PivoVideoModal.astro";
+
 const { STRAPI_HOST } = import.meta.env;
+
 interface Props {
   id: number;
   title: string;
@@ -31,123 +33,148 @@ const {
   detailUrl,
   customClass,
 } = Astro.props;
+
+const speakerNames = speakers?.map((speaker) => speaker.name).join(", ");
+const speakerName = speakers?.[0]?.name;
+const eventLabel = isNext ? "Próximo evento" : "Pivo&Code";
 ---
 
 {videoId && !detailUrl && <PivoVideoModal />}
+
 <article
   id={id.toString()}
   data-url={videoId && !detailUrl ? `https://www.youtube.com/embed/${videoId}?si=NjLzFU-ifS-QmXD6` : undefined}
   data-clip-item={videoId && !detailUrl ? true : undefined}
   data-event-tags={tags.join(",")}
-  class=`clip-container relative bg-[#356154] flex flex-col justify-end p-2 md:p-5 cursor-pointer
-  min-w-[200px] max-w-[200px] min-h-[350px] max-h-[350px] rounded-3xl group overflow-hidden ${isNext ? 'next-pivo' : ''} ${videoId && !detailUrl ? 'cursor-pointer' : ''} select-none
-  md:min-w-[330px] md:max-w-[330px] md:min-h-[460px] md:max-h-[460px] ${customClass}`
+  class:list={[
+    "group relative flex min-h-[350px] min-w-[200px] max-w-[200px] flex-col overflow-hidden rounded-3xl bg-[#356154] select-none md:min-h-[460px] md:max-h-[460px] md:min-w-[330px] md:max-w-[330px]",
+    isNext && "next-pivo",
+    videoId && !detailUrl && "cursor-pointer",
+    customClass,
+  ]}
 >
   <div
-    id="background-image"
-    class="absolute left-0 top-0 bottom-0 w-full h-full group-hover:scale-110 group-focus:scale-110 transition-scale duration-500 ease-in-out opacity-90 bg-blend-luminosity bg-center bg-cover bg-no-repeat z-10"
+    aria-hidden="true"
+    class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-90 transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none"
     style={`background-image:url('${STRAPI_HOST}${image}'),url('/img/pivos/default.png')`}
-  >
-  </div>
+  ></div>
 
   <div
-    class="absolute z-10 top-0 bottom-0 right-0 left-0 w-full h-full bg-gradient-to-b from-transparent from-20% via-primary/20 to-black/80"
-  >
-  </div>
+    aria-hidden="true"
+    class="absolute inset-0 z-10 bg-gradient-to-b from-black/5 via-black/15 to-black/90"
+  ></div>
 
-  <div id="info-pivo" class="flex flex-col gap-4 text-white z-10">
-    <div class="flex flex-wrap gap-1.5 translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-      {tags.map((tag) => (
+  <div class="relative z-10 mt-auto flex flex-col gap-4 p-4 pb-16 text-white md:p-5 md:pb-16">
+    <div class="flex flex-wrap gap-1.5">
+      <span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm">
+        {eventLabel}
+      </span>
+      {tags.slice(0, 3).map((tag) => (
         <span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm">
           {tag}
         </span>
       ))}
     </div>
 
-    <h3
-      id="title-pivo"
-      class="min-h-[3.5rem] line-clamp-2 font-bold text-xl leading-tight md:text-2xl group-hover:translate-y-0 translate-y-10 transition-transform duration-500"
-    >
+    <h3 class="line-clamp-2 min-h-[3.5rem] text-xl font-bold leading-tight md:text-2xl">
       {title}
     </h3>
 
-    <div class="flex gap-4">
-      {
-        speakers && speakers.length > 1 && (
-          <div class="flex -space-x-5 rtl:space-x-reverse">
-            <img
-              class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-              src={`${STRAPI_HOST}${speakers[0].photo}`}
-              alt={speakers.map((speaker) => speaker.name).join(",")}
-            />
-            <span class="flex items-center justify-center min-w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full dark:border-gray-800">
-              +{speakers.length - 1}
-            </span>
-          </div>
-        )
-      }
-      {
-        speakers && speakers.length === 1 && (
-          <img
-            src={`${STRAPI_HOST}${speakers[0].photo}`}
-            class="rounded-full size-8 md:size-10 object-cover"
-            alt={speakers.map((speaker) => speaker.name).join(",")}
-          />
-        )
-      }
+    <div class="grid grid-cols-1 gap-3 border-t border-white/15 pt-3">
+      <div class="flex min-w-0 items-center gap-3">
+        {
+          speakers && speakers.length > 0 ? (
+            <div class="flex min-w-0 items-center gap-2">
+              {speakers.length === 1 ? (
+                <img
+                  src={`${STRAPI_HOST}${speakers[0].photo}`}
+                  class="size-9 shrink-0 rounded-full border border-white/30 object-cover"
+                  alt={speakers[0].name}
+                />
+              ) : (
+                <div class="flex -space-x-3">
+                  <img
+                    src={`${STRAPI_HOST}${speakers[0].photo}`}
+                    class="size-9 rounded-full border-2 border-white object-cover"
+                    alt={speakers[0].name}
+                  />
+                  <span class="flex size-9 items-center justify-center rounded-full border-2 border-white bg-black/60 text-[10px] font-bold">
+                    +{speakers.length - 1}
+                  </span>
+                </div>
+              )}
+              <span class="min-w-0 truncate text-sm font-medium" title={speakerNames}>
+                {speakerName}
+                {speakers.length > 1 && " y más"}
+              </span>
+            </div>
+          ) : (
+            <span class="text-sm text-white/60">XauenDevs</span>
+          )
+        }
+      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-[70%_30%] items-center justify-between grow">
-        <div class="flex flex-col">
-          <span
-            title={speakers?.[0]?.name ?? "John Doe"}
-            class="text-sm leading-0 overflow-hidden text-nowrap text-ellipsis whitespace-nowrap"
-          >
-            {speakers?.[0]?.name ?? "John Doe"}
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium text-white/75">
+        <span class="inline-flex items-center gap-1.5">
+          <span aria-hidden="true">📅</span>
+          <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span aria-hidden="true">🕐</span>
+          <time>{formatTime(date)}</time>
+        </span>
+        {place && (
+          <span class="inline-flex min-w-0 items-center gap-1.5">
+            <LocationPin class="size-3.5 shrink-0" />
+            <span class="truncate">{place}</span>
           </span>
-          <div class="flex gap-1">
-            <LocationPin class="hidden md:block size-4" />
-            <span class="text-xs text-nowrap">{place}</span>
-          </div>
-        </div>
-        <div class="flex md:flex-col gap-1">
-          <span class="text-xs text-right capitalize">{formatDate(date)}</span>
-          <span class="text-xs text-right">{formatTime(date)}</span>
-        </div>
+        )}
       </div>
     </div>
   </div>
 
-  {detailUrl && (
-    <>
+  {
+    detailUrl && (
       <a
         href={detailUrl}
         aria-label={`Ver evento: ${title}`}
-        class="absolute inset-0 z-20"
+        class="absolute bottom-4 right-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/45 px-3.5 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-md transition-all duration-200 hover:border-accent/60 hover:bg-accent hover:text-dark focus-visible:border-accent focus-visible:bg-accent focus-visible:text-dark motion-reduce:transition-none"
       >
-        <span class="sr-only">Ver evento: {title}</span>
+        Ver evento
+        <span aria-hidden="true" class="text-sm leading-none transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none">↗</span>
       </a>
-      <span class="pointer-events-none absolute bottom-5 right-5 z-30 rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-primary backdrop-blur-sm transition-all group-hover:bg-accent">
-        Ver evento ↗
-      </span>
-    </>
-  )}
+    )
+  }
 </article>
+
 <style>
-  .next-pivo #background-image {
-    background-color: var(--color-accent);
-    transform: scale(1.1);
+  .next-pivo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    border: 2px solid var(--color-accent);
+    border-radius: 1.5rem;
+    opacity: 0.85;
   }
-  article:not(.next-pivo) #background-image:not(:hover) {
+
+  .next-pivo {
+    box-shadow: 0 0 0 1px rgb(246 183 3 / 0.2), 0 20px 50px rgb(0 0 0 / 0.2);
+  }
+
+  article:not(.next-pivo) > div:first-child {
     filter: grayscale(100%);
+    transition-property: transform, filter;
   }
-  article:not(.next-pivo):hover #background-image {
-    background-color: var(--color-accent);
+
+  article:not(.next-pivo):hover > div:first-child {
     filter: grayscale(0%);
   }
-  .next-pivo:hover #background-image {
-    filter: grayscale(0%);
-  }
-  .next-pivo #title-pivo {
-    transform: translateY(0);
+
+  @media (prefers-reduced-motion: reduce) {
+    article > div:first-child {
+      transition: none;
+    }
   }
 </style>
