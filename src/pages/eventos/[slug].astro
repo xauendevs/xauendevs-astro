@@ -195,7 +195,7 @@ const shareMessage = [
       <div class="grid gap-10 p-7 md:p-10 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div class="flex flex-col gap-8">
           <section>
-            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Cuándo
             </span>
             <p class="mt-2 text-2xl font-bold">{formattedDate}</p>
@@ -203,7 +203,7 @@ const shareMessage = [
           </section>
 
           <section>
-            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Dónde
             </span>
             <p class="mt-2 text-xl font-semibold">{event.place || "Por confirmar"}</p>
@@ -220,7 +220,7 @@ const shareMessage = [
           </section>
 
           <section>
-            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Organiza
             </span>
             <p class="mt-2 text-xl font-semibold">
@@ -229,7 +229,7 @@ const shareMessage = [
           </section>
 
           <section class="rounded-[2rem] border border-primary/10 bg-primary/[0.025] p-6 md:p-7">
-            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Sobre el evento
             </span>
             <p class="mt-3 max-w-3xl text-base leading-relaxed text-primary/65 md:text-lg">
@@ -240,7 +240,7 @@ const shareMessage = [
           {
             !isExternal && pivoEvent.speakers && pivoEvent.speakers.length > 0 && (
               <section>
-                <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+                <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
                   Ponentes
                 </span>
                 <div class="mt-4 flex flex-wrap gap-4">
@@ -288,7 +288,7 @@ const shareMessage = [
       !isExternal && pivoEvent.videoId && (
         <section class="overflow-hidden rounded-[2.5rem] bg-primary p-4 md:p-6">
           <div class="mb-5 px-2">
-            <span class="text-accent text-xs font-bold uppercase tracking-[0.16em]">
+            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Vídeo
             </span>
             <h2 class="mt-1 text-2xl font-bold text-white">
