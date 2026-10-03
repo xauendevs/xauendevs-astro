@@ -67,3 +67,34 @@ export const buildRsvpIcs = ({
     "END:VCALENDAR",
   ].join(ICS_CRLF);
 };
+
+
+export const buildRsvpConfirmedEmail = ({
+  name,
+  eventTitle,
+  eventDate,
+  eventTime,
+  eventPlace,
+  eventUrl,
+  calendarUrl,
+}: {
+  name: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+  eventPlace: string;
+  eventUrl: string;
+  calendarUrl: string;
+}) => {
+  const safe = {
+    name: escapeHtml(name),
+    title: escapeHtml(eventTitle),
+    date: escapeHtml(eventDate),
+    time: escapeHtml(eventTime),
+    place: escapeHtml(eventPlace),
+    eventUrl: escapeHtml(eventUrl),
+    calendarUrl: escapeHtml(calendarUrl),
+  };
+
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#f3f1eb;color:#111;font-family:Arial,Helvetica,sans-serif;"><div style="padding:32px 16px;"><div style="max-width:600px;margin:0 auto;background:#fff;border:1px solid #e5e2d9;border-radius:24px;overflow:hidden;"><div style="height:8px;background:#f4d400"></div><div style="padding:32px"><div style="font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">XauenDevs</div><div style="margin-top:28px;background:#f4d400;border-radius:18px;padding:24px"><div style="font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Pivo&Code</div><h1 style="margin:8px 0 0;font-size:32px;line-height:1.05">¡Asistencia confirmada! 🎉</h1></div><p style="font-size:17px;line-height:1.6;margin:28px 0 8px">Genial, <strong>${safe.name}</strong> 👋</p><p style="font-size:16px;line-height:1.6">Tu plaza para <strong>${safe.title}</strong> está confirmada. ¡Nos vemos allí!</p><div style="background:#f7f7f5;border-radius:18px;padding:22px;margin-top:24px"><div style="font-size:24px;font-weight:800;line-height:1.15">${safe.title}</div><div style="margin-top:18px;font-size:15px;line-height:1.7">📅 <strong>${safe.date}</strong><br>⏰ ${safe.time}<br>📍 ${safe.place}</div></div><div style="margin-top:24px"><a href="${safe.calendarUrl}" style="display:inline-block;background:#f4d400;color:#111;text-decoration:none;padding:15px 22px;border-radius:999px;font-weight:800">Añadir al calendario →</a></div><div style="margin-top:18px"><a href="${safe.eventUrl}" style="color:#111;font-weight:800;font-size:14px">Ver detalles del evento ↗</a></div><p style="font-size:13px;line-height:1.6;color:#777;margin-top:28px">Si finalmente no puedes venir, puedes cancelar tu inscripción desde el enlace del correo de confirmación que recibiste anteriormente.</p><div style="border-top:1px solid #e5e2d9;margin-top:32px;padding-top:20px;font-size:13px;color:#777">XauenDevs · Jaén</div></div></div></div></body></html>`;
+};
