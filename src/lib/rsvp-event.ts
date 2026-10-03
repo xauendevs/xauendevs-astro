@@ -24,7 +24,9 @@ export const getEventDetails = async (eventId: string, requestUrl: string) => {
     minute: "2-digit",
     timeZone: "Europe/Madrid",
   });
-  const eventUrl = new URL(`/eventos/${eventId}`, requestUrl).toString();
+  // Email links must use the canonical public site, never the request host (which can be localhost in local/test environments).
+  const publicBaseUrl = import.meta.env.SITE || "https://xauendevs.io";
+  const eventUrl = new URL(`/eventos/${eventId}`, publicBaseUrl).toString();
   const eventLocation = event.place || "Jaén, España";
   const calendarStart = eventStartDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
   const calendarEnd = eventEndDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
