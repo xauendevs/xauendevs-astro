@@ -2,13 +2,14 @@
 interface Props {
   date: string;
   time: string;
+  duration?: string;
   place?: string;
   organizer: string;
   mapsUrl?: string;
   registrationStatus?: "open" | "closed";
 }
 
-const { date, time, place, organizer, mapsUrl, registrationStatus } = Astro.props;
+const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = Astro.props;
 ---
 
 <section aria-labelledby="event-facts-title">
@@ -21,6 +22,7 @@ const { date, time, place, organizer, mapsUrl, registrationStatus } = Astro.prop
       <span class="text-xs font-semibold uppercase tracking-wide text-primary/45">Cuándo</span>
       <p class="mt-2 text-lg font-bold capitalize">{date}</p>
       <p class="mt-1 text-sm text-primary/55">A las {time}</p>
+      {duration && <p class="mt-2 text-xs font-semibold uppercase tracking-wide text-primary/45">{duration}</p>}
     </div>
 
     <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
