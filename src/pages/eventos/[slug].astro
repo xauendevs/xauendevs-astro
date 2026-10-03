@@ -201,6 +201,7 @@ const shareMessage = [
             place={event.place}
             organizer={isExternal ? externalEvent.organizer : "XauenDevs"}
             mapsUrl={mapsUrl}
+            registrationStatus={!isExternal ? (isPast ? "closed" : "open") : undefined}
           />
 
           <section class="rounded-[2rem] border border-primary/10 bg-primary/[0.025] p-6 md:p-7">
