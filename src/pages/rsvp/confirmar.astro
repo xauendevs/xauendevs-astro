@@ -95,6 +95,10 @@
       const confirm = document.querySelector<HTMLButtonElement>("[data-confirm]");
       const actions = document.querySelector<HTMLElement>("[data-actions]");
 
+      if (!message || !card || !name || !event || !date || !time || !place || !confirm || !actions) {
+        throw new Error("No se pudo inicializar la página de confirmación.");
+      }
+
       const showError = (error: unknown) => {
         message.textContent = error instanceof Error ? error.message : "No se pudo consultar la inscripción.";
         card?.classList.add("hidden");
@@ -118,7 +122,7 @@
           .catch(showError);
       }
 
-      confirm?.addEventListener("click", async () => {
+      confirm.addEventListener("click", async () => {
         confirm.setAttribute("disabled", "true");
         try {
           const response = await fetch("/api/rsvp/confirmar", {
