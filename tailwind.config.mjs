@@ -6,6 +6,7 @@ export default {
     extend: {
       colors: {
         accent: "var(--color-accent)",
+        "accent-text": "var(--color-accent-text)",
         dark: "var(--color-dark)",
       },
       brightness: {

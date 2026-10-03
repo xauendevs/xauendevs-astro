@@ -66,8 +66,10 @@ const socialImage = new URL(image, siteOrigin).href;
     --color-primary: #ddd;
     --color-secondary: #333;
     --color-accent: #f6b703;
+    --color-accent-text: #6b4f00;
+    --color-focus: #0d0d0d;
     --color-dark: #0d0d0d;
-    --color-accent-rgb: 213, 255, 0;
+    --color-accent-rgb: 246, 183, 3;
 
     --background-color: #0a0c00;
     --background-twitch: var(--color-twitch-ice);
@@ -81,9 +83,28 @@ const socialImage = new URL(image, siteOrigin).href;
     scroll-behavior: smooth;
   }
 
-  @media (prefers-reduce-motion: reduce) {
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  ::placeholder {
+    color: #666;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 
