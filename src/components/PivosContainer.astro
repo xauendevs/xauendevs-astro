@@ -2,6 +2,7 @@
 import ArrowRight from "@/components/icons/ArrowRight.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { slugify } from "@/lib/event-slug";
 
 const pivos = await getPivosStrapi();
 const nextEvent = pivos?.find((pivo) => {
@@ -30,6 +31,7 @@ const pastPivos = pivos
           place={nextEvent.place}
           date={nextEvent.date}
           videoId={nextEvent.videoId}
+          detailUrl={`/eventos/${slugify(nextEvent.title)}`}
           isNext
         />
       </div>
@@ -55,6 +57,7 @@ const pastPivos = pivos
                 place={place}
                 date={date}
                 videoId={videoId}
+                detailUrl={`/eventos/${slugify(title)}`}
               />
             )
           )
