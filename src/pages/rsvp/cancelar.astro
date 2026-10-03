@@ -83,6 +83,10 @@
       const place = document.querySelector<HTMLElement>("[data-place]");
       const cancel = document.querySelector<HTMLButtonElement>("[data-cancel]");
 
+      if (!message || !confirm || !name || !event || !date || !place || !cancel) {
+        throw new Error("No se pudo inicializar la página de inscripción.");
+      }
+
       if (!code) {
         message.textContent = "Falta el código de inscripción.";
       } else {
@@ -106,7 +110,7 @@
           });
       }
 
-      cancel?.addEventListener("click", async () => {
+      cancel.addEventListener("click", async () => {
         cancel.setAttribute("disabled", "true");
 
         try {
