@@ -257,13 +257,14 @@ const shareMessage = [
           calendarUrl={googleCalendarUrl}
           eventStart={calendarStart}
           eventEnd={calendarEndValue}
+          videoId={!isExternal ? pivoEvent.videoId : undefined}
         />
       </div>
     </article>
 
     {
       !isExternal && pivoEvent.videoId && (
-        <section class="overflow-hidden rounded-[2.5rem] bg-primary p-4 md:p-6">
+        <section id="video" class="overflow-hidden rounded-[2.5rem] bg-primary p-4 md:p-6">
           <div class="mb-5 px-2">
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Vídeo
