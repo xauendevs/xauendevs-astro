@@ -1,5 +1,4 @@
 ---
-import ArrowRight from "@/components/icons/ArrowRight.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
@@ -70,54 +69,9 @@ const pastPivos = pivos
     .past-pivos::-webkit-scrollbar {
       display: none;
     }
-    .scroll-smooth {
-      animation: scrollSmooth 1s;
-    }
-    @keyframes scrollSmooth {
-      from {
-        scroll-behavior: smooth;
-      }
-      to {
-        scroll-behavior: auto;
-      }
+
+    .past-pivos {
+      scroll-behavior: smooth;
     }
   </style>
-
-  <script>
-    import { $ } from "@/lib/dom-selector";
-
-    const pastPivoContainer = $("#past-pivos");
-    const iconLeft = $("#left-scroll") as HTMLButtonElement | null;
-    const iconRight = $("#right-scroll") as HTMLButtonElement | null;
-    const updateControls = () => {
-      if (!pastPivoContainer || !iconLeft || !iconRight) return;
-
-      const atStart = pastPivoContainer.scrollLeft <= 1;
-      const atEnd =
-        pastPivoContainer.scrollLeft + pastPivoContainer.clientWidth >=
-        pastPivoContainer.scrollWidth - 1;
-
-      iconLeft.disabled = atStart;
-      iconLeft.style.opacity = atStart ? "50%" : "100%";
-      iconLeft.style.filter = atStart ? "grayscale(5)" : "grayscale(0)";
-
-      iconRight.disabled = atEnd;
-      iconRight.style.opacity = atEnd ? "50%" : "100%";
-      iconRight.style.filter = atEnd ? "grayscale(5)" : "grayscale(0)";
-    };
-
-    updateControls();
-
-    iconLeft?.addEventListener("click", () => {
-      if (pastPivoContainer)
-        pastPivoContainer.scrollLeft = pastPivoContainer.scrollLeft - 200;
-    });
-
-    iconRight?.addEventListener("click", () => {
-      if (pastPivoContainer)
-        pastPivoContainer.scrollLeft = pastPivoContainer.scrollLeft + 200;
-    });
-
-    pastPivoContainer?.addEventListener("scroll", updateControls);
-  </script>
 </div>
