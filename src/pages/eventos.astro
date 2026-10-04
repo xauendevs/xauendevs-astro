@@ -37,6 +37,8 @@ const availableTags = Array.from(
     ...externalEvents.flatMap((event) => event.tags),
   ]),
 );
+
+
 ---
 
 <Layout
@@ -71,45 +73,37 @@ const availableTags = Array.from(
       </div>
     </header>
 
-    <nav
-      aria-label="Filtrar eventos por tecnología"
-      class="flex flex-col gap-3"
-    >
-      <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">
-        Filtrar por tecnología
-      </span>
-      <div class="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          data-tag-filter="all"
-          aria-pressed="true"
-          class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors"
-        >
-          Todos
-        </button>
-        {availableTags.map((tag) => (
-          <button
-            type="button"
-            data-tag-filter={tag}
-            aria-pressed="false"
-            class="rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary"
-          >
-            {tag}
-          </button>
-        ))}
-        <button
-          type="button"
-          data-clear-filters
-          class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 underline underline-offset-4 hover:text-primary"
-        >
-          Limpiar filtros
-        </button>
+    <nav aria-label="Filtrar eventos" class="flex flex-col gap-5">
+      <div class="flex flex-col gap-2">
+        <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">Tipo</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" data-type-filter="xauen" aria-pressed="false" class="filter-chip">XauenDevs</button>
+          <button type="button" data-type-filter="external" aria-pressed="false" class="filter-chip">Eventos externos</button>
+        </div>
       </div>
-      <p data-filter-status class="hidden text-xs font-semibold text-primary/45">
-        Filtros activos: <span data-filter-count>0</span>
-      </p>
+      <div class="flex flex-col gap-2">
+        <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">Tema</span>
+        <div class="flex flex-wrap items-center gap-2">
+          {availableTags.map((tag) => (
+            <button type="button" data-tag-filter={tag} aria-pressed="false" class="filter-chip">{tag}</button>
+          ))}
+        </div>
+        <p class="text-xs text-primary/45">Mostrar eventos de cualquiera de los temas seleccionados.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" data-clear-filters class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 underline underline-offset-4 hover:text-primary">Quitar filtros</button>
+        <p data-filter-status class="text-xs font-semibold text-primary/45" role="status" aria-live="polite"><span data-filter-result>0 próximos</span></p>
+      </div>
+      <div data-filter-empty class="hidden rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
+        <p class="font-semibold">No hay eventos que coincidan con estos filtros.</p>
+        <button type="button" data-clear-filters-empty class="mt-2 font-semibold text-primary underline decoration-accent decoration-2 underline-offset-4">Quitar filtros</button>
+      </div>
+      <style>
+        .filter-chip { border-radius:9999px; border:1px solid rgb(0 0 0 / .1); background:rgb(0 0 0 / .03); padding:.5rem 1rem; font-size:.875rem; font-weight:600; color:rgb(0 0 0 / .65); transition:border-color 150ms,background-color 150ms,color 150ms; }
+        .filter-chip:hover { border-color:rgb(246 183 3 / .5); background:rgb(246 183 3 / .2); color:#000; }
+        .filter-chip[aria-pressed="true"] { border-color:rgb(246 183 3); background:rgb(246 183 3); color:#000; }
+      </style>
     </nav>
-
     {
       upcomingEvents.length > 0 && (
         <section data-event-section class="flex flex-col gap-7">
@@ -123,6 +117,7 @@ const availableTags = Array.from(
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
               ({ id, title, image, speakers, place, date, videoId, tags }: Pivo) => (
+                <div data-event-tags={tags.join(",")} data-event-type="xauen" data-upcoming="true" data-event-organizer="XauenDevs">
                 <PivoCard
                   id={id}
                   title={title}
@@ -135,6 +130,7 @@ const availableTags = Array.from(
                   detailUrl={`/eventos/${slugify(title)}`}
                   customClass="justify-self-center !max-w-none !w-full !min-w-fit"
                 />
+                </div>
               )
             )}
           </div>
@@ -162,7 +158,9 @@ const availableTags = Array.from(
 
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingExternalEvents.map((event) => (
-              <ExternalEventCard event={event} />
+              <div data-event-tags={event.tags.join(",")} data-event-type="external" data-upcoming="true" data-event-organizer={event.organizer}>
+                <ExternalEventCard event={event} />
+              </div>
             ))}
           </div>
         </section>
@@ -206,6 +204,8 @@ const availableTags = Array.from(
               <a
                 href={`/eventos/${slugify(title)}`}
                 data-event-tags={tags.join(",")}
+                data-event-type="xauen"
+                data-event-organizer="XauenDevs"
                 class:list={[
                   "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] md:flex-row md:items-center md:px-6",
                   index > 0 && "border-t border-primary/10",
@@ -251,83 +251,83 @@ const availableTags = Array.from(
   </main>
 
   <script>
-    const buttons = Array.from(
-      document.querySelectorAll<HTMLButtonElement>("[data-tag-filter]"),
-    );
-    const sections = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-event-section]"),
-    );
-    const cards = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-event-tags]"),
-    );
-    const clearButton = document.querySelector<HTMLButtonElement>(
-      "[data-clear-filters]",
-    );
-    const filterStatus = document.querySelector<HTMLElement>(
-      "[data-filter-status]",
-    );
-    const filterCount = document.querySelector<HTMLElement>(
-      "[data-filter-count]",
-    );
-    const selectedTags = new Set<string>();
+    const tagButtons = Array.from(document.querySelectorAll("[data-tag-filter]"));
+    const typeButtons = Array.from(document.querySelectorAll("[data-type-filter]"));
+    const sections = Array.from(document.querySelectorAll("[data-event-section]"));
+    const cards = Array.from(document.querySelectorAll("[data-event-type]"));
+    const clearButtons = Array.from(document.querySelectorAll("[data-clear-filters], [data-clear-filters-empty]"));
+    const filterResult = document.querySelector("[data-filter-result]");
+    const filterEmpty = document.querySelector("[data-filter-empty]");
+    const selectedTags = new Set();
+    const selectedTypes = new Set();
 
-    const activeButtonClass =
-      "rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors";
-    const inactiveButtonClass =
-      "rounded-full border border-primary/10 bg-primary/[0.03] px-4 py-2 text-sm font-semibold text-primary/65 transition-colors hover:border-accent/50 hover:bg-accent/20 hover:text-primary";
-
-    const updateFilter = () => {
-      const filters = [...selectedTags];
-
-      cards.forEach((card) => {
-        const tags = (card.dataset.eventTags ?? "").split(",").filter(Boolean);
-        const visible =
-          filters.length === 0 || filters.some((filter) => tags.includes(filter));
-        card.classList.toggle("hidden", !visible);
-      });
-
-      sections.forEach((section) => {
-        const visibleCards = section.querySelectorAll(
-          '[data-event-tags]:not(.hidden)',
-        );
-        section.classList.toggle("hidden", visibleCards.length === 0);
-      });
-
-      buttons.forEach((button) => {
-        const tag = button.dataset.tagFilter;
-        const active =
-          tag === "all" ? selectedTags.size === 0 : selectedTags.has(tag ?? "");
-        button.setAttribute("aria-pressed", String(active));
-        button.className = active ? activeButtonClass : inactiveButtonClass;
-      });
-
-      const hasFilters = selectedTags.size > 0;
-      clearButton?.classList.toggle("hidden", !hasFilters);
-      filterStatus?.classList.toggle("hidden", !hasFilters);
-      if (filterCount) filterCount.textContent = String(selectedTags.size);
+    const matches = (card) => {
+      const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
+      const matchesTopic = selectedTags.size === 0 || [...selectedTags].some((tag) => tags.includes(tag));
+      const matchesType = selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || "");
+      return matchesTopic && matchesType;
     };
 
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const tag = button.dataset.tagFilter;
+    const syncUrl = () => {
+      const params = new URLSearchParams();
+      if (selectedTypes.size) params.set("tipo", [...selectedTypes].join(","));
+      if (selectedTags.size) params.set("tema", [...selectedTags].join(","));
+      const query = params.toString();
+      history.replaceState({}, "", query ? `${location.pathname}?${query}` : location.pathname);
+    };
 
-        if (tag === "all") {
-          selectedTags.clear();
-        } else if (tag) {
-          if (selectedTags.has(tag)) {
-            selectedTags.delete(tag);
-          } else {
-            selectedTags.add(tag);
-          }
-        }
-
-        updateFilter();
+    const updateFilter = (sync = true) => {
+      let visibleUpcoming = 0;
+      cards.forEach((card) => {
+        const visible = matches(card);
+        card.classList.toggle("hidden", !visible);
+        if (visible && card.dataset.upcoming === "true") visibleUpcoming++;
       });
-    });
+      sections.forEach((section) => {
+        section.classList.toggle("hidden", section.querySelectorAll('[data-event-tags]:not(.hidden)').length === 0);
+      });
+      [...tagButtons, ...typeButtons].forEach((button) => {
+        const active = (button.dataset.tagFilter && selectedTags.has(button.dataset.tagFilter)) ||
+          (button.dataset.typeFilter && selectedTypes.has(button.dataset.typeFilter));
+        button.setAttribute("aria-pressed", String(Boolean(active)));
+      });
+      const hasFilters = selectedTags.size || selectedTypes.size;
+      clearButtons.forEach((button) => button.classList.toggle("hidden", !hasFilters));
+      filterEmpty?.classList.toggle("hidden", !hasFilters || visibleUpcoming > 0);
+      if (filterResult) filterResult.textContent = visibleUpcoming === 1 ? "1 próximo evento coincide" : `${visibleUpcoming} próximos eventos coinciden`;
+      if (sync) syncUrl();
+    };
 
-    clearButton?.addEventListener("click", () => {
-      selectedTags.clear();
+    const readUrl = () => {
+      const params = new URLSearchParams(location.search);
+      params.get("tipo")?.split(",").filter(Boolean).forEach((v) => selectedTypes.add(v));
+      params.get("tema")?.split(",").filter(Boolean).forEach((v) => selectedTags.add(v));
+    };
+
+    tagButtons.forEach((button) => button.addEventListener("click", () => {
+      const tag = button.dataset.tagFilter;
+      if (!tag) return;
+      selectedTags.has(tag) ? selectedTags.delete(tag) : selectedTags.add(tag);
       updateFilter();
-    });
+    }));
+
+    typeButtons.forEach((button) => button.addEventListener("click", () => {
+      const type = button.dataset.typeFilter;
+      if (!type) return;
+      if (selectedTypes.has(type)) {
+        selectedTypes.clear();
+      } else {
+        selectedTypes.clear();
+        selectedTypes.add(type);
+      }
+      updateFilter();
+    }));
+
+    clearButtons.forEach((button) => button.addEventListener("click", () => {
+      selectedTags.clear(); selectedTypes.clear(); updateFilter();
+    }));
+
+    readUrl();
+    updateFilter(false);
   </script>
 </Layout>
