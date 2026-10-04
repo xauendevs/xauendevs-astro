@@ -264,8 +264,8 @@ const availableTags = Array.from(
     const matches = (card) => {
       const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
       return (selectedTags.size === 0 || [...selectedTags].some((tag) => tags.includes(tag))) &&
-        (selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || "")) &&
-;
+        (selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || ""));
+
     };
 
     const syncUrl = () => {
@@ -289,7 +289,7 @@ const availableTags = Array.from(
       });
       [...tagButtons, ...typeButtons].forEach((button) => {
         const active = (button.dataset.tagFilter && selectedTags.has(button.dataset.tagFilter)) ||
-          (button.dataset.typeFilter && selectedTypes.has(button.dataset.typeFilter)) ||
+          (button.dataset.typeFilter && selectedTypes.has(button.dataset.typeFilter));
         button.setAttribute("aria-pressed", String(Boolean(active)));
       });
       const hasFilters = selectedTags.size || selectedTypes.size;
