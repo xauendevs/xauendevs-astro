@@ -96,7 +96,7 @@ const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).s
           </a>
         </div>
 
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {
             pastPivos.map(({ id, title, image, date, speakers, place, videoId }) => (
               <PivoCard
@@ -108,7 +108,7 @@ const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).s
                 date={date}
                 videoId={videoId}
                 detailUrl={"/eventos/" + slugify(title)}
-                customClass="md:min-w-0 md:max-w-none md:w-full"
+                customClass="!min-w-0 !max-w-none !w-full"
               />
             ))
           }
