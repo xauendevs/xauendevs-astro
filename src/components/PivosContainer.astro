@@ -87,8 +87,8 @@ const pastPivos = pivos
     import { $ } from "@/lib/dom-selector";
 
     const pastPivoContainer = $("#past-pivos");
-    const iconLeft = $("#left-scroll");
-    const iconRight = $("#right-scroll");
+    const iconLeft = $("#left-scroll") as HTMLButtonElement | null;
+    const iconRight = $("#right-scroll") as HTMLButtonElement | null;
     if (iconLeft) {
       iconLeft.style.opacity = "50%";
       iconLeft.style.filter = "grayscale(5)";
