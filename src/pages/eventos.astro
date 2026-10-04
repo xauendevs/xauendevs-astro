@@ -11,6 +11,7 @@ import type { Pivo } from "@/types/Pivo";
 export const prerender = true;
 
 const events = (await getPivosStrapi()) ?? [];
+const externalEvents = (await getExternalEventsStrapi()) ?? [];
 const now = new Date();
 
 const upcomingEvents = events
