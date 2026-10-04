@@ -21,6 +21,7 @@ interface Props {
   calendarUrl: string;
   eventStart: string;
   eventEnd: string;
+  videoId?: string;
 }
 
 const {
@@ -36,13 +37,7 @@ const {
   mapsEmbedUrl,
   mapsUrl,
   shareMessage,
-  eventTitle,
-  eventDate,
-  eventTime,
-  eventUrl,
-  calendarUrl,
-  eventStart,
-  eventEnd,
+  videoId,
 } = Astro.props;
 ---
 
@@ -54,13 +49,17 @@ const {
   <h2 class="text-2xl font-black leading-tight">
     {isExternal
       ? "Consulta todos los detalles del evento."
-      : "Descubre esta charla."}
+      : isPast
+        ? "Esta charla ya se ha celebrado."
+        : "Descubre esta charla."}
   </h2>
 
   <p class="text-sm leading-relaxed text-black/65">
     {isExternal
       ? "Fecha, ubicación, programa e información actualizada directamente en la web oficial del evento."
-      : "Consulta los detalles de la charla y, si quieres asistir, añade el evento directamente a tu calendario."}
+      : isPast
+        ? "Consulta los materiales y recursos disponibles. Las acciones de asistencia ya están cerradas."
+        : "Consulta los detalles de la charla y, si quieres asistir, añade el evento directamente a tu calendario."}
   </p>
 
   {
@@ -87,19 +86,39 @@ const {
 
   {!isExternal && !isPast && <Rsvp eventId={eventId} />}
 
-  <div class="mt-2 border-t border-black/10 pt-4">
-    <span class="text-xs font-bold uppercase tracking-[0.14em]">
-      Añadir al calendario
-    </span>
-    <div class="mt-3 flex flex-wrap gap-2">
-      <a href={googleCalendarUrl} target="_blank" rel="noopener noreferrer" class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5">
-        Google Calendar
-      </a>
-      <a href={icsUrl} download={icsFilename} class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10">
-        Descargar .ics
-      </a>
+  {!isExternal && isPast && videoId && (
+    <a
+      href="#video"
+      class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
+    >
+      Ver grabación ↓
+    </a>
+  )}
+
+  {!isPast && (
+    <div class="mt-2 border-t border-black/10 pt-4">
+      <span class="text-xs font-bold uppercase tracking-[0.14em]">
+        Añadir al calendario
+      </span>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <a href={googleCalendarUrl} target="_blank" rel="noopener noreferrer" class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5">
+          Google Calendar
+        </a>
+        <a href={icsUrl} download={icsFilename} class="inline-flex rounded-full border border-black/20 px-4 py-2 text-xs font-bold transition-colors hover:bg-black/10">
+          Descargar .ics
+        </a>
+      </div>
     </div>
-  </div>
+  )}
+
+  {isPast && (
+    <div class="rounded-2xl border border-black/10 bg-white/30 p-4">
+      <p class="text-sm font-bold">Evento celebrado</p>
+      <p class="mt-1 text-sm leading-relaxed text-black/60">
+        Ya no admite nuevas inscripciones ni acciones de asistencia.
+      </p>
+    </div>
+  )}
 
   {eventPlace && (
     <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
