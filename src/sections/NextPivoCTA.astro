@@ -1,0 +1,46 @@
+---
+import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { formatDate, formatTime } from "@/lib/format-date";
+import { slugify } from "@/lib/event-slug";
+
+const pivos = await getPivosStrapi();
+const nextEvent = pivos?.find((pivo) => pivo.date.getTime() > Date.now());
+---
+
+{
+  nextEvent && (
+    <section
+      class="relative overflow-hidden rounded-3xl bg-accent px-6 py-10 md:px-10 md:py-12"
+      aria-labelledby="next-pivo-cta-title"
+    >
+      <div class="relative z-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-3xl">
+          <p class="text-xs font-black uppercase tracking-[0.22em] text-black/55">
+            Pivo&Code · {formatDate(nextEvent.date)} · {formatTime(nextEvent.date)}
+          </p>
+          <h2 id="next-pivo-cta-title" class="mt-3 text-4xl font-black leading-[0.95] tracking-tight md:text-6xl">
+            ¿Nos vemos en la próxima?
+          </h2>
+          <p class="mt-5 max-w-2xl text-lg font-medium leading-relaxed text-black/75 md:text-xl">
+            {nextEvent.title}
+          </p>
+        </div>
+
+        <a
+          href={"/eventos/" + slugify(nextEvent.title)}
+          class="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-black px-6 py-3.5 text-sm font-black text-white transition-transform hover:scale-105 motion-reduce:transition-none"
+        >
+          Quiero ir
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <span
+        aria-hidden="true"
+        class="absolute -right-8 -top-16 text-[12rem] font-black leading-none text-black/5 md:text-[18rem]"
+      >
+        →
+      </span>
+    </section>
+  )
+}
