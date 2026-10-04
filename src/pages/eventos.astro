@@ -38,9 +38,7 @@ const availableTags = Array.from(
   ]),
 );
 
-const availableOrganizers = Array.from(
-  new Set(["XauenDevs", ...externalEvents.map((event) => event.organizer)]),
-);
+
 ---
 
 <Layout
@@ -91,14 +89,6 @@ const availableOrganizers = Array.from(
           ))}
         </div>
         <p class="text-xs text-primary/45">Mostrar eventos de cualquiera de los temas seleccionados.</p>
-      </div>
-      <div class="flex flex-col gap-2">
-        <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">Organizador</span>
-        <div class="flex flex-wrap items-center gap-2">
-          {availableOrganizers.map((organizer) => (
-            <button type="button" data-organizer-filter={organizer} aria-pressed="false" class="filter-chip">{organizer}</button>
-          ))}
-        </div>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <button type="button" data-clear-filters class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 underline underline-offset-4 hover:text-primary">Quitar filtros</button>
@@ -263,7 +253,6 @@ const availableOrganizers = Array.from(
   <script>
     const tagButtons = Array.from(document.querySelectorAll("[data-tag-filter]"));
     const typeButtons = Array.from(document.querySelectorAll("[data-type-filter]"));
-    const organizerButtons = Array.from(document.querySelectorAll("[data-organizer-filter]"));
     const sections = Array.from(document.querySelectorAll("[data-event-section]"));
     const cards = Array.from(document.querySelectorAll("[data-event-tags]"));
     const clearButtons = Array.from(document.querySelectorAll("[data-clear-filters], [data-clear-filters-empty]"));
@@ -271,20 +260,18 @@ const availableOrganizers = Array.from(
     const filterEmpty = document.querySelector("[data-filter-empty]");
     const selectedTags = new Set();
     const selectedTypes = new Set();
-    const selectedOrganizers = new Set();
 
     const matches = (card) => {
       const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
       return (selectedTags.size === 0 || [...selectedTags].some((tag) => tags.includes(tag))) &&
         (selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || "")) &&
-        (selectedOrganizers.size === 0 || selectedOrganizers.has(card.dataset.eventOrganizer || ""));
+;
     };
 
     const syncUrl = () => {
       const params = new URLSearchParams();
       if (selectedTypes.size) params.set("tipo", [...selectedTypes].join(","));
       if (selectedTags.size) params.set("tema", [...selectedTags].join(","));
-      if (selectedOrganizers.size) params.set("organizador", [...selectedOrganizers].join(","));
       const query = params.toString();
       history.replaceState({}, "", query ? `${location.pathname}?${query}` : location.pathname);
     };
@@ -300,13 +287,12 @@ const availableOrganizers = Array.from(
       sections.forEach((section) => {
         section.classList.toggle("hidden", section.querySelectorAll('[data-event-tags]:not(.hidden)').length === 0);
       });
-      [...tagButtons, ...typeButtons, ...organizerButtons].forEach((button) => {
+      [...tagButtons, ...typeButtons].forEach((button) => {
         const active = (button.dataset.tagFilter && selectedTags.has(button.dataset.tagFilter)) ||
           (button.dataset.typeFilter && selectedTypes.has(button.dataset.typeFilter)) ||
-          (button.dataset.organizerFilter && selectedOrganizers.has(button.dataset.organizerFilter));
         button.setAttribute("aria-pressed", String(Boolean(active)));
       });
-      const hasFilters = selectedTags.size || selectedTypes.size || selectedOrganizers.size;
+      const hasFilters = selectedTags.size || selectedTypes.size;
       clearButtons.forEach((button) => button.classList.toggle("hidden", !hasFilters));
       filterEmpty?.classList.toggle("hidden", !hasFilters || visibleUpcoming > 0);
       if (filterResult) filterResult.textContent = visibleUpcoming === 1 ? "1 próximo evento coincide" : `${visibleUpcoming} próximos eventos coinciden`;
@@ -317,19 +303,17 @@ const availableOrganizers = Array.from(
       const params = new URLSearchParams(location.search);
       params.get("tipo")?.split(",").filter(Boolean).forEach((v) => selectedTypes.add(v));
       params.get("tema")?.split(",").filter(Boolean).forEach((v) => selectedTags.add(v));
-      params.get("organizador")?.split(",").filter(Boolean).forEach((v) => selectedOrganizers.add(v));
     };
 
-    [...tagButtons, ...typeButtons, ...organizerButtons].forEach((button) => button.addEventListener("click", () => {
-      const tag = button.dataset.tagFilter, type = button.dataset.typeFilter, organizer = button.dataset.organizerFilter;
+    [...tagButtons, ...typeButtons].forEach((button) => button.addEventListener("click", () => {
+      const tag = button.dataset.tagFilter, type = button.dataset.typeFilter;
       if (tag) selectedTags.has(tag) ? selectedTags.delete(tag) : selectedTags.add(tag);
       if (type) selectedTypes.has(type) ? selectedTypes.delete(type) : selectedTypes.add(type);
-      if (organizer) selectedOrganizers.has(organizer) ? selectedOrganizers.delete(organizer) : selectedOrganizers.add(organizer);
       updateFilter();
     }));
 
     clearButtons.forEach((button) => button.addEventListener("click", () => {
-      selectedTags.clear(); selectedTypes.clear(); selectedOrganizers.clear(); updateFilter();
+      selectedTags.clear(); selectedTypes.clear(); updateFilter();
     }));
 
     readUrl();
