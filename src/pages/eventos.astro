@@ -251,6 +251,7 @@ const availableTags = Array.from(
   </main>
 
   <script>
+    const initializeEventFilters = () => {
     const tagButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-tag-filter]"));
     const typeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-type-filter]"));
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-event-section]"));
@@ -329,5 +330,9 @@ const availableTags = Array.from(
 
     readUrl();
     updateFilter(false);
+    };
+
+    initializeEventFilters();
+    document.addEventListener("astro:page-load", initializeEventFilters);
   </script>
 </Layout>
