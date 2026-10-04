@@ -1,5 +1,4 @@
 ---
-import ArrowRight from "@/components/icons/ArrowRight.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
@@ -38,7 +37,7 @@ const pastPivos = pivos
     )
   }
 
-  <div class="grow md:overflow-x-hidden">
+  <div class="grow min-w-0 md:overflow-x-hidden">
     <h3 class="text-xl font-semibold mt-4 mb-2">Charlas recientes</h3>
 
     <div
@@ -70,67 +69,9 @@ const pastPivos = pivos
     .past-pivos::-webkit-scrollbar {
       display: none;
     }
-    .scroll-smooth {
-      animation: scrollSmooth 1s;
-    }
-    @keyframes scrollSmooth {
-      from {
-        scroll-behavior: smooth;
-      }
-      to {
-        scroll-behavior: auto;
-      }
+
+    .past-pivos {
+      scroll-behavior: smooth;
     }
   </style>
-
-  <script>
-    import { $ } from "@/lib/dom-selector";
-
-    const pastPivoContainer = $("#past-pivos");
-    const iconLeft = $("#left-scroll");
-    const iconRight = $("#right-scroll");
-    if (iconLeft) {
-      iconLeft.style.opacity = "50%";
-      iconLeft.style.filter = "grayscale(5)";
-    }
-
-    iconLeft?.addEventListener("click", () => {
-      if (pastPivoContainer)
-        pastPivoContainer.scrollLeft = pastPivoContainer.scrollLeft - 200;
-    });
-
-    iconRight?.addEventListener("click", () => {
-      if (pastPivoContainer)
-        pastPivoContainer.scrollLeft = pastPivoContainer.scrollLeft + 200;
-    });
-
-    pastPivoContainer?.addEventListener("scroll", function () {
-      if (pastPivoContainer.scrollLeft === 0) {
-        if (iconLeft) {
-          iconLeft.style.opacity = "50%";
-          iconLeft.style.filter = "grayscale(5)";
-        }
-      } else {
-        if (iconLeft) {
-          iconLeft.style.opacity = "100%";
-          iconLeft.style.filter = "grayscale(0)";
-        }
-      }
-      const endContainer =
-        pastPivoContainer.scrollLeft + pastPivoContainer.clientWidth >=
-        pastPivoContainer.scrollWidth;
-
-      if (endContainer) {
-        if (iconRight) {
-          iconRight.style.opacity = "50%";
-          iconRight.style.filter = "grayscale(5)";
-        }
-      } else {
-        if (iconRight) {
-          iconRight.style.opacity = "100%";
-          iconRight.style.filter = "grayscale(0)";
-        }
-      }
-    });
-  </script>
 </div>

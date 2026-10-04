@@ -20,18 +20,70 @@ import SectionTitle from "@/components/SectionTitle.astro";
       </p>
     </div>
     <div class="hidden md:flex gap-2">
-      <ArrowRight
-        id="left-scroll"
-        class="size-10 text-accent rotate-180 transition-all duration-400"
-      />
-      <ArrowRight
-        id="right-scroll"
-        class="size-10 text-accent transition-all duration-400"
-      />
+      <button type="button" id="left-scroll" aria-label="Charla anterior" disabled class="rounded-full focus-visible:outline-3 focus-visible:outline-offset-3 disabled:cursor-default">
+        <ArrowRight aria-hidden="true" class="size-10 text-accent rotate-180 transition-all duration-400" />
+      </button>
+      <button type="button" id="right-scroll" aria-label="Charla siguiente" class="rounded-full focus-visible:outline-3 focus-visible:outline-offset-3 disabled:cursor-default">
+        <ArrowRight aria-hidden="true" class="size-10 text-accent transition-all duration-400" />
+      </button>
     </div>
     <div>
       <span></span>
     </div>
   </div>
   <PivosContainer server:defer />
+
+  <script>
+    const section = document.querySelector("#pivos");
+    const leftButton = document.querySelector<HTMLButtonElement>("#left-scroll");
+    const rightButton = document.querySelector<HTMLButtonElement>("#right-scroll");
+
+    const updateControls = (container: HTMLElement) => {
+      if (!leftButton || !rightButton) return;
+
+      const atStart = container.scrollLeft <= 1;
+      const atEnd =
+        container.scrollLeft + container.clientWidth >=
+        container.scrollWidth - 1;
+
+      leftButton.disabled = atStart;
+      rightButton.disabled = atEnd;
+      leftButton.style.opacity = atStart ? "50%" : "100%";
+      rightButton.style.opacity = atEnd ? "50%" : "100%";
+      leftButton.style.filter = atStart ? "grayscale(5)" : "grayscale(0)";
+      rightButton.style.filter = atEnd ? "grayscale(5)" : "grayscale(0)";
+    };
+
+    const getContainer = () =>
+      section?.querySelector<HTMLElement>("#past-pivos");
+
+    const setupCarousel = () => {
+      const container = getContainer();
+      if (!container || !leftButton || !rightButton) return false;
+
+      updateControls(container);
+
+      container.addEventListener("scroll", () => updateControls(container), {
+        passive: true,
+      });
+
+      leftButton.addEventListener("click", () => {
+        container.scrollBy({ left: -200, behavior: "smooth" });
+      });
+
+      rightButton.addEventListener("click", () => {
+        container.scrollBy({ left: 200, behavior: "smooth" });
+      });
+
+      return true;
+    };
+
+    if (!setupCarousel() && section) {
+      const observer = new MutationObserver(() => {
+        if (setupCarousel()) observer.disconnect();
+      });
+
+      observer.observe(section, { childList: true, subtree: true });
+    }
+  </script>
 </section>
