@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const resendApiKey = import.meta.env.RESEND_API_KEY;
     const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
-    const proposalRecipient = "hola@xauendevs.io";
+    const proposalRecipient = "jaendevelopers+eventos@gmail.com";
 
     if (!resendApiKey || !resendFromEmail) {
       console.error("Event proposal email configuration is missing.");
