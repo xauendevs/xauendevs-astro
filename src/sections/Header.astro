@@ -1,25 +1,49 @@
 ---
-import MouseDown from "@/components/icons/MouseDown.astro";
 import FromFor from "../components/FromFor.astro";
 ---
 
-<div
-  class="h-[calc(100vh-140px)] rounded-3xl bg-black flex flex-col justify-end p-8 md:p-10 gap-8 md:gap-10 overflow-hidden relative"
+<header
+  class="relative flex min-h-[540px] flex-col justify-end overflow-hidden rounded-3xl bg-black px-7 py-10 md:min-h-[580px] md:px-12 md:py-14"
 >
-  <div class="z-10 flex">
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-80 saturate-50 brightness-75"
+    style="background-image:url('/img/header.webp')"
+  ></div>
+  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/10"></div>
+
+  <div class="relative z-10 max-w-4xl">
+    <div class="mb-5 flex flex-wrap items-center gap-3">
+      <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-black">
+        XauenDevs
+      </span>
+      <span class="text-sm font-semibold text-white/70">Jaén · Desarrollo · Tecnología</span>
+    </div>
+    <h1 class="text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">
+      La comunidad de desarrollo y tecnología de Jaén.
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
+      Compartimos conocimiento, organizamos eventos y conectamos a personas con ganas de aprender, enseñar y crear.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a
+        href="/eventos"
+        class="inline-flex rounded-full bg-accent px-6 py-3 font-bold text-black transition hover:-translate-y-0.5 hover:shadow-lg motion-reduce:transition-none"
+      >
+        Ver próximos eventos →
+      </a>
+      <a
+        href="https://discord.gg/CC9e6dtqxQ"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex rounded-full border border-white/30 bg-white/10 px-6 py-3 font-bold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/15 motion-reduce:transition-none"
+      >
+        Únete a la comunidad
+      </a>
+    </div>
+  </div>
+
+  <div class="relative z-10 mt-10 hidden md:block">
     <FromFor />
   </div>
-  <div class="flex justify-between items-center z-10">
-    <!-- <button class="bg-white rounded-xl text-black px-10 h-12 font-semibold">
-      Descubre más
-    </button> -->
-    <span></span>
-    <MouseDown />
-  </div>
-  <div
-    id="background-image"
-    class="absolute left-0 top-0 bottom-0 right-0 w-full h-full opacity-90 bg-blend-luminosity bg-center bg-cover bg-no-repeat saturate-50 brightness-75"
-    style=`background-image:url('/img/header.webp')`
-  >
-  </div>
-</div>
+</header>
