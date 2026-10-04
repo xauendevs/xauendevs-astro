@@ -4,7 +4,7 @@ import EventSidebar from "@/components/events/EventSidebar.astro";
 import EventFacts from "@/components/events/EventFacts.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { getPivoTags } from "@/lib/get-pivo-tags";
-import { externalEvents } from "@/data/external-events";
+import { getExternalEventsStrapi } from "@/lib/get-info-external-events";
 import { slugify } from "@/lib/event-slug";
 import type { Pivo } from "@/types/Pivo";
 import type { ExternalEvent } from "@/data/external-events";
