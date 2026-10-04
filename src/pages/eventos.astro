@@ -117,7 +117,7 @@ const availableTags = Array.from(
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
               ({ id, title, image, speakers, place, date, videoId, tags }: Pivo) => (
-                <div data-event-tags={tags.join(",")} data-event-type="xauen" data-event-organizer="XauenDevs">
+                <div data-event-tags={tags.join(",")} data-event-type="xauen" data-upcoming="true" data-event-organizer="XauenDevs">
                 <PivoCard
                   id={id}
                   title={title}
@@ -158,7 +158,7 @@ const availableTags = Array.from(
 
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingExternalEvents.map((event) => (
-              <div data-event-tags={event.tags.join(",")} data-event-type="external" data-event-organizer={event.organizer}>
+              <div data-event-tags={event.tags.join(",")} data-event-type="external" data-upcoming="true" data-event-organizer={event.organizer}>
                 <ExternalEventCard event={event} />
               </div>
             ))}
@@ -263,9 +263,9 @@ const availableTags = Array.from(
 
     const matches = (card) => {
       const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
-      return (selectedTags.size === 0 || [...selectedTags].some((tag) => tags.includes(tag))) &&
-        (selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || ""));
-
+      const matchesTopic = selectedTags.size === 0 || [...selectedTags].some((tag) => tags.includes(tag));
+      const matchesType = selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || "");
+      return matchesTopic && matchesType;
     };
 
     const syncUrl = () => {
@@ -281,8 +281,7 @@ const availableTags = Array.from(
       cards.forEach((card) => {
         const visible = matches(card);
         card.classList.toggle("hidden", !visible);
-        const heading = card.closest("[data-event-section]")?.querySelector("h2")?.textContent || "";
-        if (visible && (heading.includes("Próximamente") || heading.includes("También está pasando"))) visibleUpcoming++;
+        if (visible && card.dataset.upcoming === "true") visibleUpcoming++;
       });
       sections.forEach((section) => {
         section.classList.toggle("hidden", section.querySelectorAll('[data-event-tags]:not(.hidden)').length === 0);
@@ -305,10 +304,22 @@ const availableTags = Array.from(
       params.get("tema")?.split(",").filter(Boolean).forEach((v) => selectedTags.add(v));
     };
 
-    [...tagButtons, ...typeButtons].forEach((button) => button.addEventListener("click", () => {
-      const tag = button.dataset.tagFilter, type = button.dataset.typeFilter;
-      if (tag) selectedTags.has(tag) ? selectedTags.delete(tag) : selectedTags.add(tag);
-      if (type) selectedTypes.has(type) ? selectedTypes.delete(type) : selectedTypes.add(type);
+    tagButtons.forEach((button) => button.addEventListener("click", () => {
+      const tag = button.dataset.tagFilter;
+      if (!tag) return;
+      selectedTags.has(tag) ? selectedTags.delete(tag) : selectedTags.add(tag);
+      updateFilter();
+    }));
+
+    typeButtons.forEach((button) => button.addEventListener("click", () => {
+      const type = button.dataset.typeFilter;
+      if (!type) return;
+      if (selectedTypes.has(type)) {
+        selectedTypes.clear();
+      } else {
+        selectedTypes.clear();
+        selectedTypes.add(type);
+      }
       updateFilter();
     }));
 
