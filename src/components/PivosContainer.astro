@@ -2,52 +2,117 @@
 import PivoCard from "@/components/PivoCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
+import { formatDate, formatTime } from "@/lib/format-date";
+import LocationPin from "@/components/icons/LocationPin.astro";
+
+const { STRAPI_HOST } = import.meta.env;
 
 const pivos = await getPivosStrapi();
-const nextEvent = pivos?.find((pivo) => {
-  return pivo.date.getTime() > new Date().getTime();
-});
+const now = new Date();
+
+const nextEvent = pivos?.find((pivo) => pivo.date.getTime() > now.getTime());
 
 const pastPivos = pivos
-  ?.filter((pivo) => {
-    return pivo.date.getTime() < new Date().getTime();
-  })
-  .slice(0, 5);
+  ?.filter((pivo) => pivo.date.getTime() < now.getTime())
+  .slice(0, 3);
 ---
 
-<div
-  class="flex gap-5 md:gap-10 overflow-x-auto md:overflow-x-hidden container-mobile"
->
+<div class="mt-8 space-y-10">
   {
     nextEvent && (
-      <div>
-        <h3 class="text-xl font-semibold mt-4 mb-2">Próxima charla</h3>
-        <PivoCard
-          id={nextEvent.id}
-          title={nextEvent.title}
-          image={nextEvent.image}
-          speakers={nextEvent.speakers}
-          place={nextEvent.place}
-          date={nextEvent.date}
-          videoId={nextEvent.videoId}
-          detailUrl={`/eventos/${slugify(nextEvent.title)}`}
-          isNext
-        />
-      </div>
+      <article class="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/10">
+        <div class="grid md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+          <div class="relative min-h-[300px] overflow-hidden md:min-h-[390px]">
+            <div
+              aria-hidden="true"
+              class="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
+              style={"background-image:url('" + STRAPI_HOST + nextEvent.image + "'),url('/img/pivos/default.png')"}
+            ></div>
+            <div
+              aria-hidden="true"
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"
+            ></div>
+            <div class="absolute bottom-5 left-5">
+              <span class="rounded-full bg-accent px-3 py-1.5 text-xs font-black uppercase tracking-wide text-black">
+                Próxima charla
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col justify-between p-6 md:p-8 lg:p-10">
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.15em] text-accent">
+                {formatDate(nextEvent.date)} · {formatTime(nextEvent.date)}
+              </p>
+              <h3 class="mt-3 text-3xl font-black leading-tight md:text-4xl">
+                {nextEvent.title}
+              </h3>
+
+              {
+                nextEvent.speakers && nextEvent.speakers.length > 0 && (
+                  <div class="mt-6 flex items-center gap-3">
+                    <img
+                      src={STRAPI_HOST + nextEvent.speakers[0].photo}
+                      class="size-11 rounded-full border border-white/20 object-cover"
+                      alt={nextEvent.speakers[0].name}
+                    />
+                    <div>
+                      <p class="text-xs uppercase tracking-wide text-white/50">Con</p>
+                      <p class="font-semibold">{nextEvent.speakers[0].name}</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              {
+                nextEvent.place && (
+                  <div class="mt-5 flex items-center gap-2 text-sm text-white/65">
+                    <LocationPin class="size-4 shrink-0" />
+                    <span>{nextEvent.place}</span>
+                  </div>
+                )
+              }
+            </div>
+
+            <div class="mt-8">
+              <a
+                href={"/eventos/" + slugify(nextEvent.title)}
+                class="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-bold text-black transition-transform hover:scale-105 motion-reduce:transition-none"
+              >
+                Ver la charla
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
     )
   }
 
-  <div class="grow min-w-0 md:overflow-x-hidden">
-    <h3 class="text-xl font-semibold mt-4 mb-2">Charlas recientes</h3>
+  {
+    pastPivos && pastPivos.length > 0 && (
+      <div>
+        <div class="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-white/40">
+              Archivo reciente
+            </p>
+            <h3 class="mt-1 text-2xl font-bold md:text-3xl">
+              Lo último que hemos compartido
+            </h3>
+          </div>
+          <a
+            data-astro-reload
+            href="/eventos?tipo=xauen"
+            class="hidden font-semibold text-white/70 underline decoration-accent underline-offset-4 hover:text-white md:block"
+          >
+            Explorar archivo →
+          </a>
+        </div>
 
-    <div
-      id="past-pivos"
-      class="flex md:overflow-x-auto gap-5 md:gap-10 past-pivos scroll-smooth min-h-[350px] max-h-[350px] h-[350px] md:min-h-[460px] md:max-h-[460px] md:h-[460px]"
-    >
-      {
-        pastPivos &&
-          pastPivos.map(
-            ({ id, title, image, date, speakers, place, videoId }) => (
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {
+            pastPivos.map(({ id, title, image, date, speakers, place, videoId }) => (
               <PivoCard
                 id={id}
                 title={title}
@@ -56,22 +121,13 @@ const pastPivos = pivos
                 place={place}
                 date={date}
                 videoId={videoId}
-                detailUrl={`/eventos/${slugify(title)}`}
+                detailUrl={"/eventos/" + slugify(title)}
+                customClass="md:min-w-0 md:max-w-none md:w-full"
               />
-            )
-          )
-      }
-    </div>
-  </div>
-
-  <style>
-    .container-mobile::-webkit-scrollbar,
-    .past-pivos::-webkit-scrollbar {
-      display: none;
-    }
-
-    .past-pivos {
-      scroll-behavior: smooth;
-    }
-  </style>
+            ))
+          }
+        </div>
+      </div>
+    )
+  }
 </div>
