@@ -13,6 +13,7 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const events = (await getPivosStrapi()) ?? [];
+  const externalEvents = (await getExternalEventsStrapi()) ?? [];
 
   return [
     ...events.map((event) => ({
