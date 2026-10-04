@@ -20,14 +20,12 @@ import SectionTitle from "@/components/SectionTitle.astro";
       </p>
     </div>
     <div class="hidden md:flex gap-2">
-      <ArrowRight
-        id="left-scroll"
-        class="size-10 text-accent rotate-180 transition-all duration-400"
-      />
-      <ArrowRight
-        id="right-scroll"
-        class="size-10 text-accent transition-all duration-400"
-      />
+      <button type="button" id="left-scroll" aria-label="Charla anterior" disabled class="rounded-full focus-visible:outline-3 focus-visible:outline-offset-3 disabled:cursor-default">
+        <ArrowRight aria-hidden="true" class="size-10 text-accent rotate-180 transition-all duration-400" />
+      </button>
+      <button type="button" id="right-scroll" aria-label="Charla siguiente" class="rounded-full focus-visible:outline-3 focus-visible:outline-offset-3 disabled:cursor-default">
+        <ArrowRight aria-hidden="true" class="size-10 text-accent transition-all duration-400" />
+      </button>
     </div>
     <div>
       <span></span>
