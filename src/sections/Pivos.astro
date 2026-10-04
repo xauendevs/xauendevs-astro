@@ -1,89 +1,30 @@
 ---
-import ArrowRight from "@/components/icons/ArrowRight.astro";
 import PivosContainer from "@/components/PivosContainer.astro";
-
-import SectionTitle from "@/components/SectionTitle.astro";
 ---
 
-<section id="pivos" class="bg-black/5 rounded-3xl p-7 lg:p-10 overflow-hidden">
-  <div class="flex flex-wrap items-center justify-between gap-4">
-    <SectionTitle title="Pivo&Code" />
-    <a data-astro-reload href="/eventos?tipo=xauen" class="font-semibold underline decoration-accent decoration-2 underline-offset-4">Ver todas las charlas →</a>
-  </div>
-  <div class="flex justify-between w-full">
-    <div class="flex">
-      <p class="lg:max-w-[40%] text-sm lg:text-base">
-        Sumérgete en la tecnología con nuestras charlas PivoAndCode. Explora
-        temas de vanguardia mientras haces conexiones significativas. Únete a
-        nosotros para aprender y ampliar tu red. ¡Te esperamos en nuestras
-        próximas charlas!
+<section id="pivos" aria-labelledby="pivos-title">
+  <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div class="max-w-2xl">
+      <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-accent">
+        Comunidad · Tecnología · Jaén
+      </p>
+      <h2 id="pivos-title" class="text-4xl font-black tracking-tight md:text-5xl">
+        Pivo&Code
+      </h2>
+      <p class="mt-3 text-base text-black/65 md:text-lg">
+        Charlas para aprender, compartir lo que sabes y conocer a la gente que
+        hace tecnología en nuestra provincia.
       </p>
     </div>
-    <div class="hidden md:flex gap-2">
-      <button type="button" id="left-scroll" aria-label="Charla anterior" disabled class="rounded-full focus-visible:outline-3 focus-visible:outline-offset-3 disabled:cursor-default">
-        <ArrowRight aria-hidden="true" class="size-10 text-accent rotate-180 transition-all duration-400" />
-      </button>
-      <button type="button" id="right-scroll" aria-label="Charla siguiente" class="rounded-full focus-visible:outline-3 focus-visible:outline-offset-3 disabled:cursor-default">
-        <ArrowRight aria-hidden="true" class="size-10 text-accent transition-all duration-400" />
-      </button>
-    </div>
-    <div>
-      <span></span>
-    </div>
+
+    <a
+      data-astro-reload
+      href="/eventos?tipo=xauen"
+      class="shrink-0 font-semibold underline decoration-accent decoration-2 underline-offset-4 hover:text-accent"
+    >
+      Ver todas las charlas →
+    </a>
   </div>
+
   <PivosContainer server:defer />
-
-  <script>
-    const section = document.querySelector("#pivos");
-    const leftButton = document.querySelector<HTMLButtonElement>("#left-scroll");
-    const rightButton = document.querySelector<HTMLButtonElement>("#right-scroll");
-
-    const updateControls = (container: HTMLElement) => {
-      if (!leftButton || !rightButton) return;
-
-      const atStart = container.scrollLeft <= 1;
-      const atEnd =
-        container.scrollLeft + container.clientWidth >=
-        container.scrollWidth - 1;
-
-      leftButton.disabled = atStart;
-      rightButton.disabled = atEnd;
-      leftButton.style.opacity = atStart ? "50%" : "100%";
-      rightButton.style.opacity = atEnd ? "50%" : "100%";
-      leftButton.style.filter = atStart ? "grayscale(5)" : "grayscale(0)";
-      rightButton.style.filter = atEnd ? "grayscale(5)" : "grayscale(0)";
-    };
-
-    const getContainer = () =>
-      section?.querySelector<HTMLElement>("#past-pivos");
-
-    const setupCarousel = () => {
-      const container = getContainer();
-      if (!container || !leftButton || !rightButton) return false;
-
-      updateControls(container);
-
-      container.addEventListener("scroll", () => updateControls(container), {
-        passive: true,
-      });
-
-      leftButton.addEventListener("click", () => {
-        container.scrollBy({ left: -200, behavior: "smooth" });
-      });
-
-      rightButton.addEventListener("click", () => {
-        container.scrollBy({ left: 200, behavior: "smooth" });
-      });
-
-      return true;
-    };
-
-    if (!setupCarousel() && section) {
-      const observer = new MutationObserver(() => {
-        if (setupCarousel()) observer.disconnect();
-      });
-
-      observer.observe(section, { childList: true, subtree: true });
-    }
-  </script>
 </section>
