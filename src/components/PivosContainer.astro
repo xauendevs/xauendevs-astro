@@ -89,10 +89,24 @@ const pastPivos = pivos
     const pastPivoContainer = $("#past-pivos");
     const iconLeft = $("#left-scroll") as HTMLButtonElement | null;
     const iconRight = $("#right-scroll") as HTMLButtonElement | null;
-    if (iconLeft) {
-      iconLeft.style.opacity = "50%";
-      iconLeft.style.filter = "grayscale(5)";
-    }
+    const updateControls = () => {
+      if (!pastPivoContainer || !iconLeft || !iconRight) return;
+
+      const atStart = pastPivoContainer.scrollLeft <= 1;
+      const atEnd =
+        pastPivoContainer.scrollLeft + pastPivoContainer.clientWidth >=
+        pastPivoContainer.scrollWidth - 1;
+
+      iconLeft.disabled = atStart;
+      iconLeft.style.opacity = atStart ? "50%" : "100%";
+      iconLeft.style.filter = atStart ? "grayscale(5)" : "grayscale(0)";
+
+      iconRight.disabled = atEnd;
+      iconRight.style.opacity = atEnd ? "50%" : "100%";
+      iconRight.style.filter = atEnd ? "grayscale(5)" : "grayscale(0)";
+    };
+
+    updateControls();
 
     iconLeft?.addEventListener("click", () => {
       if (pastPivoContainer)
@@ -104,33 +118,6 @@ const pastPivos = pivos
         pastPivoContainer.scrollLeft = pastPivoContainer.scrollLeft + 200;
     });
 
-    pastPivoContainer?.addEventListener("scroll", function () {
-      if (pastPivoContainer.scrollLeft === 0) {
-        if (iconLeft) {
-          iconLeft.style.opacity = "50%";
-          iconLeft.style.filter = "grayscale(5)";
-        }
-      } else {
-        if (iconLeft) {
-          iconLeft.style.opacity = "100%";
-          iconLeft.style.filter = "grayscale(0)";
-        }
-      }
-      const endContainer =
-        pastPivoContainer.scrollLeft + pastPivoContainer.clientWidth >=
-        pastPivoContainer.scrollWidth;
-
-      if (endContainer) {
-        if (iconRight) {
-          iconRight.style.opacity = "50%";
-          iconRight.style.filter = "grayscale(5)";
-        }
-      } else {
-        if (iconRight) {
-          iconRight.style.opacity = "100%";
-          iconRight.style.filter = "grayscale(0)";
-        }
-      }
-    });
+    pastPivoContainer?.addEventListener("scroll", updateControls);
   </script>
 </div>
