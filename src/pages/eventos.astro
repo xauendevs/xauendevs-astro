@@ -117,7 +117,7 @@ const availableTags = Array.from(
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
               ({ id, title, image, speakers, place, date, videoId, tags }: Pivo) => (
-                <div data-event-tags={tags.join(",")} data-event-type="xauen" data-upcoming="true" data-event-organizer="XauenDevs">
+                <div data-event-tags={(tags ?? []).join(",")} data-event-type="xauen" data-upcoming="true" data-event-organizer="XauenDevs">
                 <PivoCard
                   id={id}
                   title={title}
@@ -251,17 +251,17 @@ const availableTags = Array.from(
   </main>
 
   <script>
-    const tagButtons = Array.from(document.querySelectorAll("[data-tag-filter]"));
-    const typeButtons = Array.from(document.querySelectorAll("[data-type-filter]"));
-    const sections = Array.from(document.querySelectorAll("[data-event-section]"));
-    const cards = Array.from(document.querySelectorAll("[data-event-type]"));
-    const clearButtons = Array.from(document.querySelectorAll("[data-clear-filters], [data-clear-filters-empty]"));
-    const filterResult = document.querySelector("[data-filter-result]");
-    const filterEmpty = document.querySelector("[data-filter-empty]");
+    const tagButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-tag-filter]"));
+    const typeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-type-filter]"));
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-event-section]"));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-event-type]"));
+    const clearButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-clear-filters], [data-clear-filters-empty]"));
+    const filterResult = document.querySelector<HTMLElement>("[data-filter-result]");
+    const filterEmpty = document.querySelector<HTMLElement>("[data-filter-empty]");
     const selectedTags = new Set();
     const selectedTypes = new Set();
 
-    const matches = (card) => {
+    const matches = (card: HTMLElement) => {
       const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
       const matchesTopic = selectedTags.size === 0 || [...selectedTags].some((tag) => tags.includes(tag));
       const matchesType = selectedTypes.size === 0 || selectedTypes.has(card.dataset.eventType || "");

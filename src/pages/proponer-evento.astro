@@ -32,9 +32,15 @@ import Layout from "@/layouts/Layout.astro";
         <div>
           <h2 class="text-2xl font-bold">Cuéntanos sobre el evento</h2>
           <p class="mt-2 text-primary/60">
-            Rellena los datos básicos. Al enviar se abrirá tu cliente de correo
-            con la propuesta preparada.
+            Rellena los datos básicos y envíanos la propuesta directamente.
           </p>
+        </div>
+
+        <div aria-hidden="true" class="absolute -left-[9999px] h-px w-px overflow-hidden">
+          <label>
+            No rellenar este campo
+            <input name="website" type="text" tabindex="-1" autocomplete="off" />
+          </label>
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
@@ -59,6 +65,19 @@ import Layout from "@/layouts/Layout.astro";
               class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </label>
+
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Email de contacto *</span>
+            <input
+              required
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="tu@email.com"
+              class="rounded-2xl border border-primary/15 bg-primary/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </label>
+
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
@@ -109,8 +128,15 @@ import Layout from "@/layouts/Layout.astro";
           type="submit"
           class="w-fit rounded-full bg-accent px-6 py-3 font-bold transition hover:-translate-y-0.5 hover:shadow-lg"
         >
-          Preparar propuesta →
+          Enviar propuesta →
         </button>
+
+        <p
+          id="proposal-status"
+          class="hidden rounded-2xl border border-accent/40 bg-accent/10 p-4 text-sm font-semibold"
+          role="status"
+          aria-live="polite"
+        ></p>
       </form>
 
       <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7">
@@ -136,31 +162,40 @@ import Layout from "@/layouts/Layout.astro";
 
   <script>
     const form = document.querySelector<HTMLFormElement>("#event-proposal-form");
+    const status = document.querySelector<HTMLElement>("#proposal-status");
+    const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
 
-    form?.addEventListener("submit", (event) => {
+    form?.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const data = new FormData(form);
-      const title = String(data.get("title") ?? "");
-      const organizer = String(data.get("organizer") ?? "");
-      const date = String(data.get("date") ?? "");
-      const place = String(data.get("place") ?? "");
-      const url = String(data.get("url") ?? "");
-      const description = String(data.get("description") ?? "");
+      if (!form.reportValidity() || !status || !submitButton) return;
 
-      const subject = encodeURIComponent(`Propuesta para Jaén Tech Events: ${title}`);
-      const body = encodeURIComponent(
-        `Nombre del evento: ${title}
-Organizador: ${organizer}
-Fecha: ${date}
-Lugar: ${place}
-Web: ${url || "No indicada"}
+      const data = Object.fromEntries(new FormData(form).entries());
+      status.classList.remove("hidden");
+      status.textContent = "Enviando propuesta…";
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando…";
 
-Descripción:
-${description}`,
-      );
+      try {
+        const response = await fetch("/api/proponer-evento", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
 
-      window.location.href = `mailto:hola@xauendevs.io?subject=${subject}&body=${body}`;
+        if (!response.ok) throw new Error(result.error || "No se pudo enviar la propuesta.");
+
+        status.textContent = "Propuesta enviada correctamente. Nos pondremos en contacto contigo si necesitamos más información.";
+        form.reset();
+      } catch (error) {
+        status.textContent = error instanceof Error
+          ? error.message
+          : "No se pudo enviar la propuesta. Inténtalo de nuevo.";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Enviar propuesta →";
+      }
     });
   </script>
 </Layout>
