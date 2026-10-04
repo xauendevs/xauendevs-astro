@@ -1,6 +1,10 @@
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
 
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 3;
+const requestLog = new Map<string, number[]>();
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -10,9 +14,47 @@ const json = (body: unknown, status = 200) =>
 const normalize = (value: unknown) => String(value ?? "").trim().replace(/\s+/g, " ");
 const isValidEmail = (value: string) => value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
+const getClientIp = (request: Request) => {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  return forwardedFor?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+};
+
+const isRateLimited = (ip: string) => {
+  const now = Date.now();
+  const recentRequests = (requestLog.get(ip) || []).filter(
+    (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS,
+  );
+
+  if (recentRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
+    requestLog.set(ip, recentRequests);
+    return true;
+  }
+
+  recentRequests.push(now);
+  requestLog.set(ip, recentRequests);
+  return false;
+};
+
 export const POST: APIRoute = async ({ request }) => {
   try {
+    if (request.headers.get("content-type")?.split(";")[0].trim() !== "application/json") {
+      return json({ error: "Solicitud no válida." }, 415);
+    }
+
     const body = await request.json();
+
+    // Honeypot: real users never see or fill this field.
+    if (String(body.website ?? "").trim()) {
+      return json({ ok: true }, 201);
+    }
+
+    const clientIp = getClientIp(request);
+    if (isRateLimited(clientIp)) {
+      return json(
+        { error: "Has enviado demasiadas propuestas. Inténtalo de nuevo más tarde." },
+        429,
+      );
+    }
 
     const title = normalize(body.title);
     const organizer = normalize(body.organizer);
