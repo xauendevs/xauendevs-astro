@@ -2,23 +2,81 @@
 ---
 
 <section
-  class="relative flex flex-col md:flex-row gap-8 md:gap-10 bg-accent p-8 md:p-10 rounded-3xl justify-between items-center"
+  class="relative overflow-hidden rounded-3xl bg-accent p-7 md:p-10"
+  aria-labelledby="participation-title"
 >
-  <div class="flex flex-col gap-3">
-    <span class="font-semibold text-3xl">Forma parte de XauenDevs</span>
-    <span class="text-xl font-medium max-w-3xl">
-      ¿Te gusta la tecnología? Este es tu sitio. En XauenDevs compartimos
-      conocimiento, nos reunimos en las Pivo&Code y conectamos a personas con
-      ganas de aprender, enseñar y hacer cosas en Jaén.
-    </span>
+  <div class="max-w-3xl">
+    <h2 id="participation-title" class="font-bold text-3xl md:text-4xl">
+      ¿Cómo quieres participar?
+    </h2>
+    <p class="mt-4 text-lg md:text-xl font-medium">
+      XauenDevs crece cuando la comunidad comparte, aprende y propone. Elige
+      cómo quieres formar parte.
+    </p>
   </div>
 
-  <a
-    href="https://discord.gg/CC9e6dtqxQ"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="shrink-0 bg-black rounded-3xl text-white text-lg px-10 py-5 font-semibold"
-  >
-    Únete a Discord
-  </a>
+  <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <a
+      href="/proponer-evento"
+      class="group rounded-2xl bg-white p-6 transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
+    >
+      <span class="text-3xl" aria-hidden="true">🎤</span>
+      <h3 class="mt-4 text-xl font-bold">Compartir conocimiento</h3>
+      <p class="mt-2 text-base">
+        ¿Tienes algo que contar? Propón una charla, taller o iniciativa para la
+        comunidad.
+      </p>
+      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
+        Proponer una charla →
+      </span>
+    </a>
+
+    <a
+      data-astro-reload
+      href="/eventos?tipo=xauen"
+      class="group rounded-2xl bg-white p-6 transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
+    >
+      <span class="text-3xl" aria-hidden="true">🧠</span>
+      <h3 class="mt-4 text-xl font-bold">Aprender</h3>
+      <p class="mt-2 text-base">
+        Descubre nuevas tecnologías, escucha experiencias y conoce a otros
+        desarrolladores.
+      </p>
+      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
+        Ver próximas charlas →
+      </span>
+    </a>
+
+    <a
+      href="https://discord.gg/CC9e6dtqxQ"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group rounded-2xl bg-white p-6 transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
+    >
+      <span class="text-3xl" aria-hidden="true">🤝</span>
+      <h3 class="mt-4 text-xl font-bold">Colaborar</h3>
+      <p class="mt-2 text-base">
+        Ayuda a organizar, compartir, comunicar o hacer crecer las actividades
+        de la comunidad.
+      </p>
+      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
+        Únete a Discord →
+      </span>
+    </a>
+
+    <a
+      href="/proponer-evento"
+      class="group rounded-2xl bg-white p-6 transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
+    >
+      <span class="text-3xl" aria-hidden="true">💡</span>
+      <h3 class="mt-4 text-xl font-bold">Proponer una idea</h3>
+      <p class="mt-2 text-base">
+        ¿Tienes una idea para hacer algo en XauenDevs? Cuéntanosla y la
+        estudiamos juntos.
+      </p>
+      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
+        Cuéntanosla →
+      </span>
+    </a>
+  </div>
 </section>
