@@ -10,6 +10,7 @@ const pivos = await getPivosStrapi();
 const now = new Date();
 
 const nextEvent = pivos?.find((pivo) => pivo.date.getTime() > now.getTime());
+const nextSpeaker = nextEvent?.speakers?.[0];
 const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).slice(0, 3);
 ---
 
@@ -39,16 +40,16 @@ const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).s
             </h3>
 
             {
-              nextEvent.speakers?.length > 0 && (
+              nextSpeaker && (
                 <div class="mt-7 flex items-center gap-3">
                   <img
-                    src={STRAPI_HOST + nextEvent.speakers[0].photo}
+                    src={STRAPI_HOST + nextSpeaker.photo}
                     class="size-11 rounded-full object-cover"
-                    alt={nextEvent.speakers[0].name}
+                    alt={nextSpeaker.name}
                   />
                   <div>
                     <p class="text-xs uppercase tracking-wide text-black/45">Con</p>
-                    <p class="font-bold">{nextEvent.speakers[0].name}</p>
+                    <p class="font-bold">{nextSpeaker.name}</p>
                   </div>
                 </div>
               )
