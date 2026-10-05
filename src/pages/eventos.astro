@@ -260,8 +260,8 @@ const availableTags = Array.from(
     const clearButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-clear-filters], [data-clear-filters-empty]"));
     const filterResult = document.querySelector<HTMLElement>("[data-filter-result]");
     const filterEmpty = document.querySelector<HTMLElement>("[data-filter-empty]");
-    const selectedTags = new Set();
-    const selectedTypes = new Set();
+    const selectedTags = new Set<string>();
+    const selectedTypes = new Set<string>();
 
     const matches = (card: HTMLElement) => {
       const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
