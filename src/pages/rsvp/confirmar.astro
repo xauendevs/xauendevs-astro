@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="no-referrer" />
-    <title>Confirmar inscripción · XauenDevs</title>
+    <title>Asistencia confirmada · XauenDevs</title>
   </head>
   <body class="m-0">
     <main class="min-h-screen bg-[#f3f1eb] px-4 py-8 text-black sm:px-6 sm:py-12">
@@ -27,11 +27,11 @@
                 </div>
 
                 <h1 class="max-w-xl text-4xl font-black leading-[0.98] tracking-[-0.035em] sm:text-5xl">
-                  ¡Asistencia confirmada!
+                  <span data-title>Confirmando tu asistencia…</span>
                 </h1>
 
                 <p class="mt-5 max-w-xl text-base leading-7 text-black/60" data-message>
-                  Comprobando tu inscripción…
+                  Un momento, estamos confirmando tu plaza.
                 </p>
 
                 <div class="mt-7 flex flex-wrap gap-3" data-actions></div>
@@ -65,11 +65,6 @@
                     <p class="text-[10px] font-black uppercase tracking-wider text-black/35">Dónde</p>
                     <p class="mt-1 text-sm font-semibold" data-place></p>
                   </div>
-                  <div class="flex items-end sm:justify-end">
-                    <button type="button" class="w-full rounded-full bg-black px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-black/85 disabled:cursor-wait disabled:opacity-50 sm:w-auto" data-confirm>
-                      Confirmar mi asistencia →
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -85,6 +80,7 @@
     <script>
       const params = new URLSearchParams(location.search);
       const code = params.get("rsvpid")?.trim().toUpperCase();
+      const title = document.querySelector<HTMLElement>("[data-title]");
       const message = document.querySelector<HTMLElement>("[data-message]");
       const card = document.querySelector<HTMLElement>("[data-card]");
       const name = document.querySelector<HTMLElement>("[data-name]");
@@ -92,16 +88,16 @@
       const date = document.querySelector<HTMLElement>("[data-date]");
       const time = document.querySelector<HTMLElement>("[data-time]");
       const place = document.querySelector<HTMLElement>("[data-place]");
-      const confirm = document.querySelector<HTMLButtonElement>("[data-confirm]");
       const actions = document.querySelector<HTMLElement>("[data-actions]");
 
-      if (!message || !card || !name || !event || !date || !time || !place || !confirm || !actions) {
+      if (!title || !message || !card || !name || !event || !date || !time || !place || !actions) {
         throw new Error("No se pudo inicializar la página de confirmación.");
       }
 
       const showError = (error: unknown) => {
-        message.textContent = error instanceof Error ? error.message : "No se pudo consultar la inscripción.";
-        card?.classList.add("hidden");
+        title.textContent = "No hemos podido confirmar";
+        message.textContent = error instanceof Error ? error.message : "No se pudo confirmar la inscripción.";
+        card.classList.add("hidden");
       };
 
       if (!code) {
@@ -110,47 +106,29 @@
         fetch("/api/rsvp/confirmar?rsvpid=" + encodeURIComponent(code))
           .then(async (response) => {
             const data = await response.json();
-            if (!response.ok) throw new Error(data.error || "No se pudo consultar la inscripción.");
+            if (!response.ok) throw new Error(data.error || "No se pudo confirmar la inscripción.");
+
+            title.textContent = "¡Asistencia confirmada!";
+            message.innerHTML = "Genial, <strong>" + data.name + "</strong>. Tu plaza está confirmada. ¡Nos vemos en Pivo&Code!";
             name.textContent = data.name;
             event.textContent = data.eventTitle;
             date.textContent = data.eventDate;
             time.textContent = data.eventTime;
             place.textContent = data.eventPlace;
             card.classList.remove("hidden");
-            message.textContent = "Tu plaza está reservada temporalmente. Comprueba los datos y confirma tu asistencia.";
+
+            if (data.calendarUrl) {
+              const link = document.createElement("a");
+              link.href = data.calendarUrl;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.textContent = "Añadir al calendario →";
+              link.className = "inline-flex rounded-full bg-[#f4d400] px-6 py-3.5 text-sm font-black text-black shadow-[4px_4px_0_#000] transition hover:-translate-y-0.5";
+              actions.appendChild(link);
+            }
           })
           .catch(showError);
       }
-
-      confirm.addEventListener("click", async () => {
-        confirm.setAttribute("disabled", "true");
-        try {
-          const response = await fetch("/api/rsvp/confirmar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rsvpid: code }),
-          });
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error || "No se pudo confirmar la inscripción.");
-
-          card.classList.add("hidden");
-          message.innerHTML = "Genial, <strong>tu plaza está confirmada.</strong> Ya puedes añadir el evento a tu calendario para no perdértelo.";
-          actions.innerHTML = "";
-
-          if (data.calendarUrl) {
-            const link = document.createElement("a");
-            link.href = data.calendarUrl;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = "Añadir al calendario →";
-            link.className = "inline-flex rounded-full bg-[#f4d400] px-6 py-3.5 text-sm font-black text-black shadow-[4px_4px_0_#000] transition hover:-translate-y-0.5";
-            actions.appendChild(link);
-          }
-        } catch (error) {
-          message.textContent = error instanceof Error ? error.message : "No se pudo confirmar la inscripción.";
-          confirm.removeAttribute("disabled");
-        }
-      });
     </script>
   </body>
 </html>

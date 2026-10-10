@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
-import { getEventDetails } from "@/lib/rsvp-event";
 import { Resend } from "resend";
-import { buildRsvpConfirmedEmail, buildRsvpIcs } from "@/lib/rsvp-email";
+import { getEventDetails } from "@/lib/rsvp-event";
 import { hashValue } from "../rsvp";
 
 const RATE_LIMIT = 5;
@@ -25,51 +24,73 @@ const ensureRateTable = async () => {
   });
 };
 
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/\x27/g, "&#039;");
+
+const sendAdminNotification = async ({
+  name,
+  email,
+  eventTitle,
+  eventDate,
+  eventTime,
+  eventPlace,
+}: {
+  name: string;
+  email: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+  eventPlace: string;
+}) => {
+  const resendApiKey = import.meta.env.RESEND_API_KEY;
+  const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
+  const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL;
+
+  if (!resendApiKey || !resendFromEmail || !adminEmail) return;
+
+  try {
+    const resend = new Resend(resendApiKey);
+    const safe = {
+      name: escapeHtml(name),
+      email: escapeHtml(email),
+      eventTitle: escapeHtml(eventTitle),
+      eventDate: escapeHtml(eventDate),
+      eventTime: escapeHtml(eventTime),
+      eventPlace: escapeHtml(eventPlace),
+    };
+
+    const { error } = await resend.emails.send(
+      {
+        from: resendFromEmail,
+        to: [adminEmail],
+        subject: `Nueva asistencia confirmada · ${eventTitle}`,
+        html: `<!doctype html><html lang="es"><body style="margin:0;background:#f3f1eb;color:#111;font-family:Arial,Helvetica,sans-serif;"><div style="padding:32px 16px;"><div style="max-width:600px;margin:0 auto;background:#fff;border:1px solid #e5e2d9;border-radius:24px;overflow:hidden;"><div style="height:8px;background:#f4d400"></div><div style="padding:32px"><div style="font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">XauenDevs · RSVP</div><h1 style="font-size:30px;line-height:1.1;margin:28px 0 12px">Nueva asistencia confirmada 🎉</h1><p style="font-size:16px;line-height:1.6;margin:0 0 24px"><strong>${safe.name}</strong> ha confirmado su asistencia.</p><div style="background:#f7f7f5;border-radius:18px;padding:22px;font-size:15px;line-height:1.8"><strong style="font-size:20px">${safe.eventTitle}</strong><br>📅 ${safe.eventDate}<br>⏰ ${safe.eventTime}<br>📍 ${safe.eventPlace}<br>✉️ ${safe.email}</div><p style="font-size:13px;color:#777;margin-top:28px">Notificación automática de XauenDevs.</p></div></div></div></body></html>`,
+      },
+      { idempotencyKey: `rsvp-admin-confirmed/${String(email)}/${String(eventTitle)}/${new Date().toISOString().slice(0, 16)}` },
+    );
+
+    if (error) console.error("RSVP admin notification error:", error);
+  } catch (error) {
+    console.error("RSVP admin notification error:", error);
+  }
+};
+
 export const GET: APIRoute = async ({ url, request }) => {
   const code = url.searchParams.get("rsvpid")?.trim().toUpperCase();
   if (!code || !CODE_REGEX.test(code)) return json({ error: "Código de confirmación no válido." }, 400);
 
   try {
     await ensureRateTable();
-    const codeHash = await hashValue(code);
-    const result = await turso.execute({
-      sql: "SELECT name, email, event_id, status, expires_at FROM event_rsvps WHERE confirm_code_hash = ? LIMIT 1",
-      args: [codeHash],
-    });
 
-    if (result.rows.length === 0) return json({ error: "La confirmación no existe o ya ha sido utilizada." }, 404);
-
-    const row = result.rows[0];
-    if (row.status !== "pending") return json({ error: "Esta inscripción ya no está pendiente de confirmación." }, 409);
-    if (!row.expires_at || new Date(String(row.expires_at).replace(" ", "T") + "Z").getTime() <= Date.now()) {
-      await turso.execute({ sql: "DELETE FROM event_rsvps WHERE confirm_code_hash = ?", args: [codeHash] });
-      return json({ error: "El plazo para confirmar esta inscripción ha caducado." }, 410);
-    }
-
-    const event = await getEventDetails(String(row.event_id), request.url);
-    if (!event) return json({ error: "El evento ya no está disponible." }, 404);
-
-    return json({ ok: true, name: row.name, eventId: row.event_id, ...event });
-  } catch (error) {
-    console.error("RSVP confirmation lookup error:", error);
-    return json({ error: "No se pudo consultar la confirmación." }, 500);
-  }
-};
-
-export const POST: APIRoute = async ({ request }) => {
-  try {
-    const body = await request.json();
-    const code = String(body.rsvpid ?? "").trim().toUpperCase();
-    if (!CODE_REGEX.test(code)) return json({ error: "Código de confirmación no válido." }, 400);
-
-    await ensureRateTable();
     const ipHash = await hashValue(getClientIp(request));
     const attempts = await turso.execute({
       sql: "SELECT COUNT(*) AS count FROM rsvp_confirm_rate_limits WHERE ip_hash = ? AND created_at >= datetime('now', ?)",
       args: [ipHash, `-${RATE_WINDOW_MINUTES} minutes`],
     });
     if (Number(attempts.rows[0]?.count ?? 0) >= RATE_LIMIT) {
-      return json({ error: "Demasiados intentos. Espera unos minutos y vuelve a intentarlo." }, 429, { "Retry-After": String(RATE_WINDOW_MINUTES * 60) });
+      return json({ error: "Demasiados intentos. Espera unos minutos y vuelve a intentarlo." }, 429, {
+        "Retry-After": String(RATE_WINDOW_MINUTES * 60),
+      });
     }
     await turso.execute({ sql: "INSERT INTO rsvp_confirm_rate_limits (ip_hash) VALUES (?)", args: [ipHash] });
     await turso.execute({ sql: "DELETE FROM rsvp_confirm_rate_limits WHERE created_at < datetime('now', '-1 day')" });
@@ -84,6 +105,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const row = current.rows[0];
     if (row.status !== "pending") return json({ error: "Esta inscripción ya no está pendiente de confirmación." }, 409);
+
     if (!row.expires_at || new Date(String(row.expires_at).replace(" ", "T") + "Z").getTime() <= Date.now()) {
       await turso.execute({ sql: "DELETE FROM event_rsvps WHERE confirm_code_hash = ?", args: [codeHash] });
       return json({ error: "El plazo para confirmar esta inscripción ha caducado." }, 410);
@@ -99,54 +121,22 @@ export const POST: APIRoute = async ({ request }) => {
     const event = await getEventDetails(String(row.event_id), request.url);
     if (!event) return json({ ok: true, name: row.name, eventId: row.event_id, status: "confirmed" });
 
-    let emailSent = false;
-    const resendApiKey = import.meta.env.RESEND_API_KEY;
-    const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
+    await sendAdminNotification({
+      name: String(row.name),
+      email: String(row.email),
+      eventTitle: event.eventTitle,
+      eventDate: event.eventDate,
+      eventTime: event.eventTime,
+      eventPlace: event.eventPlace,
+    });
 
-    if (resendApiKey && resendFromEmail) {
-      try {
-        const resend = new Resend(resendApiKey);
-        const html = buildRsvpConfirmedEmail({
-          name: String(row.name),
-          eventTitle: event.eventTitle,
-          eventDate: event.eventDate,
-          eventTime: event.eventTime,
-          eventPlace: event.eventPlace,
-          eventUrl: event.eventUrl,
-          calendarUrl: event.calendarUrl,
-        });
-        const ics = buildRsvpIcs({
-          eventId: String(row.event_id),
-          eventTitle: event.eventTitle,
-          eventStart: event.eventStart,
-          eventEnd: event.eventEnd,
-          eventPlace: event.eventPlace,
-          eventUrl: event.eventUrl,
-        });
-
-        const { error } = await resend.emails.send(
-          {
-            from: resendFromEmail,
-            to: [String(row.email)],
-            subject: `¡Plaza confirmada! · ${event.eventTitle} · XauenDevs`,
-            html,
-            attachments: [
-              {
-                filename: `${String(row.event_id)}.ics`,
-                content: Buffer.from(ics, "utf8").toString("base64"),
-              },
-            ],
-          },
-          { idempotencyKey: `rsvp-confirmed/${String(row.event_id)}/${String(row.name)}/${codeHash}` },
-        );
-        if (error) console.error("RSVP confirmed email error:", error);
-        else emailSent = true;
-      } catch (error) {
-        console.error("RSVP confirmed email error:", error);
-      }
-    }
-
-    return json({ ok: true, name: row.name, eventId: row.event_id, status: "confirmed", emailSent, ...event });
+    return json({
+      ok: true,
+      name: row.name,
+      eventId: row.event_id,
+      status: "confirmed",
+      ...event,
+    });
   } catch (error) {
     console.error("RSVP confirmation error:", error);
     return json({ error: "No se pudo confirmar la inscripción." }, 500);
