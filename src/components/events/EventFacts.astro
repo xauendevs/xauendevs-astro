@@ -42,13 +42,13 @@ const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = 
       }
     </div>
 
-    <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
+    <div class="min-w-0 rounded-2xl border border-primary/10 bg-primary/[0.025] p-4 sm:p-5">
       <span class="text-xs font-semibold uppercase tracking-wide text-primary/45">Organiza</span>
       <p class="mt-2 break-words text-base font-bold sm:text-lg">{organizer}</p>
     </div>
 
     {registrationStatus && (
-      <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
+      <div class="min-w-0 rounded-2xl border border-primary/10 bg-primary/[0.025] p-4 sm:p-5">
         <span class="text-xs font-semibold uppercase tracking-wide text-primary/45">Inscripción</span>
         <p class="mt-2 break-words text-base font-bold sm:text-lg">
           {registrationStatus === "open" ? "Inscripción abierta" : "Inscripción cerrada"}
