@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
-import { hashValue } from "./rsvp";
+import { hashValue } from "../rsvp";
 import { Resend } from "resend";
 
 const CODE_LENGTH = 10;
