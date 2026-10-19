@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
 import { Resend } from "resend";
 import { getEventDetails } from "@/lib/rsvp-event";
+import { buildRsvpConfirmedEmail, buildRsvpIcs } from "@/lib/rsvp-email";
 import { hashValue } from "../rsvp";
 
 const RATE_LIMIT = 5;
@@ -75,6 +76,69 @@ const sendAdminNotification = async ({
   }
 };
 
+const sendAttendeeConfirmation = async ({
+  name,
+  email,
+  eventId,
+  confirmationCodeHash,
+  event,
+}: {
+  name: string;
+  email: string;
+  eventId: string;
+  confirmationCodeHash: string;
+  event: NonNullable<Awaited<ReturnType<typeof getEventDetails>>>;
+}) => {
+  const resendApiKey = import.meta.env.RESEND_API_KEY;
+  const resendFromEmail = import.meta.env.RESEND_FROM_EMAIL;
+  if (!resendApiKey || !resendFromEmail) return;
+
+  try {
+    const resend = new Resend(resendApiKey);
+    const ics = buildRsvpIcs({
+      eventId,
+      eventTitle: event.eventTitle,
+      eventStart: event.eventStart,
+      eventEnd: event.eventEnd,
+      eventPlace: event.eventPlace,
+      eventUrl: event.eventUrl,
+    });
+    const icsBase64 = btoa(
+      Array.from(new TextEncoder().encode(ics), (byte) => String.fromCharCode(byte)).join(""),
+    );
+    const html = buildRsvpConfirmedEmail({
+      name,
+      eventTitle: event.eventTitle,
+      eventDate: event.eventDate,
+      eventTime: event.eventTime,
+      eventPlace: event.eventPlace,
+      eventUrl: event.eventUrl,
+      calendarUrl: event.calendarUrl,
+    });
+
+    const { error } = await resend.emails.send(
+      {
+        from: resendFromEmail,
+        to: [email],
+        subject: `¡Asistencia confirmada! · ${event.eventTitle} · XauenDevs`,
+        html,
+        attachments: [
+          {
+            filename: "pivo-code.ics",
+            content: icsBase64,
+            contentType: "text/calendar; charset=utf-8; method=PUBLISH",
+          },
+        ],
+      },
+      { idempotencyKey: `rsvp-confirmed/${eventId}/${confirmationCodeHash}` },
+    );
+
+    if (error) console.error("RSVP attendee confirmation email error:", error);
+  } catch (error) {
+    console.error("RSVP attendee confirmation email error:", error);
+  }
+};
+
 export const GET: APIRoute = async ({ url, request }) => {
   const code = url.searchParams.get("rsvpid")?.trim().toUpperCase();
   if (!code || !CODE_REGEX.test(code)) return json({ error: "Código de confirmación no válido." }, 400);
@@ -135,14 +199,23 @@ export const GET: APIRoute = async ({ url, request }) => {
 
     if (!event) return json({ ok: true, name: row.name, eventId: row.event_id, status: "confirmed" });
 
-    await sendAdminNotification({
-      name: String(row.name),
-      email: String(row.email),
-      eventTitle: event.eventTitle,
-      eventDate: event.eventDate,
-      eventTime: event.eventTime,
-      eventPlace: event.eventPlace,
-    });
+    await Promise.all([
+      sendAdminNotification({
+        name: String(row.name),
+        email: String(row.email),
+        eventTitle: event.eventTitle,
+        eventDate: event.eventDate,
+        eventTime: event.eventTime,
+        eventPlace: event.eventPlace,
+      }),
+      sendAttendeeConfirmation({
+        name: String(row.name),
+        email: String(row.email),
+        eventId: String(row.event_id),
+        confirmationCodeHash: codeHash,
+        event,
+      }),
+    ]);
 
     return json({
       ok: true,
