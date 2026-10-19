@@ -83,23 +83,17 @@ import NextEvent from "./NextEvent.astro";
 </style>
 
 <script>
-  import { $ } from "@/lib/dom-selector";
-
-  const menuButton = $("#menuButton");
-  const innerMenuButton = $("#innerMenuButton");
-  const menuMobileContent = $("#menuMobileContent");
-  const hamburgerButtons = [menuButton, innerMenuButton].filter(
-    (button): button is HTMLElement => button instanceof HTMLElement
-  );
-
+  // Use document-level delegation: Astro's ClientRouter swaps page DOM without
+  // re-running already-loaded scripts, so listeners attached to old buttons go stale.
   function setMenuOpen(isOpen: boolean) {
-    if (!menuMobileContent) return;
+    const menu = document.getElementById("menuMobileContent");
+    if (!menu) return;
 
-    menuMobileContent.classList.toggle("open", isOpen);
-    menuMobileContent.setAttribute("aria-hidden", String(!isOpen));
+    menu.classList.toggle("open", isOpen);
+    menu.setAttribute("aria-hidden", String(!isOpen));
     document.body.style.overflow = isOpen ? "hidden" : "";
 
-    hamburgerButtons.forEach((button) => {
+    document.querySelectorAll<HTMLElement>(".hamburgerButton").forEach((button) => {
       button.classList.toggle("open", isOpen);
       button.setAttribute("aria-expanded", String(isOpen));
       button.setAttribute(
@@ -109,20 +103,29 @@ import NextEvent from "./NextEvent.astro";
     });
   }
 
-  hamburgerButtons.forEach((button) => {
-    button.addEventListener("hamburgerButtonClicked", () => {
-      setMenuOpen(!menuMobileContent?.classList.contains("open"));
-    });
-  });
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
 
-  menuMobileContent?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => setMenuOpen(false));
+    const button = target.closest<HTMLElement>(".hamburgerButton");
+    if (button) {
+      event.preventDefault();
+      const menu = document.getElementById("menuMobileContent");
+      setMenuOpen(!menu?.classList.contains("open"));
+      return;
+    }
+
+    if (target.closest("#menuMobileContent a")) {
+      setMenuOpen(false);
+    }
   });
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") setMenuOpen(false);
   });
 
-  // Ensure the menu always starts closed, including after client-side navigation.
+  // Reset after every Astro client-side navigation, when the new DOM is in place.
+  document.addEventListener("astro:page-load", () => setMenuOpen(false));
+  document.addEventListener("astro:after-swap", () => setMenuOpen(false));
   setMenuOpen(false);
 </script>
