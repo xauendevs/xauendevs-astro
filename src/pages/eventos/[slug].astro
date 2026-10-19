@@ -150,15 +150,15 @@ const shareMessage = [
 ---
 
 <Layout title={title} description={description} image={socialImage} imageType="image/png">
-  <main class="flex flex-col gap-10 pb-16">
+  <main class="flex min-w-0 flex-col gap-6 pb-12 sm:gap-8 sm:pb-16 md:gap-10">
     <a
       href="/eventos"
-      class="inline-flex w-fit items-center gap-2 text-sm font-semibold text-primary/55 transition-colors hover:text-primary"
+      class="inline-flex max-w-full items-center gap-2 text-sm font-semibold text-primary/55 transition-colors hover:text-primary"
     >
       ← Volver a eventos
     </a>
 
-    <article class="overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025]">
+    <article class="min-w-0 overflow-hidden rounded-3xl border border-primary/10 bg-primary/[0.025] sm:rounded-[2.5rem]">
       {eventImage && (
         <div class="relative aspect-[1200/630] overflow-hidden bg-primary md:h-[26rem] md:aspect-auto">
           <img
@@ -172,10 +172,10 @@ const shareMessage = [
         </div>
       )}
 
-      <div class="relative overflow-hidden bg-[#0d0d0d] px-7 py-8 text-white md:px-12 md:py-10">
+      <div class="relative min-w-0 overflow-hidden bg-[#0d0d0d] px-5 py-6 text-white sm:px-7 sm:py-8 md:px-12 md:py-10">
         <div class="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/25 blur-3xl"></div>
 
-        <div class="relative max-w-5xl">
+        <div class="relative min-w-0 max-w-5xl">
           <div class="flex flex-wrap items-center gap-2">
             <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">
               {isExternal ? "Evento externo" : "XauenDevs"}
@@ -187,15 +187,15 @@ const shareMessage = [
             ))}
           </div>
 
-          <h1 class="mt-7 max-w-5xl text-4xl font-black tracking-tight md:text-6xl">
+          <h1 class="mt-5 max-w-5xl break-words text-3xl font-black tracking-tight sm:mt-7 sm:text-4xl md:text-6xl">
             {event.title}
           </h1>
 
         </div>
       </div>
 
-      <div class="grid gap-10 p-7 md:p-10 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div class="flex flex-col gap-8">
+      <div class="grid min-w-0 grid-cols-1 gap-6 p-4 sm:gap-8 sm:p-6 md:gap-10 md:p-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div class="flex min-w-0 flex-col gap-6 sm:gap-8">
           <EventFacts
             date={formattedDate}
             time={formattedTime}
@@ -207,7 +207,7 @@ const shareMessage = [
           />
 
           <section
-            class="rounded-[2rem] border border-primary/10 bg-primary/[0.025] p-6 md:p-7"
+            class="min-w-0 rounded-3xl border border-primary/10 bg-primary/[0.025] p-4 sm:rounded-[2rem] sm:p-6 md:p-7"
             aria-labelledby="event-description-title"
           >
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
@@ -216,7 +216,7 @@ const shareMessage = [
             <h2 id="event-description-title" class="mt-2 text-2xl font-bold">
               Sobre el evento
             </h2>
-            <div class="mt-4 max-w-3xl space-y-4 text-base leading-relaxed text-primary/65 md:text-lg">
+            <div class="mt-4 max-w-3xl space-y-4 break-words text-base leading-relaxed text-primary/65 md:text-lg">
               {
                 description
                   .split(/\n\s*\n/)
@@ -235,13 +235,13 @@ const shareMessage = [
                 </span>
                 <div class="mt-4 flex flex-wrap gap-4">
                   {pivoEvent.speakers?.map((speaker) => (
-                    <div class="flex items-center gap-3 rounded-2xl border border-primary/10 px-4 py-3">
+                    <div class="flex min-w-0 max-w-full items-center gap-3 rounded-2xl border border-primary/10 px-3 py-3 sm:px-4">
                       <img
                         src={`${import.meta.env.STRAPI_HOST}${speaker.photo}`}
                         alt={speaker.name}
-                        class="size-10 rounded-full object-cover"
+                        class="size-10 shrink-0 rounded-full object-cover"
                       />
-                      <span class="font-semibold">{speaker.name}</span>
+                      <span class="min-w-0 break-words font-semibold">{speaker.name}</span>
                     </div>
                   ))}
                 </div>
@@ -277,7 +277,7 @@ const shareMessage = [
 
     {
       !isExternal && pivoEvent.videoId && (
-        <section id="video" class="overflow-hidden rounded-[2.5rem] bg-primary p-4 md:p-6">
+        <section id="video" class="min-w-0 overflow-hidden rounded-3xl bg-primary p-3 sm:rounded-[2.5rem] sm:p-4 md:p-6">
           <div class="mb-5 px-2">
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Vídeo
