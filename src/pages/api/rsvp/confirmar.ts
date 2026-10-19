@@ -80,11 +80,13 @@ const sendAttendeeConfirmation = async ({
   name,
   email,
   eventId,
+  confirmationCodeHash,
   event,
 }: {
   name: string;
   email: string;
   eventId: string;
+  confirmationCodeHash: string;
   event: NonNullable<Awaited<ReturnType<typeof getEventDetails>>>;
 }) => {
   const resendApiKey = import.meta.env.RESEND_API_KEY;
@@ -128,7 +130,7 @@ const sendAttendeeConfirmation = async ({
           },
         ],
       },
-      { idempotencyKey: `rsvp-confirmed/${eventId}/${await hashValue(email)}` },
+      { idempotencyKey: `rsvp-confirmed/${eventId}/${confirmationCodeHash}` },
     );
 
     if (error) console.error("RSVP attendee confirmation email error:", error);
@@ -210,6 +212,7 @@ export const GET: APIRoute = async ({ url, request }) => {
         name: String(row.name),
         email: String(row.email),
         eventId: String(row.event_id),
+        confirmationCodeHash: codeHash,
         event,
       }),
     ]);
