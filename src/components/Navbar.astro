@@ -4,10 +4,10 @@ import Logo from "./Logo.astro";
 import NextEvent from "./NextEvent.astro";
 ---
 
-<header class="h-auto max-w-[100vw] p-10 z-20 bg-white/85">
-  <nav class="lg:flex justify-between text-nowrap hidden">
+<header class="relative z-20 h-auto max-w-[100vw] bg-white/85 p-4 sm:p-6 lg:p-10">
+  <nav class="hidden justify-between text-nowrap lg:flex">
     <div class="flex items-center gap-10">
-      <a href="/">
+      <a href="/" aria-label="XauenDevs, inicio" class="shrink-0">
         <Logo
           width="230"
           class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
@@ -17,61 +17,44 @@ import NextEvent from "./NextEvent.astro";
         <a href="/#own-mission">Nuestra misión</a>
         <a data-astro-reload href="/eventos?tipo=xauen">Charlas</a>
         <a href="/eventos">Eventos</a>
-        <!-- <a href="/#blog">Blog</a> -->
       </div>
     </div>
     <div>
       <NextEvent />
     </div>
   </nav>
-  <nav class="lg:hidden flex justify-between items-center">
-    <Logo
-      width="230"
-      class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
-    />
-    <div class="flex justify-between items-center gap-6">
-      <HamburgerButton class:list={"block lg:hidden"} id="menuButton" />
-      <div
-        id="menuMobileContent"
-        class="fixed
-        inset-0
-        z-[888]
-        flex
-        w-screen
-        flex-col
-        items-center
-        overflow-x-auto
-        
-        lg:hidden"
-      >
-        <div class="bg-black absolute w-screen h-screen opacity-90"></div>
-        <div class="flex justify-between w-full p-10 text-white z-[888]">
+
+  <nav class="flex items-center justify-between lg:hidden" aria-label="Navegación principal">
+    <a href="/" aria-label="XauenDevs, ir a inicio" class="relative z-[889] block shrink-0">
+      <Logo
+        width="190"
+        class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
+      />
+    </a>
+    <HamburgerButton class:list="block lg:hidden" id="menuButton" />
+    <div
+      id="menuMobileContent"
+      aria-hidden="true"
+      class="fixed inset-0 z-[888] flex h-[100dvh] w-screen flex-col items-center overflow-y-auto overflow-x-hidden px-5 pb-10 lg:hidden"
+    >
+      <div class="absolute inset-0 bg-black/90" aria-hidden="true"></div>
+      <div class="relative z-[888] flex w-full items-center justify-between py-6 text-white">
+        <a href="/" aria-label="XauenDevs, ir a inicio" class="block shrink-0">
           <Logo
-            width="230"
-            class="text-accent transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+            width="190"
+            class="text-accent transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
           />
-          <HamburgerButton id="innerMenuButton" />
-        </div>
-        <div
-          class:list={[
-            "flex flex-col items-center gap-5 text-2xl mb-12 z-[888] text-white uppercase",
-          ]}
-        >
-          <a
-            class="hover:text-accent transition duration-300"
-            href="/#own-mission">Nuestra misión</a
-          >
-          <a class="hover:text-accent transition duration-300" data-astro-reload href="/eventos?tipo=xauen"
-            >Charlas</a>
-          <a class="hover:text-accent transition duration-300" href="/eventos"
-            >Eventos</a
-          >
-          <!-- <a class="hover:text-accent transition duration-300" href="#blog"
-            >Blog</a
-          > -->
-        </div>
-        <hr class="h-[1px] w-1/2 border-t-0 mb-12" style="background:white" />
-        <NextEvent class="z-[888]" />
+        </a>
+        <HamburgerButton id="innerMenuButton" />
+      </div>
+      <div class="relative z-[888] mb-12 flex flex-col items-center gap-5 text-center text-2xl uppercase text-white">
+        <a class="transition duration-300 hover:text-accent" href="/#own-mission">Nuestra misión</a>
+        <a class="transition duration-300 hover:text-accent" data-astro-reload href="/eventos?tipo=xauen">Charlas</a>
+        <a class="transition duration-300 hover:text-accent" href="/eventos">Eventos</a>
+      </div>
+      <hr class="relative z-[888] mb-12 h-px w-1/2 border-0 bg-white" />
+      <div class="relative z-[888]">
+        <NextEvent />
       </div>
     </div>
   </nav>
@@ -80,37 +63,66 @@ import NextEvent from "./NextEvent.astro";
 <style>
   #menuMobileContent {
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.3s;
-    scrollbar-gutter: stable;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    overscroll-behavior: contain;
   }
 
   #menuMobileContent.open {
-    opacity: 1 !important;
-    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #menuMobileContent {
+      transition: none;
+    }
   }
 </style>
+
 <script>
   import { $ } from "@/lib/dom-selector";
-  function toggleMenu(menuMobileContent: HTMLElement | null) {
-    menuMobileContent?.classList.toggle("open");
-    innerMenuButton?.classList.toggle("open");
-    document.body.classList.toggle("overflow-hidden");
-    document.body.classList.toggle("lg:overflow-auto");
-  }
 
   const menuButton = $("#menuButton");
   const innerMenuButton = $("#innerMenuButton");
-  const menuMobileContext = $("#menuMobileContent");
-
-  menuButton?.addEventListener("hamburgerButtonClicked", () =>
-    toggleMenu(menuMobileContext)
-  );
-  innerMenuButton?.addEventListener("hamburgerButtonClicked", () =>
-    toggleMenu(menuMobileContext)
+  const menuMobileContent = $("#menuMobileContent");
+  const hamburgerButtons = [menuButton, innerMenuButton].filter(
+    (button): button is HTMLElement => button instanceof HTMLElement
   );
 
-  if (menuMobileContext?.classList.contains("open")) {
-    toggleMenu(menuMobileContext);
+  function setMenuOpen(isOpen: boolean) {
+    if (!menuMobileContent) return;
+
+    menuMobileContent.classList.toggle("open", isOpen);
+    menuMobileContent.setAttribute("aria-hidden", String(!isOpen));
+    document.body.style.overflow = isOpen ? "hidden" : "";
+
+    hamburgerButtons.forEach((button) => {
+      button.classList.toggle("open", isOpen);
+      button.setAttribute("aria-expanded", String(isOpen));
+      button.setAttribute(
+        "aria-label",
+        isOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"
+      );
+    });
   }
+
+  hamburgerButtons.forEach((button) => {
+    button.addEventListener("hamburgerButtonClicked", () => {
+      setMenuOpen(!menuMobileContent?.classList.contains("open"));
+    });
+  });
+
+  menuMobileContent?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setMenuOpen(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenuOpen(false);
+  });
+
+  // Ensure the menu always starts closed, including after client-side navigation.
+  setMenuOpen(false);
 </script>
