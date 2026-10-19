@@ -46,8 +46,8 @@ const availableTags = Array.from(
   title="Eventos tech en Jaén · XauenDevs"
   description="Agenda de eventos de tecnología y desarrollo en Jaén. Charlas, meetups y actividades de la comunidad."
 >
-  <main class="flex flex-col gap-14">
-    <header class="relative overflow-hidden rounded-[2.5rem] border border-primary/10 bg-primary/[0.025] px-7 py-10 md:px-12 md:py-14">
+  <main class="flex min-w-0 flex-col gap-8 py-2 sm:gap-10 md:gap-14">
+    <header class="relative min-w-0 overflow-hidden rounded-3xl border border-primary/10 bg-primary/[0.025] px-5 py-7 sm:rounded-[2.5rem] sm:px-7 sm:py-10 md:px-12 md:py-14">
       <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl"></div>
 
       <div class="relative flex flex-col gap-5">
@@ -62,12 +62,12 @@ const availableTags = Array.from(
           )}
         </div>
 
-        <h1 class="max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
+        <h1 class="max-w-4xl break-words text-3xl font-black tracking-tight sm:text-4xl md:text-6xl">
           Tecnología en Jaén.
           <span class="text-primary/35">Todo en un mismo sitio.</span>
         </h1>
 
-        <p class="max-w-2xl text-lg leading-relaxed text-primary/65 md:text-xl">
+        <p class="max-w-2xl text-base leading-relaxed text-primary/65 sm:text-lg md:text-xl">
           Charlas, meetups, talleres y eventos para descubrir qué está pasando
           en la comunidad tecnológica de Jaén.
         </p>
@@ -107,7 +107,7 @@ const availableTags = Array.from(
     </nav>
     {
       upcomingEvents.length > 0 && (
-        <section data-event-section class="flex flex-col gap-7">
+        <section data-event-section class="flex min-w-0 flex-col gap-5 sm:gap-7">
           <div class="flex flex-col gap-1">
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               XauenDevs
@@ -115,10 +115,10 @@ const availableTags = Array.from(
             <h2 class="text-3xl font-bold tracking-tight">Próximamente</h2>
           </div>
 
-          <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div class="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
               ({ id, title, image, speakers, place, date, videoId, tags }: Pivo) => (
-                <div data-event-tags={(tags ?? []).join(",")} data-event-type="xauen" data-upcoming="true" data-event-organizer="XauenDevs">
+                <div class="min-w-0" data-event-tags={(tags ?? []).join(",")} data-event-type="xauen" data-upcoming="true" data-event-organizer="XauenDevs">
                 <PivoCard
                   id={id}
                   title={title}
@@ -129,7 +129,7 @@ const availableTags = Array.from(
                   videoId={videoId}
                   tags={tags}
                   detailUrl={`/eventos/${slugify(title)}`}
-                  customClass="justify-self-center !max-w-none !w-full !min-w-fit"
+                  customClass="!min-w-0 !max-w-full !w-full"
                 />
                 </div>
               )
@@ -157,9 +157,9 @@ const availableTags = Array.from(
             </p>
           </div>
 
-          <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div class="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingExternalEvents.map((event) => (
-              <div data-event-tags={event.tags.join(",")} data-event-type="external" data-upcoming="true" data-event-organizer={event.organizer}>
+              <div class="min-w-0" data-event-tags={event.tags.join(",")} data-event-type="external" data-upcoming="true" data-event-organizer={event.organizer}>
                 <ExternalEventCard event={event} />
               </div>
             ))}
@@ -168,7 +168,7 @@ const availableTags = Array.from(
       )
     }
 
-    <section class="relative overflow-hidden rounded-[2rem] bg-accent px-7 py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
+    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
       <div class="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-white/30 blur-3xl"></div>
       <div class="relative">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
