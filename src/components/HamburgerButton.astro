@@ -7,6 +7,7 @@ const genericHamburgerLine = `h-[2px] ${width} bg-accent transition ease transfo
 
 <button
   id={Astro.props.id}
+  type="button"
   aria-expanded="false"
   aria-controls={MOBILE_MENU_CONTENT_ID}
   class:list={[
@@ -21,8 +22,7 @@ const genericHamburgerLine = `h-[2px] ${width} bg-accent transition ease transfo
       "group-[.open]:translate-y-2 group-[.open]:rotate-45",
       genericHamburgerLine,
     ]}
-  >
-  </span>
+  ></span>
   <span class:list={["group-[.open]:opacity-0", genericHamburgerLine]}></span>
   <span class:list={["group-[.open]:opacity-0", genericHamburgerLine]}></span>
   <span
@@ -30,37 +30,18 @@ const genericHamburgerLine = `h-[2px] ${width} bg-accent transition ease transfo
       "group-[.open]:-translate-y-[0.6rem] group-[.open]:-rotate-45",
       genericHamburgerLine,
     ]}
-  >
-  </span>
+  ></span>
 </button>
 
 <script>
-  import { $, $$ } from "@/lib/dom-selector";
+  import { $$ } from "@/lib/dom-selector";
 
-  const DISPLAY = {
-    hamburgerMenuClass: ".hamburgerButton",
-    open: "open",
-    hamburgerButtonClicked: "hamburgerButtonClicked",
-  } as const;
+  const hamburgerButtons = $$(".hamburgerButton");
 
-  const hamburgerButton = $(DISPLAY.hamburgerMenuClass);
-
-  $$(DISPLAY.hamburgerMenuClass).forEach((button) => {
+  hamburgerButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const hamburgerButton = $(DISPLAY.hamburgerMenuClass)!;
-      hamburgerButton.classList.toggle(DISPLAY.open);
-      const isMenuOpen = hamburgerButton.classList.contains(DISPLAY.open);
-      hamburgerButton.setAttribute("aria-expanded", String(isMenuOpen));
-      hamburgerButton.setAttribute(
-        "aria-label",
-        isMenuOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"
-      );
-      const hamburgerButtonClick = new CustomEvent(
-        DISPLAY.hamburgerButtonClicked
-      );
-      hamburgerButton.dispatchEvent(hamburgerButtonClick);
+      // Let Navbar own the menu state so both buttons and aria attributes stay in sync.
+      button.dispatchEvent(new CustomEvent("hamburgerButtonClicked"));
     });
   });
-  if (hamburgerButton?.classList?.contains(DISPLAY.open))
-    hamburgerButton?.classList?.remove(DISPLAY.open);
 </script>
