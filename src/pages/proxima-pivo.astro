@@ -2,7 +2,7 @@
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
 
-// Keep this route dynamic: the next Pivo changes as Strapi is updated.
+// Keep this route dynamic so it always points to the next scheduled Pivo.
 export const prerender = false;
 
 const now = Date.now();
@@ -15,8 +15,5 @@ if (!nextPivo) {
   return Astro.redirect("/eventos", 302);
 }
 
-const destination =
-  nextPivo.saraosLink || `/eventos/${slugify(nextPivo.title)}`;
-
-return Astro.redirect(destination, 302);
+return Astro.redirect(`/eventos/${slugify(nextPivo.title)}`, 302);
 ---
