@@ -97,8 +97,8 @@ export const GET: APIRoute = async ({ url, request }) => {
 
     const codeHash = await hashValue(code);
     const current = await turso.execute({
-      sql: "SELECT name, email, event_id, status, expires_at FROM event_rsvps WHERE confirm_code_hash = ? LIMIT 1",
-      args: [codeHash],
+      sql: "SELECT name, email, event_id, status, expires_at FROM event_rsvps WHERE confirm_code_hash = ? OR reminder_code_hash = ? LIMIT 1",
+      args: [codeHash, codeHash],
     });
 
     if (current.rows.length === 0) return json({ error: "La confirmación no existe o ya ha sido utilizada." }, 404);
@@ -112,8 +112,8 @@ export const GET: APIRoute = async ({ url, request }) => {
     }
 
     const updated = await turso.execute({
-      sql: "UPDATE event_rsvps SET status = 'confirmed', confirmed_at = CURRENT_TIMESTAMP, confirm_code_hash = NULL WHERE confirm_code_hash = ? AND status = 'pending' AND expires_at > CURRENT_TIMESTAMP",
-      args: [codeHash],
+      sql: "UPDATE event_rsvps SET status = 'confirmed', confirmed_at = CURRENT_TIMESTAMP, confirm_code_hash = NULL, reminder_code_hash = NULL WHERE (confirm_code_hash = ? OR reminder_code_hash = ?) AND status = 'pending' AND expires_at > CURRENT_TIMESTAMP",
+      args: [codeHash, codeHash],
     });
 
     if (Number(updated.rowsAffected ?? 0) !== 1) return json({ error: "La confirmación ya no está disponible." }, 409);
