@@ -104,6 +104,21 @@ export const GET: APIRoute = async ({ url, request }) => {
     if (current.rows.length === 0) return json({ error: "La confirmación no existe o ya ha sido utilizada." }, 404);
 
     const row = current.rows[0];
+    const event = await getEventDetails(String(row.event_id), request.url);
+
+    // A confirmation link may be opened again from the email. If it was already
+    // used successfully, return the same confirmation details instead of an error.
+    if (row.status === "confirmed") {
+      return json({
+        ok: true,
+        name: row.name,
+        eventId: row.event_id,
+        status: "confirmed",
+        ...(event ?? {}),
+        alreadyConfirmed: true,
+      });
+    }
+
     if (row.status !== "pending") return json({ error: "Esta inscripción ya no está pendiente de confirmación." }, 409);
 
     if (!row.expires_at || new Date(String(row.expires_at).replace(" ", "T") + "Z").getTime() <= Date.now()) {
@@ -112,13 +127,12 @@ export const GET: APIRoute = async ({ url, request }) => {
     }
 
     const updated = await turso.execute({
-      sql: "UPDATE event_rsvps SET status = 'confirmed', confirmed_at = CURRENT_TIMESTAMP, confirm_code_hash = NULL, reminder_code_hash = NULL WHERE (confirm_code_hash = ? OR reminder_code_hash = ?) AND status = 'pending' AND expires_at > CURRENT_TIMESTAMP",
+      sql: "UPDATE event_rsvps SET status = 'confirmed', confirmed_at = CURRENT_TIMESTAMP WHERE (confirm_code_hash = ? OR reminder_code_hash = ?) AND status = 'pending' AND expires_at > CURRENT_TIMESTAMP",
       args: [codeHash, codeHash],
     });
 
     if (Number(updated.rowsAffected ?? 0) !== 1) return json({ error: "La confirmación ya no está disponible." }, 409);
 
-    const event = await getEventDetails(String(row.event_id), request.url);
     if (!event) return json({ ok: true, name: row.name, eventId: row.event_id, status: "confirmed" });
 
     await sendAdminNotification({
