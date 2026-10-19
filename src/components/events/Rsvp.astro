@@ -78,13 +78,19 @@ const { eventId } = Astro.props;
 </section>
 
 <script>
-  document.querySelectorAll<HTMLElement>("[data-rsvp]").forEach((rsvp) => {
+  const initializedRsvpForms = new WeakSet<HTMLFormElement>();
+
+  function initializeRsvpForms() {
+    document.querySelectorAll<HTMLElement>("[data-rsvp]").forEach((rsvp) => {
     const eventId = rsvp.dataset.eventId;
     const form = rsvp.querySelector<HTMLFormElement>("[data-rsvp-form]");
     const count = rsvp.querySelector<HTMLElement>("[data-rsvp-count]");
     const result = rsvp.querySelector<HTMLElement>("[data-rsvp-result]");
     const toast = rsvp.querySelector<HTMLElement>("[data-rsvp-toast]");
     if (!eventId || !form || !count || !result || !toast) return;
+    // Astro ClientRouter puede disparar page-load más de una vez; no dupliques listeners.
+    if (initializedRsvpForms.has(form)) return;
+    initializedRsvpForms.add(form);
 
     const showToast = (text: string) => {
       toast.textContent = text;
@@ -190,5 +196,11 @@ const { eventId } = Astro.props;
         if (submit) submit.textContent = "Quiero asistir →";
       }
     });
-  });
+    });
+  }
+
+  // Los scripts de Astro no se vuelven a ejecutar en cada navegación cliente.
+  // Reinicializa los formularios cuando Astro termina de montar la nueva página.
+  document.addEventListener("astro:page-load", initializeRsvpForms);
+  initializeRsvpForms();
 </script>
