@@ -22,6 +22,18 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 
 export const GET: APIRoute = async ({ request }) => {
+  const madridTime = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    weekday: "short",
+    hour: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+  const madridWeekday = madridTime.find((part) => part.type === "weekday")?.value;
+  const madridHour = madridTime.find((part) => part.type === "hour")?.value;
+  if (madridWeekday !== "Thu" || madridHour !== "12") {
+    return json({ ok: true, skipped: true, message: "El recordatorio solo se ejecuta los jueves a las 12:00, hora peninsular." });
+  }
+
   const secret = import.meta.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return json({ error: "No autorizado." }, 401);
