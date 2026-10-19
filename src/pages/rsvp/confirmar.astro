@@ -108,8 +108,10 @@
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || "No se pudo confirmar la inscripción.");
 
-            title.textContent = "¡Asistencia confirmada!";
-            message.innerHTML = "Genial, <strong>" + data.name + "</strong>. Tu plaza está confirmada. ¡Nos vemos en Pivo&Code!";
+            title.textContent = data.alreadyConfirmed ? "¡Tu asistencia ya estaba confirmada!" : "¡Asistencia confirmada!";
+            message.textContent = data.alreadyConfirmed
+              ? "Todo está correcto, " + data.name + ". Tu plaza ya estaba confirmada. ¡Nos vemos en Pivo&Code!"
+              : "Genial, " + data.name + ". Tu plaza está confirmada. ¡Nos vemos en Pivo&Code!";
             name.textContent = data.name;
             event.textContent = data.eventTitle;
             date.textContent = data.eventDate;
