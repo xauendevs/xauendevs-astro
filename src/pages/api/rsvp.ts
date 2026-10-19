@@ -22,6 +22,8 @@ const ensureTables = async () => {
         email TEXT NOT NULL,
         rsvp_code_hash TEXT,
         confirm_code_hash TEXT,
+        reminder_code_hash TEXT,
+        reminder_sent_at TEXT,
         status TEXT NOT NULL DEFAULT 'confirmed',
         expires_at TEXT,
         confirmed_at TEXT,
@@ -47,6 +49,8 @@ const ensureTables = async () => {
   for (const statement of [
     "ALTER TABLE event_rsvps ADD COLUMN rsvp_code_hash TEXT",
     "ALTER TABLE event_rsvps ADD COLUMN confirm_code_hash TEXT",
+    "ALTER TABLE event_rsvps ADD COLUMN reminder_code_hash TEXT",
+    "ALTER TABLE event_rsvps ADD COLUMN reminder_sent_at TEXT",
     "ALTER TABLE event_rsvps ADD COLUMN status TEXT NOT NULL DEFAULT 'confirmed'",
     "ALTER TABLE event_rsvps ADD COLUMN expires_at TEXT",
     "ALTER TABLE event_rsvps ADD COLUMN confirmed_at TEXT",
