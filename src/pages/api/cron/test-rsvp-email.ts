@@ -32,6 +32,23 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
+const normalizeEmail = (email: string) => {
+  const normalized = email.trim().toLowerCase();
+  const separator = normalized.lastIndexOf("@");
+  if (separator < 0) return normalized;
+
+  let local = normalized.slice(0, separator);
+  let domain = normalized.slice(separator + 1);
+
+  // Gmail ignora los puntos y los sufijos +tag en direcciones @gmail.com/@googlemail.com.
+  if (domain === "gmail.com" || domain === "googlemail.com") {
+    local = local.split("+", 1)[0].replace(/\\./g, "");
+    domain = "gmail.com";
+  }
+
+  return `${local}@${domain}`;
+};
+
 export const GET: APIRoute = async ({ url }) => {
   const expectedToken = import.meta.env.RSVP_EMAIL_TEST_TOKEN;
   const providedToken = url.searchParams.get("token");
@@ -70,11 +87,14 @@ export const GET: APIRoute = async ({ url }) => {
 
     // Solo permite probar con una inscripción pendiente del propio destinatario de pruebas.
     const pending = await turso.execute({
-      sql: "SELECT id, name, email FROM event_rsvps WHERE event_id = ? AND lower(email) = ? AND status = 'pending' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP) LIMIT 1",
-      args: [eventId, testEmail],
+      sql: "SELECT id, name, email FROM event_rsvps WHERE event_id = ? AND status = 'pending' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)",
+      args: [eventId],
     });
+    const matchingRow = pending.rows.find(
+      (candidate) => normalizeEmail(String(candidate.email)) === normalizeEmail(testEmail),
+    );
 
-    if (pending.rows.length === 0) {
+    if (!matchingRow) {
       return json(
         {
           error: "No hay una inscripción pendiente para RSVP_EMAIL_TEST_TO en la próxima Pivo. Apunta ese correo a la Pivo y vuelve a probar.",
@@ -84,7 +104,7 @@ export const GET: APIRoute = async ({ url }) => {
       );
     }
 
-    const row = pending.rows[0];
+    const row = matchingRow;
     const code = generateCode();
     const codeHash = await hashValue(code);
     await turso.execute({
