@@ -33,15 +33,3 @@ const genericHamburgerLine = `h-[2px] ${width} bg-accent transition ease transfo
   ></span>
 </button>
 
-<script>
-  import { $$ } from "@/lib/dom-selector";
-
-  const hamburgerButtons = $$(".hamburgerButton");
-
-  hamburgerButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      // Let Navbar own the menu state so both buttons and aria attributes stay in sync.
-      button.dispatchEvent(new CustomEvent("hamburgerButtonClicked"));
-    });
-  });
-</script>
