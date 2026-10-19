@@ -42,7 +42,7 @@ const normalizeEmail = (email: string) => {
 
   // Gmail ignora los puntos y los sufijos +tag en direcciones @gmail.com/@googlemail.com.
   if (domain === "gmail.com" || domain === "googlemail.com") {
-    local = local.split("+", 1)[0].replace(/\\./g, "");
+    local = local.split("+", 1)[0].replace(/\./g, "");
     domain = "gmail.com";
   }
 
