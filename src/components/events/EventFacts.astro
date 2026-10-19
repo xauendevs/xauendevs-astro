@@ -25,7 +25,7 @@ const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = 
       {duration && <p class="mt-2 text-xs font-semibold uppercase tracking-wide text-primary/45">{duration}</p>}
     </div>
 
-    <div class="rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
+    <div class="min-w-0 rounded-2xl border border-primary/10 bg-primary/[0.025] p-4 sm:p-5">
       <span class="text-xs font-semibold uppercase tracking-wide text-primary/45">Dónde</span>
       <p class="mt-2 break-words text-base font-bold sm:text-lg">{place || "Por confirmar"}</p>
       {
@@ -53,7 +53,7 @@ const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = 
         <p class="mt-2 break-words text-base font-bold sm:text-lg">
           {registrationStatus === "open" ? "Inscripción abierta" : "Inscripción cerrada"}
         </p>
-        <p class="mt-1 text-sm text-primary/55">
+        <p class="mt-1 break-words text-sm text-primary/55">
           {registrationStatus === "open"
             ? "La asistencia se confirma mediante el enlace que recibirás por email."
             : "Este evento ya ha terminado y no admite nuevas inscripciones."}
