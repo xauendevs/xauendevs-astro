@@ -1,10 +1,17 @@
 ---
-// Selector de tema: sin temporada activa se renderiza el diseño original (`Footer.default.astro`).
-import { isHalloweenSeason } from "@/lib/season";
-import Default from "./Footer.default.astro";
-import Halloween from "./Footer.halloween.astro";
-
-const halloween = await isHalloweenSeason(Astro);
+import PreFooter from "@/components/PreFooter.astro";
 ---
 
-{halloween ? <Halloween theme="halloween" /> : <Default />}
+<footer class="flex flex-col items-center p-8 md:p-10 gap-5">
+  <PreFooter />
+  <div class="flex group">
+    <span
+      class="text-accent grayscale group-hover:grayscale-0 transition-all duration-500"
+      >:X\D &gt;_ &nbsp;
+    </span>
+    <span
+      class="font-extralight grayscale group-hover:grayscale-0 text-black/80 hw:text-white/80 transition-all duration-500"
+      >hecho con 💚 en Jaén</span
+    >
+  </div>
+</footer>

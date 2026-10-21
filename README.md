@@ -126,7 +126,8 @@ Alternativa sin Global Config: variables `SITE_THEME` y `SITE_HACK_INTRO`. **Ojo
 
 ### Cómo está montado
 - `src/lib/site-theme.ts` resuelve la temporada (Global Config → env → `default`); `src/lib/season.ts` la memoiza por petición.
-- Componentes grandes con dos versiones y un selector: `X.astro` (selector) → `X.default.astro` (diseño original) / `X.halloween.astro` (`Navbar`, `Footer`, `Header`, `AboutUs`, `views/rsvp/*`).
+- Restyling (Navbar, Footer, tarjetas, páginas): un solo archivo con la variante `hw:` y, si hace falta, marcado extra condicional.
+- Solo hay dos versiones de archivo donde el contenido es realmente distinto: `Header` (hero), `AboutUs` y las páginas RSVP (`X.astro` selector → `X.default.astro` / `X.halloween.astro`).
 - Cambios pequeños de estilo: variante de Tailwind `hw:` (solo aplica con `<body data-theme="halloween">`), p. ej. `bg-white hw:bg-white/[0.04]`.
 - Las páginas dependientes de la temporada son SSR (`prerender = false`) para decidirla en cada petición.
 - Para una temporada nueva: añadirla a `THEMES` y crear sus variantes. Para **retirar Halloween del todo**: borrar los `*.halloween.astro`, `HackIntro`, `PageHeader`, `RealCommunity` y las clases `hw:`.
