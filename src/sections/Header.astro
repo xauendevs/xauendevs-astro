@@ -31,9 +31,7 @@ import FromFor from "../components/FromFor.astro";
 
   <div class="relative z-10 max-w-4xl">
     <div class="mb-5 flex flex-wrap items-center gap-3">
-      <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-black">
-        XauenDevs
-      </span>
+      <span class="halloween-pill rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em]"><span class="halloween-pumpkin">☠</span> Especial Halloween</span>
       <span class="text-sm font-semibold text-white/70">Jaén · Desarrollo · Tecnología</span>
     </div>
     <h1 class="halloween-headline text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">
@@ -47,7 +45,7 @@ import FromFor from "../components/FromFor.astro";
         href="/eventos"
         class="inline-flex rounded-full bg-accent px-6 py-3 font-bold text-black transition hover:-translate-y-0.5 hover:shadow-lg motion-reduce:transition-none"
       >
-        Ver próximos eventos →
+        Ver próximos eventos 🎃 →
       </a>
       <a
         href="https://discord.gg/CC9e6dtqxQ"
@@ -73,6 +71,7 @@ import FromFor from "../components/FromFor.astro";
   .halloween-mist-b { bottom:25%;opacity:.65;animation:halloween-mist-drift 23s ease-in-out infinite alternate-reverse; }
   .halloween-rooftops { z-index:3;opacity:.92; }
   .halloween-vignette { background:linear-gradient(0deg,#0d0d12 0%,transparent 55%),linear-gradient(90deg,rgba(13,13,18,.35),transparent 70%); }
+  .halloween-pumpkin { display:inline-block; margin-right:.35rem; animation:halloween-pulse 2s ease-in-out infinite; } @keyframes halloween-pulse { 50% { filter:drop-shadow(0 0 6px #ff6600); opacity:.65; } }
   .halloween-pill { background:rgba(255,102,0,.13);border:1px solid rgba(255,102,0,.45);color:#ffb36d;box-shadow:0 0 25px rgba(255,102,0,.08); }
   .halloween-headline { text-shadow:0 0 24px rgba(255,102,0,.26),0 0 55px rgba(160,32,240,.14); }
   @keyframes halloween-mist-drift { from { transform:translateX(-3%); } to { transform:translateX(3%); } }
