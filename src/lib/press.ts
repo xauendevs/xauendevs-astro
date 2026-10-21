@@ -43,6 +43,110 @@ function metaContent(html: string, keys: string[]): string | undefined {
   return undefined;
 }
 
+type Json = Record<string, any>;
+
+/** Artículos del JSON-LD de la página (NewsArticle, Article, BlogPosting…), también dentro de @graph. */
+function jsonLdArticle(html: string): Json | undefined {
+  const blocks = html.match(/<script[^>]+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) ?? [];
+  const nodes: Json[] = [];
+  const collect = (value: unknown) => {
+    if (Array.isArray(value)) value.forEach(collect);
+    else if (value && typeof value === "object") {
+      nodes.push(value as Json);
+      if ((value as Json)["@graph"]) collect((value as Json)["@graph"]);
+    }
+  };
+  for (const block of blocks) {
+    try {
+      collect(JSON.parse(block.replace(/^<script[^>]*>/i, "").replace(/<\/script>$/i, "")));
+    } catch {
+      // JSON-LD mal formado: se ignora y se sigue con lo demás.
+    }
+  }
+  const isArticle = (node: Json) =>
+    [node["@type"]].flat().some((type) => typeof type === "string" && /(News)?Article|BlogPosting|Report/i.test(type));
+  return nodes.find(isArticle);
+}
+
+const ldImage = (image: unknown): string | undefined => {
+  if (!image) return undefined;
+  if (typeof image === "string") return image;
+  if (Array.isArray(image)) return ldImage(image[0]);
+  return (image as Json).url ?? (image as Json).contentUrl;
+};
+
+const stripTags = (html: string) => decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " "));
+
+/**
+ * Lo que se puede sacar del propio cuerpo de la noticia cuando el medio no publica metadatos:
+ * el primer <h1>, el primer párrafo con sustancia y la primera imagen grande, mejor dentro de <article>.
+ */
+function scrapeBody(html: string) {
+  const article = html.match(/<article\b[\s\S]*?<\/article>/i)?.[0] ?? html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] ?? html;
+  const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
+  const paragraph = (article.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) ?? []).map(stripTags).find((text) => text.length >= 80);
+  const image = (article.match(/<img\b[^>]*>/gi) ?? [])
+    .filter((tag) => !/\b(?:logo|avatar|icon|sprite|pixel|placeholder)\b/i.test(tag))
+    .map((tag) => tag.match(/\b(?:data-src|data-lazy-src|src)\s*=\s*["']([^"']+)["']/i)?.[1])
+    .find((src) => src && !src.startsWith("data:") && !/\.svg(\?|$)/i.test(src));
+  return {
+    title: h1 ? stripTags(h1) : undefined,
+    description: paragraph && paragraph.length > 220 ? `${paragraph.slice(0, 217).replace(/\s+\S*$/, "")}…` : paragraph,
+    image,
+  };
+}
+
+/**
+ * El HTML con la codificación correcta: algunos medios aún sirven ISO-8859-1 / Windows-1252 y
+ * response.text() lo leería como UTF-8 (tildes rotas). Se mira la cabecera y, si no dice nada, el <meta charset>.
+ */
+async function readHtml(response: Response): Promise<string> {
+  const bytes = new Uint8Array(await response.arrayBuffer()).slice(0, 2_000_000);
+  const head = new TextDecoder("latin1").decode(bytes.slice(0, 4096));
+  const charset =
+    response.headers.get("content-type")?.match(/charset=([\w-]+)/i)?.[1] ??
+    head.match(/<meta[^>]+charset\s*=\s*["']?([\w-]+)/i)?.[1] ??
+    "utf-8";
+  try {
+    return new TextDecoder(charset.toLowerCase()).decode(bytes);
+  } catch {
+    return new TextDecoder("utf-8").decode(bytes);
+  }
+}
+
+const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+/**
+ * Fecha escrita en el texto de la noticia, para medios sin metadatos de fecha: «Publicado el 20 de octubre
+ * de 2026» o «Publicado: 20/10/2026». Solo cuenta si va tras «publicado» o «fecha», para no coger la fecha
+ * de hoy que muchos medios ponen en la cabecera.
+ */
+function textDate(html: string): string | undefined {
+  const text = stripTags(html);
+  const long = text.match(/(?:publicad[oa]|fecha)[^0-9]{0,30}(\d{1,2}) de ([a-záéíóú]+),? (?:de |del )?(20\d{2})/i);
+  if (long) {
+    const month = MONTHS.indexOf(long[2].toLowerCase().replace("setiembre", "septiembre"));
+    if (month >= 0) return `${long[3]}-${String(month + 1).padStart(2, "0")}-${long[1].padStart(2, "0")}T12:00:00`;
+  }
+  const short = text.match(/(?:publicad[oa]|fecha)[^0-9]{0,30}(\d{1,2})[/.-](\d{1,2})[/.-](20\d{2})/i);
+  if (short) return `${short[3]}-${short[2].padStart(2, "0")}-${short[1].padStart(2, "0")}T12:00:00`;
+  return undefined;
+}
+
+/** Algunos medios ponen su dominio como og:site_name («www.diariojaen.es»): se deja en «diariojaen.es». */
+const prettySiteName = (name?: string) => (name && /^[\w.-]+\.[a-z]{2,}$/i.test(name) ? name.replace(/^www\./, "") : name);
+
+/** Quita el nombre del medio cuando va pegado al titular: «Extra Jaén | Titular» o «Titular - Diario Jaén». */
+function cleanTitle(title: string, siteName?: string): string {
+  if (!siteName) return title;
+  const site = siteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const cleaned = title
+    .replace(new RegExp(`^${site}\\s*[|\\-–—:·]\\s*`, "i"), "")
+    .replace(new RegExp(`\\s*[|\\-–—:·]\\s*${site}$`, "i"), "")
+    .trim();
+  return cleaned || title;
+}
+
 async function readMeta(url: string): Promise<PageMeta> {
   const hit = cache.get(url);
   if (hit && Date.now() - hit.at < hit.ttl) return hit.meta;
@@ -54,21 +158,43 @@ async function readMeta(url: string): Promise<PageMeta> {
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; XauenDevsBot/1.0; +https://xauendevs.io/prensa)",
         Accept: "text/html,application/xhtml+xml",
+        "Accept-Language": "es-ES,es;q=0.9",
       },
       redirect: "follow",
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(6000),
     });
     if (response.ok) {
-      // Solo hace falta el <head>: con los primeros 300 KB sobra.
-      const html = (await response.text()).slice(0, 300_000);
-      const image = metaContent(html, ["og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src"]);
+      const html = await readHtml(response);
+      const base = response.url || url;
+      // Por orden de fiabilidad: Open Graph y Twitter, luego JSON-LD del artículo y, si no hay nada,
+      // lo que se lea del propio cuerpo de la noticia.
+      const ld = jsonLdArticle(html) ?? {};
+      const body = scrapeBody(html);
       const titleTag = html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1];
+      const image =
+        metaContent(html, ["og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src"]) ??
+        ldImage(ld.image) ??
+        html.match(/<link[^>]+rel\s*=\s*["']image_src["'][^>]*href\s*=\s*["']([^"']+)["']/i)?.[1] ??
+        body.image;
+      const siteName = prettySiteName(metaContent(html, ["og:site_name", "application-name"]) ?? ld.publisher?.name);
+      const title =
+        metaContent(html, ["og:title", "twitter:title"]) ??
+        (typeof ld.headline === "string" ? decode(ld.headline) : undefined) ??
+        body.title ??
+        (titleTag ? decode(titleTag) : undefined);
       meta = {
-        title: metaContent(html, ["og:title", "twitter:title"]) ?? (titleTag ? decode(titleTag) : undefined),
-        description: metaContent(html, ["og:description", "twitter:description", "description"]),
-        image: image ? new URL(image, response.url || url).href : undefined,
-        siteName: metaContent(html, ["og:site_name", "application-name"]),
-        published: metaContent(html, ["article:published_time", "og:published_time", "datepublished", "date", "dc.date"]),
+        title: title && cleanTitle(title, siteName),
+        description:
+          metaContent(html, ["og:description", "twitter:description", "description"]) ??
+          (typeof ld.description === "string" ? decode(ld.description) : undefined) ??
+          body.description,
+        image: image ? new URL(decode(image), base).href : undefined,
+        siteName,
+        published:
+          metaContent(html, ["article:published_time", "og:published_time", "datepublished", "date", "dc.date"]) ??
+          ld.datePublished ??
+          html.match(/<time\b[^>]*datetime\s*=\s*["']([^"']+)["']/i)?.[1] ??
+          textDate(html),
       };
       ttl = OK_TTL;
     }
@@ -107,7 +233,8 @@ async function toItem(entry: PressEntry): Promise<PressItem> {
 
 /** Todas las noticias, de la más reciente a la más antigua (las que no tienen fecha, al final). */
 export async function getPress(limit?: number): Promise<PressItem[]> {
-  const items = await Promise.all(PRESS.map(toItem));
+  const entries = PRESS.map((entry) => (typeof entry === "string" ? { url: entry } : entry));
+  const items = await Promise.all(entries.map(toItem));
   items.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
   return limit ? items.slice(0, limit) : items;
 }
