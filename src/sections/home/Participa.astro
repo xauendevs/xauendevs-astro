@@ -1,0 +1,251 @@
+---
+import { DISCORD_URL } from "@/consts/social-links";
+
+interface Item {
+  name: string;
+  value: string;
+  text: string;
+  href: string;
+  /** Recarga completa (la página de eventos lee el filtro de la URL). */
+  reload?: boolean;
+  external?: boolean;
+}
+
+const groups: { name: string; items: Item[] }[] = [
+  {
+    name: "Para venir",
+    items: [
+      { name: "Asistir a una Pivo&Code", value: "entrada libre", text: "Una charla, preguntas y una cerveza después. Se reserva sitio en la página de cada charla.", href: "/eventos?tipo=xauen", reload: true },
+      { name: "Otros eventos en Jaén", value: "agenda", text: "Lo que organizan otras comunidades y la universidad, en un mismo sitio.", href: "/eventos" },
+    ],
+  },
+  {
+    name: "Para contar",
+    items: [
+      { name: "Dar una charla", value: "propuesta", text: "Lo que estés haciendo en el trabajo o en casa vale. Te ayudamos a prepararla.", href: "/proponer-evento" },
+      { name: "Proponer una idea", value: "formulario", text: "Un taller, una quedada, un formato nuevo. Cuéntanoslo y lo vemos juntos.", href: "/proponer-evento" },
+    ],
+  },
+  {
+    name: "Para quedarse",
+    items: [
+      { name: "Entrar en el Discord", value: "abierto", text: "Donde se anuncian las charlas y sigue la conversación cuando se apagan las luces.", href: DISCORD_URL, external: true },
+      { name: "Echar una mano", value: "organización", text: "Difundir, grabar, buscar sitio o ponente. Siempre hace falta alguien.", href: DISCORD_URL, external: true },
+    ],
+  },
+];
+
+// Personas que ya han dado una Pivo&Code (fotos de /public/img/charlantes).
+const speakers = [
+  { name: "Abdallah Abedraba", photo: "abdallah.png" },
+  { name: "Lorena del Moral", photo: "lorena-del-moral.jpeg" },
+  { name: "Antonio Paredes", photo: "antonio-paredes.jpeg" },
+  { name: "Pedro D. Díez", photo: "pedro-d-diez.jpeg" },
+  { name: "Rocío Ortega", photo: "rocio-ortega.jpeg" },
+  { name: "Diego Montesinos", photo: "diego-montesinos.jpeg" },
+  { name: "José Cruz", photo: "jose-cruz.jpeg" },
+  { name: "Francisco Sánchez", photo: "francisco-sanchez.jpeg" },
+  { name: "Guillermo del Pino", photo: "guillermo-del-pino.jpeg" },
+  { name: "Samuel Rocha", photo: "samuel-rocha.jpeg" },
+  { name: "Jonathan Izquierdo", photo: "jonathan-izquierdo.jpeg" },
+  { name: "Daniel Redondo", photo: "daniredondo.jpeg" },
+];
+---
+
+<section class="participa" aria-labelledby="participa-title">
+  <div class="sheet" data-reveal>
+    <h2 id="participa-title" class="poster sheet-title">Cómo participar</h2>
+    {
+      groups.map((group) => (
+        <div class="group">
+          <h3 class="group-name">{group.name}</h3>
+          <ul>
+            {group.items.map((item) => (
+              <li>
+                <a
+                  class="item"
+                  href={item.href}
+                  data-astro-reload={item.reload ? true : undefined}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
+                >
+                  <span class="item-line">
+                    <span class="item-name">{item.name}</span>
+                    <span class="leader" aria-hidden="true" />
+                    <span class="item-value">{item.value}</span>
+                  </span>
+                  <span class="item-text">{item.text}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="speakers">
+    <h3 class="speakers-title" data-reveal>Ya se han subido a hablar</h3>
+    <ul class="faces">
+      {
+        speakers.map((s, i) => (
+          <li data-reveal style={`--i:${i % 3}`}>
+            <img
+              src={`/img/charlantes/${s.photo}`}
+              alt={s.name}
+              width="320"
+              height="320"
+              loading="lazy"
+              decoding="async"
+            />
+            <span>{s.name}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="speakers-cta" data-reveal>
+      <a class="btn" href="/proponer-evento">Quiero dar una charla <span class="arrow" aria-hidden="true">→</span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .participa {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gap);
+    padding: var(--section) var(--m) calc(var(--section) * 0.75);
+    background: var(--paper);
+    color: var(--paper-ink);
+    align-items: start;
+  }
+
+  /* La carta: papel con bordes en zigzag arriba y abajo */
+  .sheet {
+    grid-column: 1 / span 6;
+    background: var(--sheet);
+    color: var(--sheet-ink);
+    padding: 72px clamp(24px, 4vw, 56px) 80px;
+    clip-path: polygon(
+      0 14px, 4% 0, 8% 14px, 12% 0, 16% 14px, 20% 0, 24% 14px, 28% 0, 32% 14px, 36% 0, 40% 14px, 44% 0, 48% 14px,
+      52% 0, 56% 14px, 60% 0, 64% 14px, 68% 0, 72% 14px, 76% 0, 80% 14px, 84% 0, 88% 14px, 92% 0, 96% 14px, 100% 0,
+      100% calc(100% - 14px), 96% 100%, 92% calc(100% - 14px), 88% 100%, 84% calc(100% - 14px), 80% 100%,
+      76% calc(100% - 14px), 72% 100%, 68% calc(100% - 14px), 64% 100%, 60% calc(100% - 14px), 56% 100%,
+      52% calc(100% - 14px), 48% 100%, 44% calc(100% - 14px), 40% 100%, 36% calc(100% - 14px), 32% 100%,
+      28% calc(100% - 14px), 24% 100%, 20% calc(100% - 14px), 16% 100%, 12% calc(100% - 14px), 8% 100%,
+      4% calc(100% - 14px), 0 100%
+    );
+  }
+  .sheet-title {
+    text-align: center;
+    font-size: clamp(2.5rem, 1.6rem + 2.4vw, 3.75rem);
+    margin-bottom: 40px;
+  }
+  .group + .group {
+    margin-top: 44px;
+  }
+  .group-name {
+    font-size: var(--step-body);
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .group ul {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .item {
+    display: block;
+    transition: transform 0.25s var(--ease-out);
+  }
+  .item:hover {
+    transform: translateX(4px);
+  }
+  .item-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .item-name {
+    font-size: var(--step-body);
+    font-weight: 650;
+  }
+  .leader {
+    flex: 1;
+    min-width: 24px;
+    border-bottom: 4px dotted currentColor;
+    opacity: 0.45;
+    transform: translateY(-4px);
+  }
+  .item-value {
+    font-weight: 650;
+  }
+  .item-text {
+    display: block;
+    margin-top: 4px;
+    font-size: var(--step-small);
+    color: var(--sheet-soft);
+    max-width: 40ch;
+  }
+
+  .speakers {
+    grid-column: 8 / span 5;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 24px;
+  }
+  .speakers-title {
+    font-size: var(--step-lead);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .faces {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+  }
+  .faces img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.4s ease;
+  }
+  .faces li:hover img {
+    filter: none;
+  }
+  .faces span {
+    display: block;
+    margin-top: 8px;
+    font-size: var(--step-small);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  @media (max-width: 900px) {
+    .participa {
+      grid-template-columns: 1fr;
+      padding-inline: 12px;
+    }
+    .sheet,
+    .speakers {
+      grid-column: 1;
+    }
+    .sheet {
+      padding: 56px 20px 64px;
+    }
+    .speakers {
+      padding: 56px 4px 0;
+    }
+    .speakers-cta .btn {
+      width: 100%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .item,
+    .faces img {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,176 @@
+---
+import { formatHour, toRoman, type Edition } from "@/lib/pivo-edition";
+
+interface Props {
+  past: Edition[];
+}
+
+const { past } = Astro.props;
+const last = past.at(-1);
+const held = last?.number ?? past.length;
+
+// La hora más repetida y los sitios donde hemos estado, sacados de las propias charlas.
+const hours = new Map<string, number>();
+past.forEach((e) => hours.set(formatHour(e.date), (hours.get(formatHour(e.date)) ?? 0) + 1));
+const usualHour = [...hours.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "19:00";
+const weekdays = new Map<string, number>();
+past.forEach((e) => {
+  const day = new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", weekday: "long" }).format(e.date);
+  weekdays.set(day, (weekdays.get(day) ?? 0) + 1);
+});
+const usualDay = [...weekdays.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "viernes";
+---
+
+<section class="intro" id="own-mission" aria-labelledby="intro-title">
+  <div class="intro-top">
+    <h2 id="intro-title" class="poster intro-title" data-reveal>Desde 2017 en Jaén</h2>
+    <p class="intro-note" data-reveal style="--i:1">
+      XauenDevs nace en 2017 para difundir el desarrollo de software y la tecnología en la provincia: charlas
+      mensuales y una comunidad que sigue hablando en Discord entre una y otra.
+    </p>
+  </div>
+
+  <dl class="facts">
+    <div data-reveal style="--i:0">
+      <dt class="poster">2017</dt>
+      <dd>Nace XauenDevs</dd>
+    </div>
+    <div data-reveal style="--i:1">
+      <dt class="poster">{toRoman(held)}</dt>
+      <dd>{held} Pivo&amp;Code celebradas</dd>
+    </div>
+    <div data-reveal style="--i:2">
+      <dt class="poster">{usualDay}</dt>
+      <dd>El día de la semana que más se repite</dd>
+    </div>
+    <div data-reveal style="--i:3">
+      <dt class="poster">{usualHour}</dt>
+      <dd>La hora a la que suele empezar</dd>
+    </div>
+  </dl>
+
+  <div class="intro-bottom">
+    <div class="intro-who" data-reveal>
+      <h3 class="who-title">Quién está detrás</h3>
+      <p>
+        Alberto Tejero, Alejandro, Adrián y Alberto. Buscamos a quien dé la charla, el sitio y la fecha, y lo contamos
+        aquí y en Discord. Lo demás lo pone cada persona que se sienta a escuchar o se levanta a hablar.
+      </p>
+      <p>
+        <a class="link" href="/proponer-evento">Proponer una charla o una idea</a>
+      </p>
+    </div>
+    <figure class="intro-photo" data-reveal style="--i:1">
+      <img
+        src="/img/home/pivo-sala.webp"
+        alt="La sala de Cuatro Gatos Coworking llena durante una Pivo&Code, con la pantalla al fondo"
+        width="2000"
+        height="1333"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>Pivo&amp;Code en Cuatro Gatos Coworking, calle Obispo Aguilar.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .intro {
+    background: var(--sheet);
+    color: var(--sheet-ink);
+    padding: var(--section) var(--m) calc(var(--section) * 0.85);
+  }
+  .intro-top {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gap);
+    align-items: end;
+  }
+  .intro-title {
+    grid-column: 1 / span 7;
+    font-size: var(--step-head);
+  }
+  .intro-note {
+    grid-column: 9 / span 4;
+    max-width: 34ch;
+    font-size: var(--step-body);
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 32px 24px;
+    margin-top: clamp(72px, 9vw, 128px);
+  }
+  .facts dt {
+    font-size: var(--step-head);
+  }
+  .facts dd {
+    margin-top: 10px;
+    font-size: var(--step-small);
+    font-weight: 500;
+    color: var(--sheet-soft);
+    max-width: 22ch;
+  }
+
+  .intro-bottom {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gap);
+    margin-top: clamp(72px, 9vw, 128px);
+    align-items: center;
+  }
+  .intro-who {
+    grid-column: 1 / span 5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 44ch;
+  }
+  .who-title {
+    font-size: var(--step-lead);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .intro-photo {
+    grid-column: 7 / span 6;
+  }
+  .intro-photo img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .intro-photo figcaption {
+    margin-top: 12px;
+    font-size: var(--step-small);
+    color: var(--sheet-soft);
+  }
+
+  @media (max-width: 900px) {
+    .intro-top,
+    .intro-bottom {
+      grid-template-columns: 1fr;
+    }
+    .intro-title,
+    .intro-note,
+    .intro-who,
+    .intro-photo {
+      grid-column: 1;
+    }
+    .intro-note {
+      margin-top: 20px;
+    }
+    .facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px 16px;
+    }
+    .facts dt {
+      font-size: clamp(2.25rem, 10vw, 3rem);
+    }
+    .intro-photo {
+      margin-top: 40px;
+    }
+  }
+</style>

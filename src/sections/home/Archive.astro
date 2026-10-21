@@ -1,0 +1,203 @@
+---
+import { slugify } from "@/lib/event-slug";
+import { yearOf, type Edition } from "@/lib/pivo-edition";
+
+interface Props {
+  past: Edition[];
+}
+
+const { past } = Astro.props;
+
+const byYear = new Map<number, Edition[]>();
+[...past].reverse().forEach((e) => {
+  const y = yearOf(e.date);
+  byYear.set(y, [...(byYear.get(y) ?? []), e]);
+});
+const years = [...byYear.entries()];
+const dayMonth = (d: Date) =>
+  new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", day: "2-digit", month: "2-digit" }).format(d);
+---
+
+<section class="archive" id="archivo" aria-labelledby="archive-title">
+  <div class="archive-col">
+    <h2 id="archive-title" class="poster archive-word" data-reveal>Archivo</h2>
+    <p class="archive-lead" data-reveal style="--i:1">
+      Todas las Pivo&amp;Code, de la {past[0]?.roman ?? "I"} a la {past.at(-1)?.roman}. Ábrelas por año y
+      entra en la que quieras.
+    </p>
+    <div class="years">
+      {
+        years.map(([year, list], index) => (
+          <details class="year" name="archivo" open={index === 0} data-reveal style={`--i:${Math.min(index, 6)}`}>
+            <summary>
+              <span class="year-name">{year}</span>
+              <span class="year-count">
+                {list.length} {list.length === 1 ? "charla" : "charlas"}
+              </span>
+              <span class="plus" aria-hidden="true" />
+            </summary>
+            <ol class="year-list">
+              {list.map((e) => (
+                <li>
+                  <span class="poster year-num">{e.roman}</span>
+                  <a class="year-talk" href={`/eventos/${slugify(e.title)}`}>
+                    {e.shortTitle}
+                    {e.speakers && e.speakers.length > 0 && (
+                      <span class="year-who">{e.speakers.map((s) => s.name).join(", ")}</span>
+                    )}
+                  </a>
+                  <time datetime={e.date.toISOString()}>{dayMonth(e.date)}</time>
+                </li>
+              ))}
+            </ol>
+          </details>
+        ))
+      }
+    </div>
+    <p class="archive-more">
+      <a class="link" data-astro-reload href="/eventos?tipo=xauen">Ver las charlas con vídeo y fotos</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .archive {
+    padding: max(var(--section), 140px) var(--m) var(--section);
+    background: var(--ground);
+    color: var(--on-ground);
+  }
+  .archive-col {
+    container-type: inline-size;
+    width: min(100%, 760px);
+    margin-inline: auto;
+  }
+  .archive-word {
+    font-size: 24.5cqw;
+    line-height: 0.8;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .archive-lead {
+    margin-top: 28px;
+    font-size: var(--step-lead);
+    line-height: 1.3;
+    max-width: 30ch;
+  }
+  .years {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .year {
+    background: var(--ground-step);
+  }
+  .year summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 60px;
+    padding: 0 20px;
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 0.2s ease;
+  }
+  .year summary::-webkit-details-marker {
+    display: none;
+  }
+  .year summary:hover {
+    background: rgb(255 255 255 / 0.05);
+  }
+  .year-name {
+    font-weight: 800;
+    font-size: var(--step-body);
+    font-variant-numeric: tabular-nums;
+  }
+  .year-count {
+    color: var(--on-ground-soft);
+    font-size: var(--step-small);
+  }
+  .plus {
+    position: relative;
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+  }
+  .plus::before,
+  .plus::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 18px;
+    height: 3px;
+    background: var(--paper);
+    transition: transform 0.3s var(--ease-out);
+  }
+  .plus::after {
+    transform: rotate(90deg);
+  }
+  .year[open] .plus::after {
+    transform: rotate(0deg);
+  }
+
+  .year:not([open]) .year-list {
+    display: none;
+  }
+  .year-list {
+    padding: 4px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .year-list li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .year-num {
+    font-size: 1.5rem;
+    color: var(--paper);
+  }
+  .year-talk {
+    font-weight: 600;
+    line-height: 1.3;
+    transition: color 0.2s ease;
+  }
+  .year-talk:hover {
+    color: var(--paper);
+  }
+  .year-who {
+    display: block;
+    font-weight: 400;
+    font-size: var(--step-small);
+    color: var(--on-ground-soft);
+    margin-top: 2px;
+  }
+  .year-list time {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step-small);
+    color: var(--on-ground-soft);
+  }
+  .archive-more {
+    margin-top: 32px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .year-list li {
+      grid-template-columns: 3.25rem 1fr;
+    }
+    .year-list time {
+      grid-column: 2;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plus::before,
+    .plus::after {
+      transition: none;
+    }
+  }
+</style>

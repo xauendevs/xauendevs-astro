@@ -7,6 +7,8 @@
   --season-rgb: 246 183 3;
   --night-rgb: 8 8 11;
   --season-ink-rgb: 0 0 0;
+  --season-soft-rgb: 255 214 102;
+  --season-alt-rgb: 243 241 236;
 }
 
 /* Cualquier temporada: diseño oscuro con el acento de la temporada */

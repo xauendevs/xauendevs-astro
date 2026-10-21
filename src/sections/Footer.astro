@@ -1,17 +1,158 @@
 ---
-import PreFooter from "@/components/PreFooter.astro";
+import { SOCIAL_LINKS } from "@/consts/social-links";
+
+// El reverso de la entrada: una postal con borde festoneado. Usa los mismos tokens de temporada
+// que la portada, así que en Halloween o Navidad cambia de color sola.
+const links = SOCIAL_LINKS.filter((l) => l.href);
+const scallops = 12;
+const year = new Date().getFullYear();
 ---
 
-<footer class="flex flex-col items-center p-8 md:p-10 gap-5">
-  <PreFooter />
-  <div class="flex group">
-    <span
-      class="text-accent grayscale group-hover:grayscale-0 transition-all duration-500"
-      >:X\D &gt;_ &nbsp;
-    </span>
-    <span
-      class="font-extralight grayscale group-hover:grayscale-0 text-black/80 fest:text-white/80 transition-all duration-500"
-      >hecho con 💚 en Jaén</span
-    >
+<footer class="site-footer">
+  <div class="postcard">
+    <svg class="scallops" viewBox={`0 0 ${scallops * 100} 50`} preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d={`M0 50 ${Array.from({ length: scallops }, (_, i) => `A50 50 0 0 1 ${(i + 1) * 100} 50`).join(" ")} Z`}
+      />
+    </svg>
+
+    <div class="postcard-body">
+      <div class="message">
+        <p class="poster-sign">Hecho en Jaén</p>
+        <p>
+          Si has llegado hasta aquí, ya eres un poco de la comunidad. Te esperamos en la próxima Pivo&amp;Code; la
+          primera ronda de preguntas es tuya.
+        </p>
+        <p class="sign">XauenDevs</p>
+      </div>
+
+      <div class="address">
+        <img
+          class="stamp"
+          src="/img/home/pivo-sala.webp"
+          alt="Sello: la sala de una Pivo&Code"
+          width="88"
+          height="117"
+          loading="lazy"
+          decoding="async"
+        />
+        <ul>
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href!} target="_blank" rel="noopener noreferrer">
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+          <li><a href="/eventos">Agenda de eventos</a></li>
+          <li><a href="/privacidad">Privacidad</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="imprint"><span aria-hidden="true">:X\D &gt;_</span> XauenDevs · comunidad de desarrollo de Jaén · 2017–{year}</p>
   </div>
 </footer>
+
+<style>
+  .site-footer {
+    --paper: rgb(var(--season-rgb));
+    --paper-ink: rgb(var(--season-ink-rgb));
+    background: rgb(var(--night-rgb));
+    padding: clamp(64px, 8vw, 120px) clamp(16px, 2.2vw, 32px) 0;
+  }
+  .postcard {
+    position: relative;
+    max-width: 1200px;
+    margin-inline: auto;
+    background: var(--paper);
+    color: var(--paper-ink);
+    margin-top: 40px;
+    padding: 56px clamp(24px, 5vw, 72px) 28px;
+  }
+  .scallops {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% - 1px);
+    width: 100%;
+    height: clamp(24px, 4vw, 50px);
+    fill: var(--paper);
+  }
+  .postcard-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+  .message {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 42ch;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  .poster-sign {
+    font-stretch: 32%;
+    font-weight: 860;
+    text-transform: uppercase;
+    line-height: 0.92;
+    font-size: clamp(2.25rem, 1.6rem + 2vw, 3.5rem);
+  }
+  .sign {
+    font-weight: 750;
+  }
+  .address {
+    position: relative;
+    padding-top: 8px;
+  }
+  .stamp {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 88px;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    padding: 6px;
+    background: #ececea;
+    rotate: 3deg;
+  }
+  .address ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    padding-right: 120px;
+  }
+  .address a {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+    transition: text-underline-offset 0.2s ease;
+  }
+  .address a:hover {
+    text-underline-offset: 0.4em;
+  }
+  .imprint {
+    margin-top: 56px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 760px) {
+    .postcard-body {
+      grid-template-columns: 1fr;
+    }
+    .stamp {
+      width: 64px;
+      top: -8px;
+    }
+    .address ul {
+      padding-right: 80px;
+    }
+  }
+</style>

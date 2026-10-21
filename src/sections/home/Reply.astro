@@ -1,0 +1,171 @@
+---
+import { DISCORD_URL } from "@/consts/social-links";
+import type { Partner } from "@/types/Partner";
+
+interface Props {
+  partners?: Partner[];
+}
+
+const { partners = [] } = Astro.props;
+const { STRAPI_HOST } = import.meta.env;
+---
+
+<section class="reply" aria-labelledby="reply-title">
+  <div class="reply-side" data-reveal>
+    <p class="reply-text">
+      Las Pivo&amp;Code salen adelante gracias a quienes nos abren la puerta.
+    </p>
+    {
+      partners.length > 0 && (
+        <ul class="partners" aria-label="Partners de XauenDevs">
+          {partners.map(({ name, logo, url }) => (
+            <li>
+              <a href={url} target="_blank" rel="noopener noreferrer">
+                <img src={`${STRAPI_HOST}${logo}`} alt={name} loading="lazy" decoding="async" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+
+  <div class="card" data-reveal style="--i:1">
+    <h2 id="reply-title" class="poster card-title">Nos vemos en Discord</h2>
+    <p class="card-text">
+      Allí avisamos de cada Pivo&amp;Code antes que en ningún sitio, se proponen charlas y sigue la conversación
+      cuando se recogen las sillas.
+    </p>
+    <a class="card-btn" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+      Entrar en el Discord <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .reply {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gap);
+    padding: clamp(72px, 8vw, 120px) var(--m) 0;
+    background: var(--ground);
+    color: var(--on-ground);
+    overflow: hidden;
+    align-items: end;
+  }
+  .reply-side {
+    grid-column: 1 / span 4;
+    align-self: end;
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .reply-text {
+    font-size: var(--step-lead);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+  .partners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+  }
+  .partners a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 88px;
+    padding: 16px;
+    background: var(--sheet);
+    transition: transform 0.25s var(--ease-out);
+  }
+  .partners a:hover {
+    transform: translateY(-3px);
+  }
+  .partners img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .card {
+    grid-column: 6 / span 7;
+    aspect-ratio: 7 / 5;
+    margin-bottom: -60px;
+    rotate: -2deg;
+    background: var(--sheet);
+    color: var(--sheet-ink);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 24px;
+  }
+  .card-title {
+    font-size: clamp(2.25rem, 1.4rem + 2.6vw, 4rem);
+    max-width: 12ch;
+  }
+  .card-text {
+    max-width: 40ch;
+    font-size: var(--step-body);
+  }
+  .card-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    align-self: stretch;
+    min-height: 56px;
+    background: var(--sheet-ink);
+    color: var(--sheet);
+    font-weight: 750;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .card-btn:hover {
+    background: var(--paper);
+    color: var(--paper-ink);
+  }
+  .card-btn .arrow {
+    transition: transform 0.25s var(--ease-out);
+  }
+  .card-btn:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 900px) {
+    .reply {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .reply-side {
+      grid-column: 1;
+      margin-bottom: 48px;
+    }
+    .reply-text {
+      font-size: 1.25rem;
+    }
+    .card {
+      grid-column: 1;
+      width: 90%;
+      justify-self: center;
+      aspect-ratio: auto;
+      rotate: -1deg;
+      padding: 40px 24px 72px;
+      margin-bottom: -40px;
+    }
+    .card-btn {
+      min-height: 52px;
+    }
+    .partners li {
+      flex: 1 1 calc(50% - 6px);
+    }
+    .partners a {
+      width: 100%;
+    }
+  }
+</style>

@@ -24,10 +24,11 @@ export default {
   },
   plugins: [
     animations,
-    // Variantes de temporada. `fest:` aplica con cualquier temporada activa (<body data-festive>);
+    // Variantes de temporada. `fest:` aplica con cualquier temporada activa (<body data-festive>) y en las
+    // páginas oscuras sin temporada (<body data-dark>, la portada);
     // `halloween:` / `navidad:` solo con esa temporada (<body data-theme="...">).
     function ({ addVariant }) {
-      addVariant("fest", "[data-festive] &");
+      addVariant("fest", ["[data-festive] &", "[data-dark] &"]);
       addVariant("halloween", '[data-theme="halloween"] &');
       addVariant("navidad", '[data-theme="navidad"] &');
     },

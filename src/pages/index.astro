@@ -1,26 +1,45 @@
 ---
-import Header from "@/sections/Header.astro";
 import Layout from "@/layouts/Layout.astro";
-import AboutUs from "@/sections/AboutUs.astro";
-import Partners from "@/sections/Partners.astro";
-import Pivos from "@/sections/Pivos.astro";
-import Community from "@/sections/Community.astro";
+import Hero from "@/sections/home/Hero.astro";
+import Intro from "@/sections/home/Intro.astro";
+import Stubs from "@/sections/home/Stubs.astro";
+import Archive from "@/sections/home/Archive.astro";
+import Participa from "@/sections/home/Participa.astro";
+import Reply from "@/sections/home/Reply.astro";
+import { getPivosStrapi } from "@/lib/get-info-pivos";
+import { getPartners } from "@/lib/get-partner";
+import { numberEditions } from "@/lib/pivo-edition";
+import { getSeason } from "@/lib/season";
+import "@/styles/home.css";
 
 // Sin prerender: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
+
+const [pivos, partners, season] = await Promise.all([getPivosStrapi(), getPartners(), getSeason(Astro)]);
+
+// La portada es la entrada de la próxima Pivo&Code: todo se numera a partir de las charlas reales.
+const editions = numberEditions(pivos ?? []);
+const now = Date.now();
+const next = editions.find((e) => e.date.getTime() > now);
+const past = editions.filter((e) => e.date.getTime() <= now);
 ---
 
 <Layout
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
+  bleed
+  dark
 >
-  <main class="flex flex-col gap-8">
-    <Header />
-    <AboutUs />
-    <Pivos />
-    <Community />
-    <Partners />
-  </main>
+  <div class="home">
+    <Hero editions={editions} next={next} season={season} />
+    <Intro past={past} />
+    {past.length > 0 && <Stubs past={past} />}
+    {past.length > 0 && <Archive past={past} />}
+    <Participa />
+    <Reply partners={partners ?? []} />
+  </div>
 </Layout>
 
-<style></style>
+<script>
+  import "@/scripts/home-motion";
+</script>

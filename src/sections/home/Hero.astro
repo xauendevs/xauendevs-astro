@@ -1,0 +1,340 @@
+---
+import { slugify } from "@/lib/event-slug";
+import { formatDay, formatHour, shortPlace, type Edition } from "@/lib/pivo-edition";
+import type { Season } from "@/lib/season";
+
+interface Props {
+  editions: Edition[];
+  next?: Edition;
+  season?: Season;
+}
+
+const { editions, next, season } = Astro.props;
+
+// Una barra por cada Pivo&Code celebrada; la última, la que viene, parpadea.
+const pastCount = editions.filter((e) => !next || e.number < next.number).length;
+const bars = Array.from({ length: pastCount + 1 }, (_, i) => i === pastCount);
+
+const photos =
+  season === "halloween"
+    ? [
+        { src: "/img/hero-halloween.webp", alt: "Público de una Pivo&Code en Cuatro Gatos Coworking, con la sala en luz naranja" },
+        { src: "/img/community-halloween.webp", alt: "Asistentes a una charla de XauenDevs en Cuatro Gatos Coworking" },
+      ]
+    : season === "navidad"
+      ? [
+          { src: "/img/community-navidad.webp", alt: "Asistentes a una charla de XauenDevs en Cuatro Gatos Coworking" },
+          { src: "/img/home/pivo-charla.webp", alt: "Un ponente habla ante el público de una Pivo&Code en Cuatro Gatos Coworking" },
+        ]
+      : [
+          { src: "/img/home/pivo-charla.webp", alt: "Un ponente habla ante el público de una Pivo&Code en Cuatro Gatos Coworking" },
+          { src: "/img/home/pivo-sala.webp", alt: "La sala de Cuatro Gatos Coworking llena durante una Pivo&Code" },
+        ];
+
+const eventUrl = next ? `/eventos/${slugify(next.title)}` : "/proponer-evento";
+const speakers = next?.speakers?.map((s) => s.name).join(", ");
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-photo" data-crossfade aria-roledescription="carrusel" aria-label="Fotos de Pivo&Code">
+    {
+      photos.map((photo, i) => (
+        <img
+          src={photo.src}
+          alt={photo.alt}
+          width="2000"
+          height="1333"
+          loading={i === 0 ? "eager" : "lazy"}
+          fetchpriority={i === 0 ? "high" : undefined}
+          decoding="async"
+          class:list={["hero-img", i === 0 && "is-on"]}
+        />
+      ))
+    }
+  </div>
+
+  <article class="ticket" aria-label={next ? `Entrada para la Pivo&Code ${next.roman}` : "Pivo&Code"}>
+    <div class="tally" aria-hidden="true">
+      {bars.map((isNext) => <span class:list={["bar", isNext && "bar-next"]} />)}
+    </div>
+
+    <div class="ticket-body">
+      <h1 id="hero-title" class="poster ticket-title" data-reveal style="--i:1">
+        La comunidad dev de Jaén
+      </h1>
+      <p class="ticket-lead" data-reveal style="--i:2">
+        Desde 2017 organizamos Pivo&amp;Code: una charla de tecnología, una cerveza después y gente con ganas de contar lo que sabe.
+      </p>
+    </div>
+
+    <div class="perforation" aria-hidden="true"><span></span></div>
+
+    <div class="stub" data-reveal style="--i:3">
+      {
+        next ? (
+          <>
+            <div class="stub-title">
+              <h2 class="poster stub-edition">Pivo&amp;Code {next.roman}</h2>
+              <p class="stub-talk">{next.shortTitle}</p>
+            </div>
+            <dl class="stub-facts">
+              <div>
+                <dt>Día</dt>
+                <dd>
+                  <time datetime={next.date.toISOString()}>{formatDay(next.date)}</time>
+                </dd>
+              </div>
+              <div>
+                <dt>Hora</dt>
+                <dd>{formatHour(next.date)}</dd>
+              </div>
+              <div>
+                <dt>Dónde</dt>
+                <dd>{shortPlace(next.place)}</dd>
+              </div>
+              {speakers && (
+                <div>
+                  <dt>Con</dt>
+                  <dd>{speakers}</dd>
+                </div>
+              )}
+            </dl>
+            <div class="stub-action">
+              <a class="btn stub-btn" href={eventUrl}>
+                Reserva tu sitio <span class="arrow" aria-hidden="true">→</span>
+              </a>
+              <p class="stub-live" data-countdown={next.date.toISOString()} data-rsvp-event={slugify(next.title)} aria-live="polite">
+                <span data-countdown-text>Entrada libre, con reserva.</span>
+                <span data-rsvp-total hidden></span>
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="stub-title">
+              <h2 class="poster stub-edition">La próxima Pivo&amp;Code</h2>
+              <p class="stub-talk">Aún no tiene fecha. ¿La das tú?</p>
+            </div>
+            <div class="stub-action">
+              <a class="btn stub-btn" href={eventUrl}>
+                Proponer una charla <span class="arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
+          </>
+        )
+      }
+    </div>
+  </article>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+    padding: 0 var(--m) var(--m);
+    align-items: start;
+  }
+
+  /* ── La foto de la sala: fija mientras la entrada se desplaza ── */
+  .hero-photo {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: var(--m);
+    height: calc(100svh - 2 * var(--m));
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--ground-step);
+  }
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.04);
+    transition:
+      opacity 1.6s ease,
+      transform 7s linear;
+  }
+  .hero-img.is-on {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ── La entrada ── */
+  .ticket {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 2 * var(--m));
+    background: var(--paper);
+    color: var(--paper-ink);
+  }
+
+  .tally {
+    display: flex;
+    gap: 6px;
+    height: 56px;
+    padding: 0 clamp(20px, 3vw, 44px);
+    overflow: hidden;
+  }
+  .bar {
+    flex: 1 1 0;
+    min-width: 3px;
+    max-width: 28px;
+    background: var(--paper-ink);
+  }
+  .bar-next {
+    animation: bar-next 1.4s steps(2, jump-none) infinite;
+  }
+  @keyframes bar-next {
+    to {
+      opacity: 0.15;
+    }
+  }
+
+  .ticket-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: clamp(28px, 4.5vh, 56px) clamp(20px, 4vw, 64px) clamp(20px, 3vh, 36px);
+  }
+  .ticket-title {
+    font-size: clamp(3rem, 1rem + 4.6vw, 5.5rem);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  .ticket-lead {
+    margin-top: 24px;
+    max-width: 44ch;
+    font-size: var(--step-body);
+    font-weight: 500;
+  }
+
+  /* Línea de corte: puntos redondos y dos muescas del color del fondo */
+  .perforation {
+    position: relative;
+    height: 28px;
+    margin-inline: -1px;
+  }
+  .perforation span {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 12px;
+    border-top: 5px dotted var(--paper-ink);
+    opacity: 0.85;
+  }
+  .perforation::before,
+  .perforation::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ground);
+  }
+  .perforation::before {
+    left: -14px;
+  }
+  .perforation::after {
+    right: -14px;
+  }
+
+  .stub {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: clamp(16px, 2.5vh, 28px) clamp(20px, 4vw, 64px) clamp(24px, 4vh, 40px);
+    margin-top: auto;
+  }
+  .stub-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stub-edition {
+    font-size: var(--step-lead);
+    line-height: 1;
+  }
+  .stub-talk {
+    font-size: var(--step-lead);
+    font-weight: 700;
+    line-height: 1.15;
+    max-width: 26ch;
+    text-wrap: balance;
+  }
+  .stub-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px 24px;
+  }
+  .stub-facts dt {
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+  .stub-facts dd {
+    font-size: var(--step-body);
+    font-weight: 750;
+  }
+  .stub-action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+  }
+  .stub-live {
+    display: flex;
+    flex-direction: column;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+    .hero-photo {
+      grid-column: 1;
+      position: relative;
+      top: 0;
+      height: 48svh;
+      min-height: 280px;
+    }
+    .ticket {
+      grid-row: 2;
+      margin: -24px 12px 0;
+      min-height: 0;
+      z-index: 1;
+    }
+    .tally {
+      height: 40px;
+      gap: 4px;
+      padding: 0 20px;
+    }
+    .ticket-title {
+      font-size: clamp(2.25rem, 9.6vw, 4.5rem);
+    }
+    .stub-btn {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar-next {
+      animation: none;
+      opacity: 0.4;
+    }
+    .hero-img {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

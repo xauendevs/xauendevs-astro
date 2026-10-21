@@ -1,0 +1,117 @@
+/* ───────── Portada: propuesta de rediseño ─────────
+   Una impresión a dos tintas: el papel de la entrada (el color de XauenDevs, o el de la temporada)
+   y la tinta negra, sobre el fondo de noche. Todo lo de la portada usa solo estos tokens, así que
+   Halloween y Navidad la recolorean sin tocar nada más (ver src/styles/seasons.css). */
+.home {
+  --paper: rgb(var(--season-rgb));
+  --paper-ink: rgb(var(--season-ink-rgb));
+  --ground: rgb(var(--night-rgb));
+  --on-ground: #ececea;
+  --on-ground-soft: rgb(236 236 234 / 0.72);
+  --sheet: #ececea;
+  --sheet-ink: #0d0d0d;
+  --sheet-soft: rgb(13 13 13 / 0.68);
+  --sheet-step: #dededb;
+  --ground-step: #1a1a1e;
+
+  --m: clamp(16px, 2.2vw, 32px);
+  --gap: 12px;
+  --section: clamp(96px, 12vw, 200px);
+
+  --step-small: 0.875rem;
+  --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+  --step-lead: clamp(1.375rem, 1.1rem + 1vw, 2rem);
+  --step-head: clamp(2.75rem, 1.6rem + 4.4vw, 5.5rem);
+  --step-display: clamp(4.5rem, 2rem + 10vw, 11rem);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  background: var(--ground);
+  color: var(--on-ground);
+  font-size: var(--step-body);
+  line-height: 1.5;
+}
+
+/* Rótulos de cartel: Roboto Flex estrecha y pesada, como el logotipo */
+.home .poster {
+  font-stretch: 32%;
+  font-weight: 860;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+
+.home .wrap {
+  padding-inline: var(--m);
+}
+
+/* Botón: rectángulo plano, una sola forma en toda la página */
+.home .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 56px;
+  padding: 0 1.6rem;
+  font-weight: 750;
+  font-size: var(--step-body);
+  background: var(--sheet-ink);
+  color: var(--sheet);
+  transition:
+    transform 0.25s var(--ease-out),
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.home .btn:hover {
+  transform: translateY(-2px);
+}
+.home .btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.home .btn .arrow {
+  transition: transform 0.25s var(--ease-out);
+}
+.home .btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+.home .link {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+  transition: text-underline-offset 0.2s ease, opacity 0.2s ease;
+}
+.home .link:hover {
+  text-underline-offset: 0.4em;
+}
+
+.home :focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* Entradas al hacer scroll: título, texto e imagen escalonados. Sin JS todo se ve. */
+.js .home [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.js .home [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .home [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .home .btn,
+  .home .btn .arrow {
+    transition: none;
+  }
+}
