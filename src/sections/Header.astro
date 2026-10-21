@@ -1,49 +1,90 @@
 ---
 import FromFor from "../components/FromFor.astro";
+import NextEventPill from "../components/NextEventPill.astro";
+import Bat from "../components/halloween/Bat.astro";
+import Pumpkin from "../components/halloween/Pumpkin.astro";
 ---
 
-<header
-  class="relative flex min-h-[540px] flex-col justify-end overflow-hidden rounded-3xl bg-black px-7 py-10 md:min-h-[580px] md:px-12 md:py-14"
->
+<header class="relative isolate flex min-h-[560px] items-center overflow-hidden bg-night lg:min-h-[500px]">
+  <!-- Foto de la comunidad, virada a morado/naranja para el tema Halloween -->
   <div
     aria-hidden="true"
-    class="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-80 saturate-50 brightness-75"
+    class="absolute inset-0 -z-30 bg-cover bg-[position:70%_40%] bg-no-repeat [filter:hue-rotate(90deg)_saturate(1.4)_brightness(0.8)_contrast(1.1)]"
     style="background-image:url('/img/header.webp')"
-  ></div>
-  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/10"></div>
+  >
+  </div>
+  <div aria-hidden="true" class="absolute inset-0 -z-20 bg-gradient-to-r from-night via-night/70 to-transparent"></div>
+  <div aria-hidden="true" class="absolute inset-0 -z-20 bg-gradient-to-t from-night via-transparent to-night/50"></div>
 
-  <div class="relative z-10 max-w-4xl">
-    <div class="mb-5 flex flex-wrap items-center gap-3">
-      <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-black">
-        XauenDevs
-      </span>
-      <span class="text-sm font-semibold text-white/70">Jaén · Desarrollo · Tecnología</span>
-    </div>
-    <h1 class="text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">
-      La comunidad de desarrollo y tecnología de Jaén.
-    </h1>
-    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
-      Compartimos conocimiento, organizamos eventos y conectamos a personas con ganas de aprender, enseñar y crear.
-    </p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a
-        href="/eventos"
-        class="inline-flex rounded-full bg-accent px-6 py-3 font-bold text-black transition hover:-translate-y-0.5 hover:shadow-lg motion-reduce:transition-none"
-      >
-        Ver próximos eventos →
-      </a>
-      <a
-        href="https://discord.gg/CC9e6dtqxQ"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex rounded-full border border-white/30 bg-white/10 px-6 py-3 font-bold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/15 motion-reduce:transition-none"
-      >
-        Únete a la comunidad
-      </a>
-    </div>
+  <!-- Luna y niebla -->
+  <div
+    aria-hidden="true"
+    class="absolute right-[40%] top-3 -z-10 hidden size-32 rounded-full bg-[radial-gradient(circle_at_30%_30%,#efe3c8,#a99a7e_55%,#5e5545)] opacity-45 blur-[1px] shadow-[0_0_80px_16px_rgba(255,200,130,0.15)] md:block"
+  >
+  </div>
+  <div
+    aria-hidden="true"
+    class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-[radial-gradient(ellipse_at_20%_100%,rgba(124,58,237,0.45),transparent_60%),radial-gradient(ellipse_at_80%_100%,rgba(124,58,237,0.4),transparent_60%)] blur-md"
+  >
   </div>
 
-  <div class="relative z-10 mt-10 hidden md:block">
-    <FromFor />
+  <!-- Murciélagos -->
+  <Bat class="bat-float absolute right-[30%] top-3 -z-10 hidden h-7 w-14 text-black/90 md:block" />
+  <Bat
+    class="bat-float absolute right-[42%] top-[34%] -z-10 hidden h-8 w-16 text-black/90 [animation-delay:-2s] lg:block"
+  />
+  <Bat
+    class="bat-float absolute right-[9%] top-[14%] -z-10 hidden h-9 w-[4.5rem] text-black/90 [animation-delay:-4s] md:block"
+  />
+
+  <!-- Calabazas -->
+  <Pumpkin
+    class="pumpkin-flicker absolute -left-3 bottom-1 -z-[5] h-20 w-auto sm:left-3 sm:h-24 lg:left-6 lg:h-28"
+  />
+  <Pumpkin
+    class="pumpkin-flicker absolute -right-2 bottom-1 -z-[5] h-16 w-auto [animation-delay:-1.4s] sm:right-4 sm:h-20 lg:right-8 lg:h-24"
+  />
+
+  <div class="relative mx-auto w-full max-w-[1314px] px-4 py-10 sm:px-6 lg:px-10 lg:py-8">
+    <NextEventPill server:defer>
+      <span
+        slot="fallback"
+        class="inline-flex rounded-full border border-pumpkin/60 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-pumpkin"
+      >
+        Próximo evento
+      </span>
+    </NextEventPill>
+
+    <h1 class="mt-6 max-w-xl text-lg text-white/95 sm:text-xl">
+      La comunidad de desarrollo y tecnología de Jaén.
+    </h1>
+
+    <FromFor
+      variant="halloween"
+      role="img"
+      aria-label="From XauenDevs for Devs"
+      class="mt-2 h-auto w-full max-w-[min(100%,640px)] [filter:drop-shadow(0_0_20px_rgba(255,138,31,0.6))]"
+    />
+
+    <p class="mt-5 max-w-[34rem] text-base leading-relaxed text-white/70 sm:text-lg">
+      Charlas, eventos y personas que comparten la misma pasión por la tecnología en la provincia de Jaén.
+    </p>
+
+    <div class="mt-7 flex flex-wrap gap-3">
+      <a
+        href="/eventos"
+        class="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-pumpkin to-[#ffa63d] px-6 py-3 font-semibold text-black shadow-[0_0_28px_rgba(255,138,31,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(255,138,31,0.6)] motion-reduce:transition-none"
+      >
+        <span aria-hidden="true">🎃</span>
+        Ver próximos eventos
+        <span aria-hidden="true">→</span>
+      </a>
+      <a
+        href="/#own-mission"
+        class="inline-flex items-center rounded-full border border-pumpkin/70 bg-night/40 px-6 py-3 font-semibold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-pumpkin hover:bg-pumpkin/10 motion-reduce:transition-none"
+      >
+        Conoce nuestra misión
+      </a>
+    </div>
   </div>
 </header>

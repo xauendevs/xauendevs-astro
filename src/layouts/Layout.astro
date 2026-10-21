@@ -9,6 +9,8 @@ interface Props {
   description: string;
   image?: string;
   imageType?: string;
+  /** "halloween" activa el tema oscuro de la portada (barra, fondo y decoraciones). */
+  theme?: "default" | "halloween";
 }
 
 const {
@@ -16,7 +18,9 @@ const {
   description,
   image = "/img/og-xauendevs.svg",
   imageType,
+  theme = "default",
 } = Astro.props;
+const isHalloween = theme === "halloween";
 
 const siteOrigin = import.meta.env.PROD
   ? Astro.site
@@ -52,17 +56,19 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
   </head>
-  <body>
-    <Header />
-    <main class="min-w-0 px-4 sm:px-6 md:px-10">
+  <body data-theme={theme} class:list={[isHalloween && "bg-night text-white"]}>
+    <Header variant={theme} />
+    <main class:list={["min-w-0", !isHalloween && "px-4 sm:px-6 md:px-10"]}>
       <slot class="" />
     </main>
-    <Footer />
+    <Footer theme={theme} />
     <ClientRouter />
   </body>
 </html>
 <style is:global>
   :root {
+    --color-night: #08080b;
+    --color-pumpkin: #ff8a1f;
     --color-primary: #ddd;
     --color-secondary: #333;
     --color-accent: #f6b703;
@@ -106,6 +112,45 @@ const socialImage = new URL(image, siteOrigin).href;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+
+  /* Decoraciones del tema Halloween */
+  @keyframes bat-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(-3deg);
+    }
+    50% {
+      transform: translate3d(10px, -8px, 0) rotate(3deg);
+    }
+  }
+  @keyframes spider-swing {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+  @keyframes pumpkin-flicker {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 18px rgba(255, 138, 31, 0.75));
+    }
+    50% {
+      filter: drop-shadow(0 0 26px rgba(255, 170, 60, 0.95));
+    }
+  }
+  .bat-float {
+    animation: bat-float 6s ease-in-out infinite;
+  }
+  .spider-swing {
+    transform-origin: top center;
+    animation: spider-swing 5s ease-in-out infinite;
+  }
+  .pumpkin-flicker {
+    animation: pumpkin-flicker 3.2s ease-in-out infinite;
   }
 
   #header-nav {

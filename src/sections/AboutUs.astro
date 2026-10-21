@@ -1,74 +1,64 @@
-<section class="grid grid-cols-1 md:grid-cols-[40%_60%]" id="own-mission">
-  <div class="bg-black/5 rounded-3xl p-7 lg:p-10 md:mr-8 mb-8 md:mb-0">
-    <h2 class="font-bold text-2xl">Nuestra misión</h2>
-    <section class="mt-4">
-      <details name="about-us" open>
-        <summary class="text-xl"> ¿Qué somos? </summary>
-        <p class="mt-4">
-          XauenDevs nace en 2017 como comunidad de desarrolladores de software
-          en la provincia de Jaén. Nuestro principal objetivo es difundir
-          conocimiento sobre desarrollo y tecnología en general.
-        </p>
-      </details>
-      <hr />
-      <details name="about-us">
-        <summary class="text-xl"> ¿Qué queremos? </summary>
-        <p class="mt-4">
-          Entre otras tantas actividades, nuestra principal labor se basa en
-          organizar charlas mensuales con diferentes temáticas y profesionales
-          de distintos campos, siempre relacionados con la tecnología.
-        </p>
-      </details>
-      <hr />
-      <details name="about-us">
-        <summary class="text-xl"> ¿Quiénes somos? </summary>
-        <p class="mt-4">
-          Actualmente, XauenDevs los conformamos 4 personas: Alberto Tejero,
-          Alejandro, Adrián y Alberto. Todos somos muy apasionados por el
-          desarrollo y la tecnologí y tratamos de transmitirlo en cada actividad
-          que realizamos.
-        </p>
-      </details>
-    </section>
-  </div>
-  <div class="max-h-[400px] min-h-[400px] overflow-hidden relative rounded-3xl">
-    <div
-      id="background-image"
-      class="absolute left-0 top-0 bottom-0 right-0 w-full h-full opacity-90 bg-blend-luminosity bg-center bg-cover bg-no-repeat z-10 saturate-50 brightness-75"
-      style=`background-image:url('/img/home.webp')`
-    >
+---
+import Bat from "@/components/halloween/Bat.astro";
+import Cobweb from "@/components/halloween/Cobweb.astro";
+import Code from "@/components/icons/Code.astro";
+import Rocket from "@/components/icons/Rocket.astro";
+import Users from "@/components/icons/Users.astro";
+
+const pillars = [
+  {
+    title: "¿Qué somos?",
+    text: "Una comunidad abierta de personas apasionadas por la tecnología, el desarrollo y la innovación.",
+    Icon: Users,
+  },
+  {
+    title: "¿Qué queremos?",
+    text: "Fomentar el talento, el conocimiento y las oportunidades en el ecosistema tecnológico de Jaén.",
+    Icon: Rocket,
+  },
+  {
+    title: "¿Cómo lo hacemos?",
+    text: "Organizando charlas, eventos, meetups y actividades para conectar a la comunidad.",
+    Icon: Code,
+  },
+];
+---
+
+<section
+  id="own-mission"
+  aria-labelledby="own-mission-title"
+  class="relative mx-auto w-full max-w-[1398px] scroll-mt-6 px-4 py-12 sm:px-6 lg:py-14"
+>
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.8fr)] lg:gap-12">
+    <div class="relative">
+      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-pumpkin">
+        Comunidad · Tecnología · Jaén
+      </p>
+      <h2 id="own-mission-title" class="text-3xl font-black tracking-tight text-white sm:text-4xl">
+        Nuestra misión
+      </h2>
+      <p class="mt-6 max-w-md leading-relaxed text-white/70">
+        Impulsar la comunidad de desarrolladores y profesionales de la tecnología en Jaén, creando un espacio abierto
+        para aprender, compartir y crecer juntos.
+      </p>
+      <Bat
+        class="bat-float pointer-events-none absolute -top-2 right-6 hidden h-8 w-16 text-white/10 sm:block lg:right-12"
+      />
     </div>
+
+    <ul class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      {
+        pillars.map(({ title, text, Icon }) => (
+          <li class="relative overflow-hidden rounded-xl border border-pumpkin/70 bg-gradient-to-b from-white/[0.03] to-transparent p-5 shadow-[0_0_24px_rgba(255,138,31,0.18),inset_0_0_30px_rgba(255,138,31,0.05)]">
+            <Cobweb
+              class="pointer-events-none absolute right-0 top-0 h-20 w-20 -scale-x-100 text-pumpkin/25"
+            />
+            <Icon class="relative size-9 text-pumpkin" />
+            <h3 class="relative mt-6 font-bold text-white">{title}</h3>
+            <p class="relative mt-3 text-sm leading-relaxed text-white/70">{text}</p>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
-
-<style>
-  summary {
-    display: flex;
-  }
-  :root {
-    interpolate-size: allow-keywords;
-  }
-  details {
-    overflow: clip;
-    cursor: pointer;
-  }
-  details::details-content {
-    height: 0;
-    transition:
-      height 0.3s,
-      content-visibility 0.3s allow-discrete;
-  }
-
-  details[open]::details-content {
-    height: auto;
-  }
-
-  hr {
-    display: block;
-    height: 2px;
-    border: 0;
-    border-top: 1px solid #003d40;
-    margin: 1em 0;
-    padding: 0;
-  }
-</style>

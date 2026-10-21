@@ -8,6 +8,8 @@ export default {
         accent: "var(--color-accent)",
         "accent-text": "var(--color-accent-text)",
         dark: "var(--color-dark)",
+        night: "#08080b",
+        pumpkin: "#ff8a1f",
       },
       brightness: {
         25: ".25",

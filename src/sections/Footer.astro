@@ -1,16 +1,26 @@
 ---
 import PreFooter from "@/components/PreFooter.astro";
+
+interface Props {
+  theme?: "default" | "halloween";
+}
+
+const { theme = "default" } = Astro.props;
+const isHalloween = theme === "halloween";
 ---
 
-<footer class="flex flex-col items-center p-8 md:p-10 gap-5">
+<footer class:list={["flex flex-col items-center p-8 md:p-10 gap-5", isHalloween && "mx-auto w-full max-w-[1350px]"]}>
   <PreFooter />
   <div class="flex group">
     <span
-      class="text-accent grayscale group-hover:grayscale-0 transition-all duration-500"
+      class:list={["grayscale group-hover:grayscale-0 transition-all duration-500", isHalloween ? "text-pumpkin" : "text-accent"]}
       >:X\D &gt;_ &nbsp;
     </span>
     <span
-      class="font-extralight grayscale group-hover:grayscale-0 text-black/80 transition-all duration-500"
+      class:list={[
+        "font-extralight grayscale group-hover:grayscale-0 transition-all duration-500",
+        isHalloween ? "text-white/80" : "text-black/80",
+      ]}
       >hecho con 💚 en Jaén</span
     >
   </div>

@@ -2,6 +2,7 @@
 import Header from "@/sections/Header.astro";
 import Layout from "@/layouts/Layout.astro";
 import AboutUs from "@/sections/AboutUs.astro";
+import RealCommunity from "@/sections/RealCommunity.astro";
 import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
@@ -10,16 +11,16 @@ export const prerender = true;
 ---
 
 <Layout
+  theme="halloween"
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >
-  <main class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6 pb-10">
     <Header />
     <AboutUs />
+    <RealCommunity />
     <Pivos />
     <Community />
     <Partners />
-  </main>
+  </div>
 </Layout>
-
-<style></style>
