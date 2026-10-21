@@ -1,150 +1,137 @@
 ---
-import "@/styles/seasons.css";
-import { getSeason } from "@/lib/season";
+import Layout from "@/layouts/Layout.astro";
 
-// Mismo diseño de siempre; con una temporada activa se aplican las clases `fest:` y se añade el fondo ilustrado.
-const season = await getSeason(Astro);
+// Se llega desde el email de inscripción. Usa el Layout de la web (menú, pie y temporada) y no se indexa.
+export const prerender = false;
 ---
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="referrer" content="no-referrer" />
-    <title>Asistencia confirmada · XauenDevs</title>
-  </head>
-  <body data-theme={season} data-festive={season ? "" : undefined} class="m-0 fest:bg-night">
-    <main class="min-h-screen bg-[#f3f1eb] fest:relative fest:isolate fest:overflow-hidden fest:bg-night fest:text-white px-4 py-8 text-black sm:px-6 sm:py-12">
-      {
-        season && (
-          <div
-            aria-hidden="true"
-            class="pointer-events-none absolute inset-0 -z-10 bg-cover bg-no-repeat bg-[position:100%_0%] md:bg-top"
-            style="background-image:var(--season-overlay)"
-          />
-        )
-      }
-      <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl items-center justify-center sm:min-h-[calc(100vh-6rem)]">
-        <section class="w-full overflow-hidden rounded-[2.5rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.09)] fest:border-season/40 fest:bg-night/80 fest:shadow-[0_0_50px_rgb(var(--season-rgb)_/_0.18)] fest:backdrop-blur-sm">
-          <div class="h-2 bg-[#f4d400] fest:bg-season"></div>
 
-          <div class="p-7 sm:p-10 lg:p-12">
-            <div class="flex items-center justify-between gap-4">
-              <p class="text-[11px] font-black uppercase tracking-[0.2em] text-black/45 fest:text-white/45">XauenDevs · Pivo&Code</p>
-              <span class="rounded-full bg-black/5 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-black/45 fest:bg-white/10 fest:text-white/45">RSVP</span>
-            </div>
+<Layout title="Confirmar asistencia · XauenDevs" description="Confirma tu asistencia a una Pivo&Code de XauenDevs." private>
+  <main class="mx-auto flex max-w-4xl flex-col py-6 sm:py-10">
+    <section class="overflow-hidden rounded-3xl bg-black/[0.04] fest:bg-white/[0.05] fest:ring-1 fest:ring-season/40">
+      <div class="h-2 bg-accent fest:bg-season"></div>
 
-            <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
-              <div>
-                <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f4d400] text-2xl font-black shadow-[4px_4px_0_#000] fest:bg-season fest:text-season-ink fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)]" aria-hidden="true">
-                  ✓
-                </div>
-
-                <h1 class="max-w-xl text-4xl font-black leading-[0.98] tracking-[-0.035em] sm:text-5xl">
-                  <span data-title>Confirmando tu asistencia…</span>
-                </h1>
-
-                <p class="mt-5 max-w-xl text-base leading-7 text-black/60 fest:text-white/60" data-message>
-                  Un momento, estamos confirmando tu plaza.
-                </p>
-
-                <div class="mt-7 flex flex-wrap gap-3" data-actions></div>
-              </div>
-
-              <div class="relative hidden h-56 lg:block" aria-hidden="true">
-                <div class="absolute inset-8 rounded-full bg-[#f4d400]/20 blur-2xl fest:bg-season/20"></div>
-                <div class="absolute left-8 top-16 h-28 w-16 -rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-[#f4d400] shadow-[5px_5px_0_#000] fest:border-white/90 fest:bg-season fest:shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.4)]"></div>
-                <div class="absolute left-16 top-7 h-8 w-16 -rotate-12 rounded-full border-[5px] border-black bg-white fest:border-white/90"></div>
-                <div class="absolute right-8 top-16 h-28 w-16 rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-[#f4d400] shadow-[5px_5px_0_#000] fest:border-white/90 fest:bg-season fest:shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.4)]"></div>
-                <div class="absolute right-16 top-7 h-8 w-16 rotate-12 rounded-full border-[5px] border-black bg-white fest:border-white/90"></div>
-                <span class="absolute left-1/2 top-4 text-3xl font-black">✦</span>
-                <span class="absolute left-5 top-28 text-xl font-black text-[#f4d400] fest:text-season">✦</span>
-                <span class="absolute right-2 bottom-9 text-2xl font-black text-[#f4d400] fest:text-season">✦</span>
-              </div>
-            </div>
-
-            <div class="mt-10 hidden overflow-hidden rounded-3xl border border-black/10 bg-[#f7f6f2] fest:border-white/10 fest:bg-white/[0.04]" data-card>
-              <div class="p-6 sm:p-7">
-                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-black/40 fest:text-white/40">Tu inscripción</p>
-                <p class="mt-2 text-xl font-black" data-name></p>
-                <p class="mt-1 text-sm font-bold text-black/45 fest:text-white/45" data-event></p>
-
-                <div class="mt-6 grid gap-3 border-t border-black/10 pt-5 sm:grid-cols-3 fest:border-white/10">
-                  <div>
-                    <p class="text-[10px] font-black uppercase tracking-wider text-black/35 fest:text-white/35">Cuándo</p>
-                    <p class="mt-1 text-sm font-semibold" data-date></p>
-                    <p class="text-sm text-black/55 fest:text-white/55" data-time></p>
-                  </div>
-                  <div>
-                    <p class="text-[10px] font-black uppercase tracking-wider text-black/35 fest:text-white/35">Dónde</p>
-                    <p class="mt-1 text-sm font-semibold" data-place></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <a href="/" class="mt-8 inline-flex items-center gap-2 text-sm font-bold underline decoration-black/25 underline-offset-4 transition hover:decoration-black fest:decoration-white/30 fest:hover:decoration-season">
-              <span aria-hidden="true">←</span> Volver a XauenDevs
-            </a>
+      <div class="p-6 sm:p-10">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-center">
+          <div>
+            <p class="text-base font-semibold" data-kicker>Pivo&Code</p>
+            <h1 class="mt-2 max-w-xl text-4xl font-black leading-tight tracking-tight sm:text-5xl" data-title tabindex="-1" style="outline:none">
+              Confirmando tu asistencia…
+            </h1>
+            <p class="mt-4 max-w-xl text-lg leading-relaxed text-black/80 fest:text-white/80" data-message role="status">
+              Un momento, estamos confirmando tu plaza.
+            </p>
+            <div class="mt-7 flex flex-wrap gap-3" data-actions></div>
           </div>
-        </section>
-      </div>
-    </main>
 
-    <script>
-      const params = new URLSearchParams(location.search);
-      const code = params.get("rsvpid")?.trim().toUpperCase();
+          <!-- Dos jarras de cerveza: la «pivo» de Pivo&Code -->
+          <div class="relative hidden h-48 lg:block" aria-hidden="true">
+            <div class="absolute left-6 top-14 h-28 w-16 -rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-accent fest:border-white/90 fest:bg-season"></div>
+            <div class="absolute left-14 top-5 h-8 w-16 -rotate-12 rounded-full border-[5px] border-black bg-white fest:border-white/90"></div>
+            <div class="absolute right-6 top-14 h-28 w-16 rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-accent fest:border-white/90 fest:bg-season"></div>
+            <div class="absolute right-14 top-5 h-8 w-16 rotate-12 rounded-full border-[5px] border-black bg-white fest:border-white/90"></div>
+          </div>
+        </div>
+
+        <dl class="mt-8 hidden gap-4 rounded-2xl bg-white p-5 text-black sm:grid-cols-3 sm:p-6 fest:bg-white/[0.06] fest:text-white" data-card>
+          <div class="sm:col-span-3">
+            <dt class="text-sm font-medium text-black/70 fest:text-white/70">Evento</dt>
+            <dd class="mt-1 text-xl font-bold" data-event></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-black/70 fest:text-white/70">A nombre de</dt>
+            <dd class="mt-1 font-semibold" data-name></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-black/70 fest:text-white/70">Cuándo</dt>
+            <dd class="mt-1 font-semibold"><span data-date></span> · <span data-time></span></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-black/70 fest:text-white/70">Dónde</dt>
+            <dd class="mt-1 font-semibold" data-place></dd>
+          </div>
+        </dl>
+
+        <p class="mt-6 hidden text-base text-black/80 fest:text-white/80" data-cancel-hint>
+          ¿Al final no puedes venir? En el mismo email tienes un enlace para cancelar y liberar tu plaza.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const slugify = (value: string) =>
+      value
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+    const init = () => {
       const title = document.querySelector<HTMLElement>("[data-title]");
       const message = document.querySelector<HTMLElement>("[data-message]");
       const card = document.querySelector<HTMLElement>("[data-card]");
-      const name = document.querySelector<HTMLElement>("[data-name]");
-      const event = document.querySelector<HTMLElement>("[data-event]");
-      const date = document.querySelector<HTMLElement>("[data-date]");
-      const time = document.querySelector<HTMLElement>("[data-time]");
-      const place = document.querySelector<HTMLElement>("[data-place]");
       const actions = document.querySelector<HTMLElement>("[data-actions]");
+      const hint = document.querySelector<HTMLElement>("[data-cancel-hint]");
+      if (!title || !message || !card || !actions || !hint || title.dataset.ready) return;
+      title.dataset.ready = "1";
 
-      if (!title || !message || !card || !name || !event || !date || !time || !place || !actions) {
-        throw new Error("No se pudo inicializar la página de confirmación.");
-      }
-
-      const showError = (error: unknown) => {
-        title.textContent = "No hemos podido confirmar";
-        message.textContent = error instanceof Error ? error.message : "No se pudo confirmar la inscripción.";
-        card.classList.add("hidden");
+      const field = (key: string) => document.querySelector<HTMLElement>(`[data-${key}]`);
+      const button = (href: string, text: string, primary: boolean, external = false) => {
+        const link = document.createElement("a");
+        link.href = href;
+        link.textContent = text;
+        if (external) {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
+        link.className = primary
+          ? "inline-flex min-h-12 items-center rounded-full bg-black px-6 font-bold text-white transition hover:-translate-y-0.5 fest:bg-season fest:text-season-ink"
+          : "inline-flex min-h-12 items-center rounded-full border-2 border-black px-6 font-bold transition hover:bg-black hover:text-white fest:border-white fest:hover:bg-white fest:hover:text-black";
+        actions.appendChild(link);
       };
 
+      const showError = (error: unknown) => {
+        title.textContent = "No hemos podido confirmar tu plaza";
+        message.textContent =
+          (error instanceof Error ? error.message : "No se pudo confirmar la inscripción.") +
+          " Si el enlace no funciona, vuelve a apuntarte desde la ficha del evento.";
+        card.classList.add("hidden");
+        button("/eventos", "Ver la agenda", true);
+        title.focus();
+      };
+
+      const code = new URLSearchParams(location.search).get("rsvpid")?.trim().toUpperCase();
       if (!code) {
         showError(new Error("Falta el código de confirmación."));
-      } else {
-        fetch("/api/rsvp/confirmar?rsvpid=" + encodeURIComponent(code))
-          .then(async (response) => {
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || "No se pudo confirmar la inscripción.");
-
-            title.textContent = data.alreadyConfirmed ? "¡Tu asistencia ya estaba confirmada!" : "¡Asistencia confirmada!";
-            message.textContent = data.alreadyConfirmed
-              ? "Todo está correcto, " + data.name + ". Tu plaza ya estaba confirmada. ¡Nos vemos en Pivo&Code!"
-              : "Genial, " + data.name + ". Tu plaza está confirmada. ¡Nos vemos en Pivo&Code!";
-            name.textContent = data.name;
-            event.textContent = data.eventTitle;
-            date.textContent = data.eventDate;
-            time.textContent = data.eventTime;
-            place.textContent = data.eventPlace;
-            card.classList.remove("hidden");
-
-            if (data.calendarUrl) {
-              const link = document.createElement("a");
-              link.href = data.calendarUrl;
-              link.target = "_blank";
-              link.rel = "noopener noreferrer";
-              link.textContent = "Añadir al calendario →";
-              link.className = "inline-flex rounded-full bg-[#f4d400] fest:bg-season px-6 py-3.5 text-sm font-black text-black fest:text-season-ink shadow-[4px_4px_0_#000] fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)] transition hover:-translate-y-0.5";
-              actions.appendChild(link);
-            }
-          })
-          .catch(showError);
+        return;
       }
-    </script>
-  </body>
-</html>
+
+      fetch("/api/rsvp/confirmar?rsvpid=" + encodeURIComponent(code))
+        .then(async (response) => {
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "No se pudo confirmar la inscripción.");
+
+          title.textContent = data.alreadyConfirmed ? "Tu plaza ya estaba confirmada" : "¡Plaza confirmada!";
+          message.textContent = `Genial, ${data.name}. Nos vemos en la Pivo&Code.`;
+          field("event")!.textContent = data.eventTitle;
+          field("name")!.textContent = data.name;
+          field("date")!.textContent = data.eventDate;
+          field("time")!.textContent = data.eventTime;
+          field("place")!.textContent = data.eventPlace;
+          card.classList.remove("hidden");
+          card.classList.add("grid");
+          hint.classList.remove("hidden");
+
+          if (data.calendarUrl) button(data.calendarUrl, "Añadir al calendario", true, true);
+          if (data.eventTitle) button(`/eventos/${slugify(data.eventTitle)}`, "Ver el evento", false);
+          title.focus();
+        })
+        .catch(showError);
+    };
+
+    init();
+    document.addEventListener("astro:page-load", init);
+  </script>
+</Layout>
