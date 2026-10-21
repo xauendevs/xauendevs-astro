@@ -1,4 +1,4 @@
-<section class="grid grid-cols-1 md:grid-cols-[40%_60%]" id="own-mission">
+<section class="halloween-mission grid grid-cols-1 md:grid-cols-[40%_60%]" id="own-mission">
   <div class="bg-black/5 rounded-3xl p-7 lg:p-10 md:mr-8 mb-8 md:mb-0">
     <h2 class="font-bold text-2xl">Nuestra misión</h2>
     <section class="mt-4">
@@ -71,4 +71,10 @@
     margin: 1em 0;
     padding: 0;
   }
+
+  .halloween-mission > div:first-child { border:1px solid rgba(255,102,0,.3); background:linear-gradient(145deg,rgba(255,102,0,.055),rgba(160,32,240,.035)); transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease; }
+  .halloween-mission > div:first-child:hover { border-color:rgba(255,102,0,.55); box-shadow:0 14px 42px rgba(255,102,0,.07); transform:translateY(-2px); }
+  .halloween-mission #background-image { filter:sepia(.16) hue-rotate(235deg) saturate(.85) brightness(.72); }
+  .halloween-mission hr { border-top-color:rgba(255,102,0,.24); }
+  @media(prefers-reduced-motion:reduce) { .halloween-mission > div:first-child { transition:none; } }
 </style>
