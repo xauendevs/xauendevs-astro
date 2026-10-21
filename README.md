@@ -116,7 +116,7 @@ Por favor, consulta nuestra [guía de contribución](https://github.com/xauendev
 
 La "temporada" se cambia **en caliente, sin desplegar**, con [Vercel Edge Config](https://vercel.com/docs/edge-config):
 
-1. Vercel → *Storage* → crear un **Edge Config** y conectarlo al proyecto (Vercel añade solo la variable `EDGE_CONFIG`).
+1. Vercel → *Storage* → crear un **Edge Config** y conectarlo al proyecto (Vercel añade solo la variable `GLOBAL_CONFIG`).
 2. En el Edge Config, añadir las claves:
    - `site_theme`: `"halloween"` o `"default"`.
    - `hack_intro`: `true` / `false` (la broma del hackeo; solo se ve con `halloween`).

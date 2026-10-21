@@ -11,7 +11,7 @@
  *
  * Añadir una temporada nueva: ver README → "Temas estacionales".
  */
-import { get } from "@vercel/global-config";
+import { createClient } from "@vercel/global-config";
 
 export const THEMES = ["default", "halloween"] as const;
 export type SiteTheme = (typeof THEMES)[number];
@@ -23,12 +23,16 @@ const isTheme = (value: unknown): value is SiteTheme =>
 
 const normalize = (value: unknown) => String(value).trim().toLowerCase() as SiteTheme;
 
-/** Lee Edge Config sin que un fallo o un retraso rompa la página. */
+/** Cadena de conexión: Vercel la crea como GLOBAL_CONFIG (antes EDGE_CONFIG). */
+const connection = import.meta.env.GLOBAL_CONFIG ?? import.meta.env.EDGE_CONFIG ?? process.env.GLOBAL_CONFIG ?? process.env.EDGE_CONFIG;
+const client = connection ? createClient(connection) : undefined;
+
+/** Lee el Global Config sin que un fallo o un retraso rompa la página. */
 async function fromEdgeConfig<T>(key: string): Promise<T | undefined> {
-  if (!import.meta.env.EDGE_CONFIG && !process.env.EDGE_CONFIG) return undefined;
+  if (!client) return undefined;
   try {
     return await Promise.race([
-      get<T>(key),
+      client.get<T>(key),
       new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 800)),
     ]);
   } catch {
