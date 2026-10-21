@@ -53,6 +53,9 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:image" content={socialImage} />
   </head>
   <body>
+    <div class="halloween-bloodline" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
     <Header />
     <main class="min-w-0 px-4 sm:px-6 md:px-10">
       <slot class="" />
@@ -112,6 +115,108 @@ const socialImage = new URL(image, siteOrigin).href;
   body {
     position: relative;
     isolation: isolate;
+  }
+
+  /* Sangre animada fija en el borde superior: parte del marco, nunca del logo. */
+  .halloween-bloodline {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 7px;
+    pointer-events: none;
+    background: linear-gradient(180deg, #7d0711 0%, #c51425 68%, #4b0309 100%);
+    box-shadow: 0 2px 12px rgba(181, 15, 31, .3);
+  }
+
+  .halloween-bloodline i {
+    position: absolute;
+    top: 3px;
+    display: block;
+    width: var(--drop-width, 7px);
+    height: var(--drop-height, 18px);
+    left: var(--drop-left);
+    border-radius: 0 0 55% 55%;
+    background: linear-gradient(90deg, #790711, #e11a2d 55%, #9c0b1b);
+    transform-origin: top center;
+    animation: blood-drip var(--drop-speed, 3.8s) ease-in infinite;
+    animation-delay: var(--drop-delay, 0s);
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,.35));
+  }
+
+  .halloween-bloodline i:nth-child(1) { --drop-left: 4%; --drop-height: 18px; --drop-speed: 4.2s; --drop-delay: -1.7s; }
+  .halloween-bloodline i:nth-child(2) { --drop-left: 11%; --drop-width: 5px; --drop-height: 11px; --drop-speed: 3.3s; --drop-delay: -2.2s; }
+  .halloween-bloodline i:nth-child(3) { --drop-left: 19%; --drop-width: 9px; --drop-height: 26px; --drop-speed: 4.8s; --drop-delay: -.8s; }
+  .halloween-bloodline i:nth-child(4) { --drop-left: 27%; --drop-width: 5px; --drop-height: 14px; --drop-speed: 3.7s; --drop-delay: -2.8s; }
+  .halloween-bloodline i:nth-child(5) { --drop-left: 36%; --drop-width: 7px; --drop-height: 20px; --drop-speed: 4.4s; --drop-delay: -1.1s; }
+  .halloween-bloodline i:nth-child(6) { --drop-left: 45%; --drop-width: 5px; --drop-height: 12px; --drop-speed: 3.5s; --drop-delay: -2.5s; }
+  .halloween-bloodline i:nth-child(7) { --drop-left: 54%; --drop-width: 9px; --drop-height: 28px; --drop-speed: 5s; --drop-delay: -3.1s; }
+  .halloween-bloodline i:nth-child(8) { --drop-left: 63%; --drop-width: 5px; --drop-height: 13px; --drop-speed: 3.8s; --drop-delay: -.4s; }
+  .halloween-bloodline i:nth-child(9) { --drop-left: 72%; --drop-width: 7px; --drop-height: 22px; --drop-speed: 4.5s; --drop-delay: -2s; }
+  .halloween-bloodline i:nth-child(10) { --drop-left: 81%; --drop-width: 5px; --drop-height: 12px; --drop-speed: 3.4s; --drop-delay: -1.4s; }
+  .halloween-bloodline i:nth-child(11) { --drop-left: 90%; --drop-width: 9px; --drop-height: 25px; --drop-speed: 4.7s; --drop-delay: -3.5s; }
+  .halloween-bloodline i:nth-child(12) { --drop-left: 97%; --drop-width: 5px; --drop-height: 14px; --drop-speed: 3.6s; --drop-delay: -.9s; }
+
+  @keyframes blood-drip {
+    0%, 12% { transform: scaleY(.25); opacity: .55; }
+    45% { transform: scaleY(1); opacity: 1; }
+    78% { transform: scaleY(.72) translateY(2px); opacity: .95; }
+    100% { transform: scaleY(.25); opacity: .55; }
+  }
+
+  /* Botones que se derriten al pasar el cursor: líquido rojo oscuro y deformación sutil. */
+  body main a[class*="rounded"][class*="bg-black"],
+  body main a[class*="rounded"][class*="bg-accent"],
+  body main button[class*="rounded"],
+  body main button[type="submit"] {
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+    transition: transform .22s ease, box-shadow .22s ease, border-radius .22s ease;
+  }
+
+  body main a[class*="rounded"][class*="bg-black"]::after,
+  body main a[class*="rounded"][class*="bg-accent"]::after,
+  body main button[class*="rounded"]::after,
+  body main button[type="submit"]::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 12%;
+    right: 12%;
+    bottom: -5px;
+    height: 8px;
+    opacity: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 18% 0%, #b20d20 0 4px, transparent 4.5px),
+      radial-gradient(ellipse at 50% 0%, #e21b30 0 3px, transparent 3.5px),
+      radial-gradient(ellipse at 82% 0%, #8d0919 0 4px, transparent 4.5px);
+    transition: height .22s ease, bottom .22s ease, opacity .22s ease;
+  }
+
+  body main a[class*="rounded"][class*="bg-black"]:hover,
+  body main a[class*="rounded"][class*="bg-accent"]:hover,
+  body main button[class*="rounded"]:hover,
+  body main button[type="submit"]:hover {
+    transform: translateY(-2px) skewX(-1deg);
+    box-shadow: 0 7px 24px rgba(154, 13, 29, .2);
+  }
+
+  body main a[class*="rounded"][class*="bg-black"]:hover::after,
+  body main a[class*="rounded"][class*="bg-accent"]:hover::after,
+  body main button[class*="rounded"]:hover::after,
+  body main button[type="submit"]:hover::after {
+    opacity: 1;
+    height: 17px;
+    bottom: -13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .halloween-bloodline i { animation: none; }
+    body main a[class*="rounded"],
+    body main button { transition: none; }
   }
 
   /* XauenDevs: Halloween editorial — noche, bruma y cobre encendido. */
