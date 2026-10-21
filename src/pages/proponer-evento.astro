@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import PageHeader from "@/components/PageHeader.astro";
 ---
 
 <Layout
@@ -7,27 +8,14 @@ import Layout from "@/layouts/Layout.astro";
   description="Propón un evento tecnológico para incluirlo en la agenda de Jaén Tech Events."
 >
   <main class="flex flex-col gap-12">
-    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary px-7 py-10 text-white md:px-12 md:py-14">
-      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/90 blur-3xl"></div>
-
-      <div class="relative max-w-3xl">
-        <span class="text-accent text-sm font-bold uppercase tracking-[0.16em]">
-          JAÉN TECH EVENTS
-        </span>
-        <h1 class="mt-5 text-4xl font-black tracking-tight md:text-6xl">
-          ¿Organizas algo tech en Jaén?
-        </h1>
-        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/70 md:text-xl">
-          Cuéntanos qué estás preparando y valoraremos añadirlo a la agenda de
-          la comunidad.
-        </p>
-      </div>
-    </header>
+    <PageHeader eyebrow="Jaén Tech Events" title="¿Organizas algo tech en Jaén?">
+      Cuéntanos qué estás preparando y valoraremos añadirlo a la agenda de la comunidad.
+    </PageHeader>
 
     <section class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
       <form
         id="event-proposal-form"
-        class="flex flex-col gap-7 rounded-[2rem] border border-primary/10 p-6 md:p-8"
+        class="flex flex-col gap-7 rounded-[2rem] border border-pumpkin/40 bg-primary/[0.03] p-6 shadow-[0_0_30px_rgba(255,138,31,0.12)] md:p-8"
       >
         <div>
           <h2 class="text-2xl font-bold">Cuéntanos sobre el evento</h2>
@@ -126,7 +114,7 @@ import Layout from "@/layouts/Layout.astro";
 
         <button
           type="submit"
-          class="w-fit rounded-full bg-accent px-6 py-3 font-bold transition hover:-translate-y-0.5 hover:shadow-lg"
+          class="w-fit rounded-full bg-accent px-6 py-3 font-bold text-black transition hover:-translate-y-0.5 hover:shadow-lg"
         >
           Enviar propuesta →
         </button>
@@ -139,7 +127,7 @@ import Layout from "@/layouts/Layout.astro";
         ></p>
       </form>
 
-      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7">
+      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7 text-black">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
           ¿Qué buscamos?
         </span>
@@ -153,7 +141,7 @@ import Layout from "@/layouts/Layout.astro";
           <li>→ Conferencias</li>
           <li>→ Actividades de comunidades tech</li>
         </ul>
-        <p class="border-t border-primary/15 pt-5 text-sm text-primary/65">
+        <p class="border-t border-black/15 pt-5 text-sm text-black/70">
           Revisaremos cada propuesta antes de incorporarla a la agenda.
         </p>
       </aside>

@@ -160,24 +160,24 @@ const shareMessage = [
 
     <article class="min-w-0 overflow-hidden rounded-3xl border border-primary/10 bg-primary/[0.025] sm:rounded-[2.5rem]">
       {eventImage && (
-        <div class="relative aspect-[1200/630] overflow-hidden bg-primary md:h-[26rem] md:aspect-auto">
+        <div class="relative aspect-[1200/630] overflow-hidden bg-night md:h-[26rem] md:aspect-auto">
           <img
             src={eventImage}
             alt=""
             class="size-full object-cover object-bottom"
             loading="eager"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/35 to-transparent"></div>
-          <div class="absolute inset-0 bg-primary/10"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night via-night/35 to-transparent"></div>
+          <div class="absolute inset-0 bg-night/10"></div>
         </div>
       )}
 
-      <div class="relative min-w-0 overflow-hidden bg-[#0d0d0d] px-5 py-6 text-white sm:px-7 sm:py-8 md:px-12 md:py-10">
-        <div class="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/25 blur-3xl"></div>
+      <div class="relative isolate min-w-0 overflow-hidden bg-night px-5 py-6 text-white sm:px-7 sm:py-8 md:px-12 md:py-10">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 bg-cover bg-[position:100%_50%] bg-no-repeat md:bg-[position:50%_70%]" style="background-image:url('/img/halloween-overlay.webp')"></div>
 
         <div class="relative min-w-0 max-w-5xl">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-black">
               {isExternal ? "Evento externo" : "XauenDevs"}
             </span>
             {tags.map((tag) => (
@@ -277,7 +277,7 @@ const shareMessage = [
 
     {
       !isExternal && pivoEvent.videoId && (
-        <section id="video" class="min-w-0 overflow-hidden rounded-3xl bg-primary p-3 sm:rounded-[2.5rem] sm:p-4 md:p-6">
+        <section id="video" class="min-w-0 overflow-hidden rounded-3xl border border-pumpkin/30 bg-night p-3 sm:rounded-[2.5rem] sm:p-4 md:p-6">
           <div class="mb-5 px-2">
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Vídeo

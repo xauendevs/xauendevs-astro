@@ -18,7 +18,7 @@ const {
   description,
   image = "/img/og-xauendevs.svg",
   imageType,
-  theme = "default",
+  theme = "halloween",
 } = Astro.props;
 const isHalloween = theme === "halloween";
 
@@ -58,7 +58,7 @@ const socialImage = new URL(image, siteOrigin).href;
   </head>
   <body data-theme={theme} class:list={[isHalloween && "bg-night text-white"]}>
     <Header variant={theme} />
-    <main class:list={["min-w-0", !isHalloween && "px-4 sm:px-6 md:px-10"]}>
+    <main class="min-w-0 px-4 sm:px-6 md:px-10">
       <slot class="" />
     </main>
     <Footer theme={theme} />
@@ -82,6 +82,20 @@ const socialImage = new URL(image, siteOrigin).href;
 
     --color-twitch: #9146ff;
     --color-twitch-ice: #f0f0ff;
+
+    /* "Tinta" del tema (texto, bordes y tintes): negra en claro, blanca en Halloween */
+    --color-primary-rgb: 0 0 0;
+  }
+
+  /* Tema Halloween (temporada): acento naranja y tinta blanca sobre fondo oscuro.
+     Para volver al diseño anterior basta con cambiar el `theme` por defecto del Layout. */
+  [data-theme="halloween"] {
+    --color-primary-rgb: 255 255 255;
+    --color-accent: #ff8a1f;
+    --color-accent-text: #ff8a1f;
+    --color-accent-rgb: 255, 138, 31;
+    --color-focus: #ffb15c;
+    color-scheme: dark;
   }
 
   html {
@@ -124,15 +138,6 @@ const socialImage = new URL(image, siteOrigin).href;
       transform: translate3d(10px, -8px, 0) rotate(3deg);
     }
   }
-  @keyframes spider-swing {
-    0%,
-    100% {
-      transform: rotate(-3deg);
-    }
-    50% {
-      transform: rotate(3deg);
-    }
-  }
   @keyframes pumpkin-flicker {
     0%,
     100% {
@@ -144,10 +149,6 @@ const socialImage = new URL(image, siteOrigin).href;
   }
   .bat-float {
     animation: bat-float 6s ease-in-out infinite;
-  }
-  .spider-swing {
-    transform-origin: top center;
-    animation: spider-swing 5s ease-in-out infinite;
   }
   .pumpkin-flicker {
     animation: pumpkin-flicker 3.2s ease-in-out infinite;

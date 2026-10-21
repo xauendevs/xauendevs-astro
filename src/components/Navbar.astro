@@ -1,7 +1,5 @@
 ---
 import { DISCORD_URL, SOCIAL_LINKS } from "@/consts/social-links";
-import Cobweb from "./halloween/Cobweb.astro";
-import Spider from "./halloween/Spider.astro";
 import Pumpkin from "./halloween/Pumpkin.astro";
 import Discord from "./icons/Discord.astro";
 import Github from "./icons/Github.astro";
@@ -35,28 +33,12 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
   class:list={[
     "relative z-20 h-auto max-w-[100vw]",
     isHalloween
-      ? "border-b border-white/10 bg-night/90 px-4 py-4 text-white sm:px-6 lg:px-10 lg:py-5"
+      ? "border-b border-white/10 bg-night/90 p-4 text-white sm:p-6 lg:p-10"
       : "bg-white/85 p-4 sm:p-6 lg:p-10",
   ]}
 >
-  {
-    isHalloween && (
-      <>
-        <Cobweb
-          class="pointer-events-none absolute left-0 top-0 h-24 w-24 text-pumpkin/60 sm:h-32 sm:w-32 lg:h-40 lg:w-40"
-        />
-        <Cobweb
-          class="pointer-events-none absolute right-0 top-0 h-24 w-24 -scale-x-100 text-pumpkin/60 sm:h-32 sm:w-32 lg:h-40 lg:w-40"
-        />
-        <Spider
-          class="spider-swing pointer-events-none absolute right-3 top-0 hidden h-16 w-5 text-pumpkin lg:block"
-        />
-      </>
-    )
-  }
-
   <nav
-    class:list={["hidden justify-between text-nowrap lg:flex", isHalloween && "relative mx-auto max-w-[1234px]"]}
+    class="hidden justify-between text-nowrap lg:flex"
     aria-label="Navegación principal"
   >
     <div class="flex items-center gap-10">
@@ -123,7 +105,7 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
   </nav>
 
   <nav
-    class:list={["flex items-center justify-between lg:hidden", isHalloween && "relative"]}
+    class="flex items-center justify-between lg:hidden"
     aria-label="Navegación principal"
   >
     <a href="/" aria-label="XauenDevs, ir a inicio" class="flex shrink-0 items-center gap-2">

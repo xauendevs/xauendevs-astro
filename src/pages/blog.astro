@@ -1,11 +1,12 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import PageHeader from "@/components/PageHeader.astro";
 export const prerender = true;
 ---
 
 <Layout
-  title="XauenDevs 🫒 Desarrollo en Jaén"
-  description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
+  title="Blog · XauenDevs"
+  description="El blog de XauenDevs, la comunidad de desarrollo y tecnología de Jaén."
 >
-  <main class="flex flex-col gap-8">ESTAMOS TRABAJANDO EN NUESTRO BLOG</main>
+  <PageHeader eyebrow="XauenDevs" title="Blog">Estamos trabajando en nuestro blog.</PageHeader>
 </Layout>

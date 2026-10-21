@@ -9,7 +9,7 @@ const { theme = "default" } = Astro.props;
 const isHalloween = theme === "halloween";
 ---
 
-<footer class:list={["flex flex-col items-center p-8 md:p-10 gap-5", isHalloween && "mx-auto w-full max-w-[1350px]"]}>
+<footer class="flex flex-col items-center p-8 md:p-10 gap-5">
   <PreFooter />
   <div class="flex group">
     <span

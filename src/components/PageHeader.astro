@@ -1,0 +1,65 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  /** Segunda parte del título, atenuada. */
+  dim?: string;
+  class?: string;
+}
+
+const { eyebrow, title, dim, class: className } = Astro.props;
+---
+
+<header
+  class:list={[
+    "relative isolate flex min-h-[300px] min-w-0 flex-col justify-center overflow-hidden rounded-3xl bg-night px-5 pb-20 pt-10 sm:px-7 md:min-h-[420px] md:px-12 md:pb-28 md:pt-14",
+    className,
+  ]}
+>
+  <!-- Overlay de diseño (telarañas, luna, murciélagos, calabazas, tumbas y niebla) -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 -z-10 bg-cover bg-[position:100%_50%] bg-no-repeat md:bg-[position:50%_70%]"
+    style="background-image:url('/img/halloween-overlay.webp')"
+  >
+  </div>
+  <!-- Degradado para que el texto se lea sobre la luna y las calabazas -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-[5] bg-gradient-to-r from-night/75 via-night/35 to-transparent md:from-night/45 md:via-transparent"
+  >
+  </div>
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_25%_40%,rgba(124,58,237,0.22),transparent_65%)]"
+  >
+  </div>
+
+  <div class="relative z-10 flex max-w-3xl flex-col gap-5">
+    {
+      (eyebrow || Astro.slots.has("badge")) && (
+        <div class="flex flex-wrap items-center gap-3">
+          {eyebrow && (
+            <span class="text-[11px] font-bold uppercase tracking-[0.28em] text-pumpkin">{eyebrow}</span>
+          )}
+          <slot name="badge" />
+        </div>
+      )
+    }
+
+    <h1
+      class="break-words text-3xl font-black tracking-tight text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.85)] sm:text-4xl md:text-6xl"
+    >
+      {title}
+      {dim && <span class="text-white/45"> {dim}</span>}
+    </h1>
+
+    {
+      Astro.slots.has("default") && (
+        <div class="max-w-2xl text-base leading-relaxed text-white/80 [text-shadow:0_2px_14px_rgba(0,0,0,0.9)] sm:text-lg md:text-xl">
+          <slot />
+        </div>
+      )
+    }
+  </div>
+</header>

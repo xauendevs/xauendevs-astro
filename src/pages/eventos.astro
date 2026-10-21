@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import PageHeader from "@/components/PageHeader.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
@@ -47,32 +48,14 @@ const availableTags = Array.from(
   description="Agenda de eventos de tecnología y desarrollo en Jaén. Charlas, meetups y actividades de la comunidad."
 >
   <main class="flex min-w-0 flex-col gap-8 py-2 sm:gap-10 md:gap-14">
-    <header class="relative min-w-0 overflow-hidden rounded-3xl border border-primary/10 bg-primary/[0.025] px-5 py-7 sm:rounded-[2.5rem] sm:px-7 sm:py-10 md:px-12 md:py-14">
-      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl"></div>
-
-      <div class="relative flex flex-col gap-5">
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="text-accent-text text-sm font-bold uppercase tracking-[0.16em]">
-            JAÉN TECH EVENTS
-          </span>
-          {totalUpcoming > 0 && (
-            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold">
-              {totalUpcoming} próximos
-            </span>
-          )}
-        </div>
-
-        <h1 class="max-w-4xl break-words text-3xl font-black tracking-tight sm:text-4xl md:text-6xl">
-          Tecnología en Jaén.
-          <span class="text-primary/35">Todo en un mismo sitio.</span>
-        </h1>
-
-        <p class="max-w-2xl text-base leading-relaxed text-primary/65 sm:text-lg md:text-xl">
-          Charlas, meetups, talleres y eventos para descubrir qué está pasando
-          en la comunidad tecnológica de Jaén.
-        </p>
-      </div>
-    </header>
+    <PageHeader eyebrow="Jaén Tech Events" title="Tecnología en Jaén." dim="Todo en un mismo sitio.">
+      {totalUpcoming > 0 && (
+        <span slot="badge" class="rounded-full bg-accent px-3 py-1 text-xs font-bold text-black">
+          {totalUpcoming} próximos
+        </span>
+      )}
+      Charlas, meetups, talleres y eventos para descubrir qué está pasando en la comunidad tecnológica de Jaén.
+    </PageHeader>
 
     <nav aria-label="Filtrar eventos" class="flex flex-col gap-5">
       <div class="flex flex-col gap-2">
@@ -100,9 +83,9 @@ const availableTags = Array.from(
         <button type="button" data-clear-filters-empty class="mt-2 font-semibold text-primary underline decoration-accent decoration-2 underline-offset-4">Quitar filtros</button>
       </div>
       <style>
-        .filter-chip { border-radius:9999px; border:1px solid rgb(0 0 0 / .1); background:rgb(0 0 0 / .03); padding:.5rem 1rem; font-size:.875rem; font-weight:600; color:rgb(0 0 0 / .65); transition:border-color 150ms,background-color 150ms,color 150ms; }
-        .filter-chip:hover { border-color:rgb(246 183 3 / .5); background:rgb(246 183 3 / .2); color:#000; }
-        .filter-chip[aria-pressed="true"] { border-color:rgb(246 183 3); background:rgb(246 183 3); color:#000; }
+        .filter-chip { border-radius:9999px; border:1px solid rgb(var(--color-primary-rgb) / .15); background:rgb(var(--color-primary-rgb) / .04); padding:.5rem 1rem; font-size:.875rem; font-weight:600; color:rgb(var(--color-primary-rgb) / .75); transition:border-color 150ms,background-color 150ms,color 150ms; }
+        .filter-chip:hover { border-color:rgba(var(--color-accent-rgb), .6); background:rgba(var(--color-accent-rgb), .18); color:rgb(var(--color-primary-rgb)); }
+        .filter-chip[aria-pressed="true"] { border-color:var(--color-accent); background:var(--color-accent); color:#000; }
       </style>
     </nav>
     {
@@ -168,7 +151,7 @@ const availableTags = Array.from(
       )
     }
 
-    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
+    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 text-black py-6 sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
       <div class="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-white/30 blur-3xl"></div>
       <div class="relative">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
@@ -177,7 +160,7 @@ const availableTags = Array.from(
         <h2 class="mt-2 text-2xl font-black md:text-3xl">
           Ayúdanos a mantener la agenda al día.
         </h2>
-        <p class="mt-2 max-w-2xl text-sm text-primary/65">
+        <p class="mt-2 max-w-2xl text-sm text-black/70">
           Si conoces un evento relacionado con tecnología en Jaén, compártelo
           con la comunidad y lo revisamos.
         </p>
