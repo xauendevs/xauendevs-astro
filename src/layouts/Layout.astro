@@ -4,6 +4,7 @@ import Footer from "@/sections/Footer.astro";
 import ClientRouter from "astro/components/ClientRouter.astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import HackIntro from "@/components/HackIntro.astro";
+import EasterEgg from "@/components/EasterEgg.astro";
 import { getHackIntroEnabled } from "@/lib/site-theme";
 import { getSeason, seasonFavicon } from "@/lib/season";
 import "@/styles/seasons.css";
@@ -81,6 +82,7 @@ const socialImage = new URL(image, siteOrigin).href;
       <slot class="" />
     </main>
     <Footer />
+    <EasterEgg />
     <ClientRouter />
   </body>
 </html>
