@@ -10,7 +10,25 @@ import FromFor from "../components/FromFor.astro";
     class="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-80 saturate-50 brightness-75"
     style="background-image:url('/img/header.webp')"
   ></div>
-  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/10"></div>
+  <div aria-hidden="true" class="halloween-scene absolute inset-0 overflow-hidden">
+    <div class="halloween-moon"></div>
+    <div class="halloween-haze halloween-haze-one"></div>
+    <div class="halloween-haze halloween-haze-two"></div>
+    <svg class="halloween-silhouette absolute inset-x-0 bottom-0 h-[78%] w-full" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax slice">
+      <defs><linearGradient id="window-glow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb14d"/><stop offset="1" stop-color="#e65a1f"/></linearGradient></defs>
+      <path d="M0 430 L100 395 190 425 270 365 350 415 430 390 510 438 600 370 690 425 780 390 880 430 980 370 1070 410 1160 360 1250 415 1350 380 1440 420 V620 H0Z" fill="#15100f"/>
+      <g fill="#090909">
+        <path d="M690 620V260L730 260V215L760 215V260H795V620Z"/><path d="M810 620V190H850V140H875V190H915V620Z"/><path d="M920 620V250H950V215H975V250H1000V620Z"/><path d="M1040 620V320H1080V285H1115V320H1150V620Z"/>
+        <path d="M650 300L750 220 835 300V620H650Z"/><path d="M630 310L750 205 855 310L837 325 750 247 647 325Z"/><path d="M760 620V340H820V620Z"/>
+        <path d="M670 390H700V430H670ZM720 390H750V430H720ZM670 460H700V500H670ZM720 460H750V500H720Z" fill="url(#window-glow)" opacity=".75"/>
+        <path d="M835 260H875V310H835ZM885 260H905V310H885ZM835 335H875V385H835ZM885 335H905V385H885Z" fill="url(#window-glow)" opacity=".65"/>
+        <path d="M40 620Q95 490 160 620Q190 510 235 620Q275 465 325 620Z"/><path d="M1140 620Q1200 470 1250 620Q1295 500 1350 620Q1390 460 1440 590V620Z"/>
+      </g>
+      <g fill="#070707" opacity=".9"><path d="M300 80l-12 22-24 4 20 14-5 24 21-13 21 13-6-24 20-14-24-4Z"/><path d="M420 125q-18-28-35 0q17-12 35 0q18-12 35 0q-17-28-35 0Z"/></g>
+    </svg>
+    <div class="halloween-ground absolute inset-x-0 bottom-0 h-3/4"></div>
+  </div>
+  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/15"></div>
 
   <div class="relative z-10 max-w-4xl">
     <div class="mb-5 flex flex-wrap items-center gap-3">
@@ -47,3 +65,17 @@ import FromFor from "../components/FromFor.astro";
     <FromFor />
   </div>
 </header>
+
+<style>
+  .halloween-scene { pointer-events:none;background:radial-gradient(ellipse at 76% 28%,rgba(199,75,24,.16),transparent 38%),linear-gradient(135deg,#101011 0%,#21110f 58%,#090909 100%); }
+  .halloween-moon { position:absolute;width:clamp(180px,28vw,390px);aspect-ratio:1;border-radius:50%;right:clamp(5%,9vw,140px);top:clamp(24px,7vh,76px);background:radial-gradient(circle at 38% 36%,#f7d5a0 0%,#d98946 34%,#9d4225 62%,#401916 76%,transparent 77%);box-shadow:0 0 50px rgba(224,104,40,.15),0 0 130px rgba(192,64,27,.13);opacity:.84; }
+  .halloween-moon::after { content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 30% 25%,rgba(255,240,200,.16),transparent 26%),radial-gradient(ellipse at 68% 62%,rgba(55,15,12,.25),transparent 34%); }
+  .halloween-haze { position:absolute;z-index:2;left:-15%;width:130%;height:22%;filter:blur(24px);background:linear-gradient(90deg,transparent,rgba(205,94,52,.13),rgba(188,188,188,.10),transparent); }
+  .halloween-haze-one { bottom:19%;animation:haze-drift 19s ease-in-out infinite alternate; }
+  .halloween-haze-two { bottom:31%;opacity:.65;transform:scaleX(-1);animation:haze-drift 25s ease-in-out infinite alternate-reverse; }
+  .halloween-silhouette { z-index:3;opacity:.92; }
+  .halloween-ground { z-index:4;background:linear-gradient(180deg,transparent 0%,rgba(7,7,7,.3) 32%,#080808 100%); }
+  @keyframes haze-drift { from { transform:translate3d(-3%,0,0); } to { transform:translate3d(3%,0,0); } }
+  @media(max-width:640px) { .halloween-moon { width:190px;right:-15px;top:55px;opacity:.62; }.halloween-silhouette { height:62%; }.halloween-haze { height:16%; } }
+  @media(prefers-reduced-motion:reduce) { .halloween-haze { animation:none; } }
+</style>
