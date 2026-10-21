@@ -49,62 +49,50 @@ const availableTags = Array.from(
   description="Agenda de eventos de tecnología y desarrollo en Jaén. Charlas, meetups y actividades de la comunidad."
 >
   <main class="flex min-w-0 flex-col gap-8 py-2 sm:gap-10 md:gap-14">
-    <header class="relative min-w-0 overflow-hidden rounded-3xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] px-5 py-7 sm:rounded-[2.5rem] sm:px-7 sm:py-10 md:px-12 md:py-14">
-      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl fest:hidden"></div>
+    <header class="relative min-w-0 overflow-hidden rounded-3xl bg-black/[0.04] fest:bg-white/[0.04] px-5 py-7 sm:rounded-[2.5rem] sm:px-7 sm:py-10 md:px-12 md:py-14">
       <SeasonOverlay />
 
       <div class="relative flex flex-col gap-5">
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="text-accent-text text-sm font-bold uppercase tracking-[0.16em]">
-            JAÉN TECH EVENTS
-          </span>
-          {totalUpcoming > 0 && (
-            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold fest:text-season-ink">
-              {totalUpcoming} próximos
-            </span>
-          )}
-        </div>
-
-        <h1 class="max-w-4xl break-words text-3xl font-black tracking-tight sm:text-4xl md:text-6xl">
-          Tecnología en Jaén.
-          <span class="text-primary/35 fest:text-white/35">Todo en un mismo sitio.</span>
+        <h1 class="max-w-4xl break-words text-4xl font-black tracking-tight md:text-6xl">
+          Agenda tech de Jaén
         </h1>
 
-        <p class="max-w-2xl text-base leading-relaxed text-primary/65 fest:text-white/65 sm:text-lg md:text-xl">
-          Charlas, meetups, talleres y eventos para descubrir qué está pasando
-          en la comunidad tecnológica de Jaén.
+        <p class="max-w-2xl text-lg leading-relaxed text-black/80 fest:text-white/80 md:text-xl">
+          Nuestras Pivo&Code y las charlas, meetups y talleres de otras comunidades, todo en un mismo sitio.
+          {totalUpcoming > 0 && <strong class="font-bold"> {totalUpcoming === 1 ? "Hay 1 evento próximo." : `Hay ${totalUpcoming} eventos próximos.`}</strong>}
         </p>
       </div>
     </header>
 
-    <nav aria-label="Filtrar eventos" class="flex flex-col gap-5">
+    <nav aria-label="Filtrar eventos" class="flex flex-col gap-5 rounded-3xl bg-black/[0.04] p-5 fest:bg-white/[0.04] sm:p-6">
       <div class="flex flex-col gap-2">
-        <span class="text-primary/40 fest:text-white/40 text-xs font-bold uppercase tracking-[0.16em]">Tipo</span>
-        <div class="flex flex-wrap items-center gap-2">
+        <span class="text-base font-bold">Quién lo organiza</span>
+        <div class="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
           <button type="button" data-type-filter="xauen" aria-pressed="false" class="filter-chip">XauenDevs</button>
           <button type="button" data-type-filter="external" aria-pressed="false" class="filter-chip">Eventos externos</button>
         </div>
       </div>
       <div class="flex flex-col gap-2">
-        <span class="text-primary/40 fest:text-white/40 text-xs font-bold uppercase tracking-[0.16em]">Tema</span>
-        <div class="flex flex-wrap items-center gap-2">
+        <span class="text-base font-bold">Tema</span>
+        <div class="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
           {availableTags.map((tag) => (
             <button type="button" data-tag-filter={tag} aria-pressed="false" class="filter-chip">{tag}</button>
           ))}
         </div>
-        <p class="text-xs text-primary/45 fest:text-white/45">Mostrar eventos de cualquiera de los temas seleccionados.</p>
+        <p class="text-sm text-black/70 fest:text-white/70">Puedes elegir varios temas.</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <button type="button" data-clear-filters class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 fest:text-white/45 underline underline-offset-4 hover:text-primary fest:hover:text-white">Quitar filtros</button>
-        <p data-filter-status class="text-xs font-semibold text-primary/45 fest:text-white/45" role="status" aria-live="polite"><span data-filter-result>0 próximos</span></p>
+        <button type="button" data-clear-filters class="hidden min-h-10 rounded-full px-3 text-sm font-semibold underline underline-offset-4">Quitar filtros</button>
+        <p data-filter-status class="text-sm font-semibold text-black/75 fest:text-white/75" role="status" aria-live="polite"><span data-filter-result>0 próximos</span></p>
       </div>
-      <div data-filter-empty class="hidden rounded-2xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] p-5">
+      <div data-filter-empty class="hidden rounded-2xl bg-white p-5 fest:bg-white/[0.06]">
         <p class="font-semibold">No hay eventos que coincidan con estos filtros.</p>
         <button type="button" data-clear-filters-empty class="mt-2 font-semibold text-primary fest:text-white underline decoration-accent decoration-2 underline-offset-4">Quitar filtros</button>
       </div>
       <style>
-        .filter-chip { border-radius:9999px; border:1px solid rgb(0 0 0 / .1); background:rgb(0 0 0 / .03); padding:.5rem 1rem; font-size:.875rem; font-weight:600; color:rgb(0 0 0 / .65); transition:border-color 150ms,background-color 150ms,color 150ms; }
-        .filter-chip:hover { border-color:rgb(246 183 3 / .5); background:rgb(246 183 3 / .2); color:#000; }
+        .filter-chip { flex-shrink:0; white-space:nowrap; min-height:2.5rem; border-radius:9999px; border:1px solid rgb(0 0 0 / .15); background:#fff; padding:.5rem 1rem; font-size:.9375rem; font-weight:600; color:#000; transition:border-color 150ms,background-color 150ms,color 150ms; }
+        .filter-chip:hover { border-color:rgb(246 183 3); background:rgb(246 183 3 / .25); color:#000; }
+        .filter-chip[aria-pressed="true"]::before { content:"\2713\00a0"; }
         :global([data-festive]) .filter-chip { border-color:rgb(255 255 255 / .15); background:rgb(255 255 255 / .04); color:rgb(255 255 255 / .75); }
         :global([data-festive]) .filter-chip:hover { border-color:rgb(var(--season-rgb) / .6); background:rgb(var(--season-rgb) / .18); color:#fff; }
         :global([data-festive]) .filter-chip[aria-pressed="true"] { border-color:rgb(var(--season-rgb)); background:rgb(var(--season-rgb)); color:#000; }
@@ -114,12 +102,7 @@ const availableTags = Array.from(
     {
       upcomingEvents.length > 0 && (
         <section data-event-section class="flex min-w-0 flex-col gap-5 sm:gap-7">
-          <div class="flex flex-col gap-1">
-            <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
-              XauenDevs
-            </span>
-            <h2 class="text-3xl font-bold tracking-tight">Próximamente</h2>
-          </div>
+          <h2 class="text-3xl font-black tracking-tight">Próximas Pivo&Code</h2>
 
           <div class="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map(
@@ -149,15 +132,10 @@ const availableTags = Array.from(
       upcomingExternalEvents.length > 0 && (
         <section data-event-section class="flex flex-col gap-7">
           <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <div class="flex flex-col gap-1">
-              <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
-                Comunidad tech
-              </span>
-              <h2 class="text-3xl font-bold tracking-tight">
-                También está pasando
-              </h2>
-            </div>
-            <p class="max-w-md text-sm leading-relaxed text-primary/55 fest:text-white/55 md:text-right">
+            <h2 class="text-3xl font-black tracking-tight">
+              Otros eventos en Jaén
+            </h2>
+            <p class="max-w-md text-base leading-relaxed text-black/75 fest:text-white/75 md:text-right">
               Eventos de otras comunidades, empresas y organizaciones que
               pueden interesarte.
             </p>
@@ -175,22 +153,18 @@ const availableTags = Array.from(
     }
 
     <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 fest:text-season-ink sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
-      <div class="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-white/30 blur-3xl"></div>
       <div class="relative">
-        <span class="text-xs font-bold uppercase tracking-[0.16em]">
-          ¿Conoces algún evento?
-        </span>
-        <h2 class="mt-2 text-2xl font-black md:text-3xl">
-          Ayúdanos a mantener la agenda al día.
+        <h2 class="text-2xl font-black md:text-3xl">
+          ¿Conoces un evento que falta?
         </h2>
-        <p class="mt-2 max-w-2xl text-sm text-primary/65 fest:text-season-ink/70">
+        <p class="mt-2 max-w-2xl text-base text-black/80 fest:text-season-ink/80">
           Si conoces un evento relacionado con tecnología en Jaén, compártelo
           con la comunidad y lo revisamos.
         </p>
       </div>
       <a
         href="/proponer-evento"
-        class="relative mt-6 inline-flex shrink-0 rounded-full !bg-black px-6 py-3 font-bold !text-white shadow-none transition-transform duration-200 hover:!bg-black hover:!text-white hover:-translate-y-0.5 hover:shadow-none md:mt-0"
+        class="relative mt-6 inline-flex min-h-12 shrink-0 items-center rounded-full !bg-black px-6 py-3 font-bold !text-white transition-transform duration-200 hover:-translate-y-0.5 md:mt-0"
       >
         Compartir evento →
       </a>
@@ -198,15 +172,10 @@ const availableTags = Array.from(
 
     {
       pastEvents.length > 0 && (
-        <section data-event-section class="border-t border-primary/10 fest:border-white/10 pt-12">
-          <div class="mb-6 flex flex-col gap-1">
-            <span class="text-primary/35 fest:text-white/35 text-xs font-bold uppercase tracking-[0.16em]">
-              Archivo
-            </span>
-            <h2 class="text-2xl font-bold">Eventos anteriores</h2>
-          </div>
+        <section data-event-section class="pt-4">
+          <h2 class="mb-6 text-3xl font-black tracking-tight">Charlas anteriores</h2>
 
-          <div class="overflow-hidden rounded-3xl border border-primary/10 fest:border-white/10">
+          <div class="overflow-hidden rounded-3xl bg-black/[0.04] fest:bg-white/[0.04]">
             {pastEvents.map(({ title, speakers, place, date, tags }, index) => (
               <a
                 href={`/eventos/${slugify(title)}`}
@@ -214,39 +183,40 @@ const availableTags = Array.from(
                 data-event-type="xauen"
                 data-event-organizer="XauenDevs"
                 class:list={[
-                  "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] fest:hover:bg-white/[0.025] md:flex-row md:items-center md:px-6",
-                  index > 0 && "border-t border-primary/10 fest:border-white/10",
+                  "group flex flex-col gap-2 px-5 py-5 transition-colors hover:bg-accent/25 md:flex-row md:items-center md:gap-4 md:px-6",
+                  index > 0 && "border-t border-black/10 fest:border-white/10",
                 ]}
               >
                 <time class="flex shrink-0 flex-col md:w-28" datetime={date.toISOString()}>
-                  <span class="text-sm font-bold">
+                  <span class="text-base font-bold">
                     {date.toLocaleDateString("es-ES", {
-                      day: "2-digit",
+                      day: "numeric",
                       month: "short",
-                    })}
+                      year: "numeric",
+                      timeZone: "Europe/Madrid",
+                    }).replace(".", "")}
                   </span>
-                  <span class="text-xs text-primary/40 fest:text-white/40">{date.getFullYear()}</span>
                 </time>
 
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70 fest:group-hover:text-white/70">
+                    <h3 class="text-base font-bold group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4 md:text-lg">
                       {title}
                     </h3>
-                    {tags.map((tag) => (
-                      <span class="rounded-full bg-primary/[0.05] fest:bg-white/[0.05] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary/45 fest:text-white/45">
+                    {tags.filter((tag) => tag !== "Charlas").map((tag) => (
+                      <span class="rounded-full bg-black/[0.07] px-2.5 py-0.5 text-[13px] font-medium fest:bg-white/10">
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <p class="mt-1 truncate text-sm text-primary/50 fest:text-white/50">
+                  <p class="mt-1 text-sm text-black/75 fest:text-white/75">
                     {speakers?.map((speaker) => speaker.name).join(" · ")}
                     {place && speakers?.length ? " · " : ""}
                     {place}
                   </p>
                 </div>
 
-                <span class="hidden text-primary/25 fest:text-white/25 transition-transform group-hover:translate-x-1 md:block">
+                <span class="hidden text-xl transition-transform group-hover:translate-x-1 md:block">
                   ↗
                 </span>
               </a>

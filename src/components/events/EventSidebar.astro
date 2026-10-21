@@ -22,6 +22,7 @@ interface Props {
   eventStart: string;
   eventEnd: string;
   videoId?: string;
+  class?: string;
 }
 
 const {
@@ -38,29 +39,27 @@ const {
   mapsUrl,
   shareMessage,
   videoId,
+  class: className,
 } = Astro.props;
 ---
 
-<aside class="flex h-fit min-w-0 flex-col gap-4 rounded-3xl bg-accent p-4 fest:text-season-ink sm:rounded-[2rem] sm:p-6">
-  <span class="text-xs font-bold uppercase tracking-[0.16em]">
-    {isExternal ? "Evento externo" : "XauenDevs"}
-  </span>
-
-  <h2 class="break-words text-2xl font-black leading-tight">
-    {isExternal
-      ? "Consulta todos los detalles del evento."
-      : isPast
-        ? "Esta charla ya se ha celebrado."
-        : "Descubre esta charla."}
-  </h2>
-
-  <p class="text-sm leading-relaxed text-black/65">
-    {isExternal
-      ? "Fecha, ubicación, programa e información actualizada directamente en la web oficial del evento."
-      : isPast
-        ? "Consulta los materiales y recursos disponibles. Las acciones de asistencia ya están cerradas."
-        : "Consulta los detalles de la charla y, si quieres asistir, añade el evento directamente a tu calendario."}
-  </p>
+<aside class:list={["flex h-fit min-w-0 flex-col gap-4 rounded-3xl bg-accent p-4 text-black fest:text-season-ink sm:rounded-[2rem] sm:p-6", className]}>
+  {
+    (isExternal || isPast) && (
+      <div>
+        <h2 class="break-words text-2xl font-black leading-tight">
+          {isExternal ? "Información y entradas" : "Esta charla ya se celebró"}
+        </h2>
+        <p class="mt-2 text-base leading-relaxed text-black/80">
+          {isExternal
+            ? "Programa, fechas e inscripción, al día, en la web oficial del evento."
+            : videoId
+              ? "Ya no admite inscripciones, pero puedes ver la grabación."
+              : "Ya no admite inscripciones."}
+        </p>
+      </div>
+    )
+  }
 
   {
     isExternal ? (
@@ -89,7 +88,7 @@ const {
   {!isExternal && isPast && videoId && (
     <a
       href="#video"
-      class="mt-2 inline-flex w-fit rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
+      class="inline-flex min-h-12 w-fit items-center rounded-full !bg-black px-5 py-3 font-bold !text-white transition-transform hover:-translate-y-0.5 hover:!bg-black"
     >
       Ver grabación ↓
     </a>
@@ -97,28 +96,18 @@ const {
 
   {(!isPast || isExternal) && (
     <div class="mt-2 border-t border-black/10 pt-4">
-      <span class="text-xs font-bold uppercase tracking-[0.14em]">
-        Añadir al calendario
-      </span>
+      <h3 class="text-base font-bold">Añadir al calendario</h3>
       <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-        <a href={googleCalendarUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-w-0 items-center justify-center rounded-full bg-black px-4 py-2 text-center text-xs font-bold text-white transition-transform hover:-translate-y-0.5">
+        <a href={googleCalendarUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-w-0 items-center justify-center rounded-full bg-black min-h-11 px-4 py-2 text-center text-sm font-bold text-white transition-transform hover:-translate-y-0.5">
           Google Calendar
         </a>
-        <a href={icsUrl} download={icsFilename} class="inline-flex min-w-0 items-center justify-center rounded-full border border-black/20 px-4 py-2 text-center text-xs font-bold transition-colors hover:bg-black/10">
+        <a href={icsUrl} download={icsFilename} class="inline-flex min-w-0 items-center justify-center rounded-full border border-black/20 min-h-11 px-4 py-2 text-center text-sm font-bold transition-colors hover:bg-black/10">
           Descargar .ics
         </a>
       </div>
     </div>
   )}
 
-  {!isExternal && isPast && (
-    <div class="rounded-2xl border border-black/10 bg-white/30 p-4">
-      <p class="text-sm font-bold">Evento celebrado</p>
-      <p class="mt-1 text-sm leading-relaxed text-black/60">
-        Ya no admite nuevas inscripciones ni acciones de asistencia.
-      </p>
-    </div>
-  )}
 
   {eventPlace && (
     <div class="mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white/30">
@@ -139,20 +128,18 @@ const {
   )}
 
   <div class="mt-2 min-w-0 border-t border-black/10 pt-5">
-    <span class="text-xs font-bold uppercase tracking-[0.14em]">
-      Compartir evento
-    </span>
-    <p class="mt-2 text-sm leading-relaxed text-black/60">
-      WhatsApp lleva el texto listo. En LinkedIn copiamos el mensaje y abrimos el editor para que solo tengas que pegarlo.
+    <h3 class="text-base font-bold">Compartir</h3>
+    <p class="mt-1 text-sm leading-relaxed text-black/75">
+      En LinkedIn copiamos el mensaje y abrimos el editor: solo tienes que pegarlo.
     </p>
     <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-      <a href={`https://api.whatsapp.com/send/?text=${encodeURIComponent(shareMessage)}`} target="_blank" rel="noopener noreferrer" class="inline-flex min-w-0 items-center justify-center rounded-full bg-black px-4 py-2 text-center text-xs font-bold text-white transition-transform hover:-translate-y-0.5">
+      <a href={`https://api.whatsapp.com/send/?text=${encodeURIComponent(shareMessage)}`} target="_blank" rel="noopener noreferrer" class="inline-flex min-w-0 items-center justify-center rounded-full bg-black min-h-11 px-4 py-2 text-center text-sm font-bold text-white transition-transform hover:-translate-y-0.5">
         WhatsApp
       </a>
-      <button type="button" data-linkedin-share={shareMessage} class="inline-flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5">
+      <button type="button" data-linkedin-share={shareMessage} class="inline-flex min-h-11 items-center justify-center rounded-full bg-black px-4 py-2 text-sm font-bold text-white transition-transform hover:-translate-y-0.5">
         LinkedIn
       </button>
-      <button type="button" data-copy-share-message={shareMessage} class="inline-flex min-w-0 items-center justify-center rounded-full border border-black/20 px-4 py-2 text-center text-xs font-bold transition-colors hover:bg-black/10">
+      <button type="button" data-copy-share-message={shareMessage} class="inline-flex min-w-0 items-center justify-center rounded-full border border-black/20 min-h-11 px-4 py-2 text-center text-sm font-bold transition-colors hover:bg-black/10">
         Copiar mensaje
       </button>
     </div>
