@@ -10,7 +10,24 @@ import FromFor from "../components/FromFor.astro";
     class="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-80 saturate-50 brightness-75"
     style="background-image:url('/img/header.webp')"
   ></div>
-  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/10"></div>
+  <div aria-hidden="true" class="halloween-atmosphere absolute inset-0">
+    <div class="halloween-moon"></div>
+    <div class="halloween-mist halloween-mist-a"></div>
+    <div class="halloween-mist halloween-mist-b"></div>
+    <svg class="halloween-rooftops absolute inset-x-0 bottom-0 h-[70%] w-full" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMax slice">
+      <path d="M0 390 100 355 165 390 250 330 320 380 405 345 490 390 575 340 650 380 735 330 820 390 900 350 1000 390 1080 325 1170 385 1260 345 1350 390 1440 350V500H0Z" fill="#100d14"/>
+      <g fill="#08080c">
+        <path d="M720 500V185L780 130 840 185V500Z"/><path d="M700 190 780 110 860 190 844 202 780 145 716 202Z"/>
+        <path d="M820 500V230H875V195H910V230H945V500Z"/><path d="M660 500V275H700V240H735V275H760V500Z"/>
+        <path d="M742 275h18v36h-18zm45 0h18v36h-18zm-45 60h18v36h-18zm45 0h18v36h-18z" fill="#ff7a24" opacity=".8"/>
+        <path d="M845 270h24v42h-24zm43 0h24v42h-24zm-43 65h24v42h-24z" fill="#a020f0" opacity=".65"/>
+        <path d="M0 500Q30 410 75 500Q110 405 155 500Q190 430 225 500ZM1200 500Q1240 405 1280 500Q1320 420 1360 500Q1400 400 1440 485Z"/>
+      </g>
+      <g fill="#09080e"><path d="M320 65q-25-35-48 0q24-12 48 0q25-12 49 0q-24-35-49 0Z"/><path d="M480 100q-18-27-35 0q17-10 35 0q18-10 35 0q-17-27-35 0Z"/></g>
+    </svg>
+    <div class="halloween-vignette absolute inset-0"></div>
+  </div>
+  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#0d0d12] via-[#0d0d12]/45 to-[#0d0d12]/10"></div>
 
   <div class="relative z-10 max-w-4xl">
     <div class="mb-5 flex flex-wrap items-center gap-3">
@@ -19,10 +36,10 @@ import FromFor from "../components/FromFor.astro";
       </span>
       <span class="text-sm font-semibold text-white/70">Jaén · Desarrollo · Tecnología</span>
     </div>
-    <h1 class="text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">
+    <h1 class="halloween-headline text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">
       La comunidad de desarrollo y tecnología de Jaén.
     </h1>
-    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">
       Compartimos conocimiento, organizamos eventos y conectamos a personas con ganas de aprender, enseñar y crear.
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
@@ -47,3 +64,18 @@ import FromFor from "../components/FromFor.astro";
     <FromFor />
   </div>
 </header>
+<style>
+  .halloween-atmosphere { pointer-events:none; overflow:hidden; background:radial-gradient(ellipse at 78% 27%,rgba(160,32,240,.18),transparent 34%),linear-gradient(120deg,rgba(13,13,18,.35),rgba(30,9,23,.24)); }
+  .halloween-moon { position:absolute; width:clamp(150px,23vw,310px); aspect-ratio:1; right:clamp(5%,8vw,110px); top:7%; border-radius:50%; background:radial-gradient(circle at 35% 33%,#fff0c8 0,#ffb15e 23%,#ff6600 49%,#72233d 72%,transparent 73%); opacity:.8; box-shadow:0 0 65px rgba(255,102,0,.2),0 0 150px rgba(160,32,240,.12); }
+  .halloween-moon::after { content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 72% 65%,rgba(20,10,26,.4),transparent 30%),radial-gradient(ellipse at 25% 75%,rgba(20,10,26,.25),transparent 22%); }
+  .halloween-mist { position:absolute;z-index:2;left:-15%;width:130%;height:20%;filter:blur(26px);background:linear-gradient(90deg,transparent,rgba(160,32,240,.16),rgba(255,102,0,.14),rgba(210,210,230,.12),transparent); }
+  .halloween-mist-a { bottom:12%;animation:halloween-mist-drift 17s ease-in-out infinite alternate; }
+  .halloween-mist-b { bottom:25%;opacity:.65;animation:halloween-mist-drift 23s ease-in-out infinite alternate-reverse; }
+  .halloween-rooftops { z-index:3;opacity:.92; }
+  .halloween-vignette { background:linear-gradient(0deg,#0d0d12 0%,transparent 55%),linear-gradient(90deg,rgba(13,13,18,.35),transparent 70%); }
+  .halloween-pill { background:rgba(255,102,0,.13);border:1px solid rgba(255,102,0,.45);color:#ffb36d;box-shadow:0 0 25px rgba(255,102,0,.08); }
+  .halloween-headline { text-shadow:0 0 24px rgba(255,102,0,.26),0 0 55px rgba(160,32,240,.14); }
+  @keyframes halloween-mist-drift { from { transform:translateX(-3%); } to { transform:translateX(3%); } }
+  @media(max-width:640px) { .halloween-moon { width:155px;right:-15px;top:5%;opacity:.55; }.halloween-rooftops { height:56%; } }
+  @media(prefers-reduced-motion:reduce) { .halloween-mist { animation:none; } }
+</style>
