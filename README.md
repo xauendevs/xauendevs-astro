@@ -126,4 +126,4 @@ Alternativa sin Edge Config: variables `SITE_THEME` y `SITE_HACK_INTRO`. **Ojo:*
 
 Lógica en `src/lib/site-theme.ts` (Edge Config → env → `default`). Para una temporada nueva, añadirla a `THEMES` y colgar de `season` (en `Layout.astro`, `data-season` del `<body>`) sus decoraciones.
 
-Probar la broma en local: `/?hack=1` · saltarla: `/?nohack`.
+Probar la broma (también en producción, aunque esté apagada): `/?hack=1` · saltarla: `/?nohack`.
