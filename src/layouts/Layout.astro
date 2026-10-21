@@ -139,19 +139,19 @@ const socialImage = new URL(image, siteOrigin).href;
     }
   }
   @keyframes pumpkin-flicker {
-    0%,
-    100% {
-      filter: drop-shadow(0 0 18px rgba(255, 138, 31, 0.75));
+    from {
+      opacity: 0.82;
     }
-    50% {
-      filter: drop-shadow(0 0 26px rgba(255, 170, 60, 0.95));
+    to {
+      opacity: 1;
     }
   }
   .bat-float {
     animation: bat-float 6s ease-in-out infinite;
   }
   .pumpkin-flicker {
-    animation: pumpkin-flicker 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 16px rgba(255, 138, 31, 0.8));
+    animation: pumpkin-flicker 2.8s ease-in-out infinite alternate;
   }
 
   #header-nav {

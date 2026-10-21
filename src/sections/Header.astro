@@ -8,7 +8,7 @@ const rand = (i: number, n: number) => {
   const x = Math.sin(i * 97.13 + n * 13.7) * 10000;
   return x - Math.floor(x);
 };
-const embers = Array.from({ length: 20 }, (_, i) => ({
+const embers = Array.from({ length: 12 }, (_, i) => ({
   left: 3 + rand(i, 1) * 94, // % del ancho
   size: 2 + rand(i, 2) * 3.5, // px
   delay: -rand(i, 3) * 16, // s (negativo: ya están en marcha al cargar)
@@ -27,13 +27,12 @@ const bats = [
   data-hero
   class="hero relative isolate flex min-h-[620px] flex-col justify-center overflow-hidden rounded-3xl bg-night px-7 py-10 md:px-12 md:py-14 lg:aspect-[1983/793] lg:max-h-[820px] lg:min-h-[600px] lg:pb-24"
 >
-  <!-- 1. Foto: monocroma + duotono morado→naranja (sin tonos verdes) -->
-  <div aria-hidden="true" class="layer hero-photo" style="background-image:url('/img/header.webp')"></div>
-  <div aria-hidden="true" class="layer hero-tint"></div>
+  <!-- 1. Foto en duotono morado→naranja (horneado en la imagen: sin filtros ni blend en tiempo real) -->
+  <div aria-hidden="true" class="layer hero-photo" data-fx="photo" style="background-image:url('/img/hero-halloween.webp')"></div>
   <div aria-hidden="true" class="layer hero-scrim"></div>
 
   <!-- 2. Foco de luz que sigue al cursor -->
-  <div aria-hidden="true" class="layer hero-spotlight"></div>
+  <div aria-hidden="true" class="hero-spotlight" data-fx="spot"></div>
 
   <!-- 3. Niebla en movimiento -->
   <div aria-hidden="true" class="hero-fog"></div>
@@ -42,6 +41,7 @@ const bats = [
   <div
     aria-hidden="true"
     class="layer hero-overlay"
+    data-fx="overlay"
     style="background-image:url('/img/halloween-overlay.webp')"
   >
   </div>
@@ -64,7 +64,7 @@ const bats = [
     {
       bats.map((b) => (
         <div class="bat-fly" style={`--y:${b.top};--t:${b.duration};--d:${b.delay}`}>
-          <Bat class:list={["bat-flap text-black [filter:drop-shadow(0_0_6px_rgba(255,138,31,0.55))]", b.size]} />
+          <Bat class:list={["bat-flap text-black", b.size]} />
         </div>
       ))
     }
@@ -89,12 +89,24 @@ const bats = [
       La comunidad de desarrollo y tecnología de Jaén.
     </h1>
 
-    <div class="reveal" style="--i:2">
+    <div
+      class="reveal relative mt-2 w-full max-w-[min(100%,clamp(560px,40vw,880px))]"
+      style="--i:2"
+      role="img"
+      aria-label="From XauenDevs for Devs"
+    >
       <FromFor
         variant="halloween"
-        role="img"
-        aria-label="From XauenDevs for Devs"
-        class="mt-2 h-auto w-full max-w-[min(100%,clamp(560px,40vw,880px))] [filter:drop-shadow(0_0_22px_rgba(255,138,31,0.55))]"
+        part="light"
+        aria-hidden="true"
+        class="block h-auto w-full [filter:drop-shadow(0_0_22px_rgba(255,138,31,0.55))]"
+      />
+      <!-- Capa naranja aparte: el neón parpadea animando solo su opacidad (compositor) -->
+      <FromFor
+        variant="halloween"
+        part="orange"
+        aria-hidden="true"
+        class="fromfor-orange absolute inset-0 block h-auto w-full [filter:drop-shadow(0_0_22px_rgba(255,138,31,0.55))]"
       />
     </div>
 
@@ -116,7 +128,7 @@ const bats = [
       </a>
       <a
         href="/#own-mission"
-        class="inline-flex items-center rounded-full border border-pumpkin/70 bg-night/40 px-6 py-3 font-semibold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-pumpkin hover:bg-pumpkin/10 motion-reduce:transition-none"
+        class="inline-flex items-center rounded-full border border-pumpkin/70 bg-night/60 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-pumpkin hover:bg-pumpkin/10 motion-reduce:transition-none"
       >
         Conoce nuestra misión
       </a>
@@ -138,16 +150,8 @@ const bats = [
     background-size: cover;
     background-position: 72% 30%;
     background-repeat: no-repeat;
-    filter: grayscale(1) contrast(1.2) brightness(0.95);
-    transform: translate3d(calc(var(--px, 0) * -22px), calc(var(--py, 0) * -14px), 0);
     transition: transform 0.25s ease-out;
     will-change: transform;
-  }
-  .hero-tint {
-    z-index: -29;
-    background: linear-gradient(118deg, #3b0764 0%, #6d28d9 38%, #c2410c 78%, #ff8a1f 100%);
-    mix-blend-mode: color;
-    opacity: 0.92;
   }
   /* Legibilidad del texto a la izquierda + fundido con el resto de la página */
   .hero-scrim {
@@ -159,15 +163,19 @@ const bats = [
   }
 
   /* --- Foco con el cursor ---------------------------------------------- */
+  /* Se mueve solo con transform (compositor); el degradado se pinta una vez */
   .hero-spotlight {
+    position: absolute;
+    left: 74%;
+    top: 36%;
+    width: 880px;
+    height: 880px;
+    margin: -440px 0 0 -440px;
     z-index: -20;
-    background: radial-gradient(
-      440px circle at var(--mx, 74%) var(--my, 36%),
-      rgba(255, 176, 90, 0.3),
-      rgba(255, 138, 31, 0.09) 46%,
-      transparent 72%
-    );
-    mix-blend-mode: screen;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 176, 90, 0.3), rgba(255, 138, 31, 0.09) 38%, transparent 66%);
+    transition: transform 0.18s ease-out;
+    will-change: transform;
   }
 
   /* --- Niebla ----------------------------------------------------------- */
@@ -180,7 +188,7 @@ const bats = [
     background:
       radial-gradient(42% 75% at 18% 100%, rgba(124, 58, 237, 0.55), transparent 70%),
       radial-gradient(46% 85% at 76% 100%, rgba(168, 85, 247, 0.42), transparent 70%);
-    filter: blur(20px);
+    will-change: transform;
     animation: fog-drift 26s ease-in-out infinite alternate;
   }
   @keyframes fog-drift {
@@ -198,7 +206,7 @@ const bats = [
     background-size: cover;
     background-position: 100% 100%;
     background-repeat: no-repeat;
-    transform: translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 5px), 0) scale(1.02);
+    transform: scale(1.02);
     transition: transform 0.25s ease-out;
     will-change: transform;
   }
@@ -220,7 +228,6 @@ const bats = [
     translate: -50% -50%;
     pointer-events: none;
     background: radial-gradient(circle, rgba(255, 150, 40, 0.6), rgba(255, 100, 0, 0.2) 40%, transparent 68%);
-    mix-blend-mode: screen;
     animation: pglow 3.4s ease-in-out infinite alternate;
   }
   .pglow-sm {
@@ -236,11 +243,9 @@ const bats = [
   @keyframes pglow {
     from {
       opacity: 0.5;
-      scale: 0.92;
     }
     to {
       opacity: 1;
-      scale: 1.08;
     }
   }
 
@@ -259,8 +264,7 @@ const bats = [
     width: calc(var(--s) * 1px);
     height: calc(var(--s) * 1px);
     border-radius: 50%;
-    background: radial-gradient(circle, #ffe2b0, #ff8a1f 60%, transparent 72%);
-    box-shadow: 0 0 8px 2px rgba(255, 138, 31, 0.7);
+    background: radial-gradient(circle, #fff0d0 0%, #ffb15c 35%, rgba(255, 138, 31, 0.55) 60%, transparent 75%);
     opacity: 0;
     animation: ember-rise calc(var(--t) * 1s) linear calc(var(--d) * 1s) infinite;
   }
@@ -306,6 +310,12 @@ const bats = [
   }
   .bat-fly :global(.bat-flap) {
     animation: bat-flap 0.3s ease-in-out infinite alternate;
+  }
+  /* Borde naranja vectorial en lugar de drop-shadow (los filtros animados repintan cada fotograma) */
+  .bat-fly :global(.bat-flap path) {
+    stroke: rgba(255, 138, 31, 0.75);
+    stroke-width: 1.4px;
+    paint-order: stroke;
   }
   @keyframes bat-flap {
     from {
@@ -356,6 +366,16 @@ const bats = [
     }
   }
 
+  /* Pausa los efectos cuando el hero no se ve (ahorra GPU/CPU al hacer scroll) */
+  .hero.is-paused .ember,
+  .hero.is-paused .hero-fog,
+  .hero.is-paused .pglow,
+  .hero.is-paused .bat-fly,
+  .hero.is-paused :global(.bat-flap),
+  .hero.is-paused :global(.fromfor-orange) {
+    animation-play-state: paused;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-fog,
     .pglow,
@@ -370,26 +390,38 @@ const bats = [
       display: none;
     }
     .hero-photo,
-    .hero-overlay {
+    .hero-overlay,
+    .hero-spotlight {
       transition: none;
-      transform: none;
-    }
-    .hero-overlay {
-      transform: scale(1.02);
     }
   }
 </style>
 
 <script>
-  // Foco de luz + parallax siguiendo al cursor. Solo con ratón y sin "reducir movimiento".
+  // Foco de luz + parallax con el cursor. Solo escribe `transform` (sin variables CSS ni repintados).
+  // Solo con ratón y sin "reducir movimiento".
   function initHero() {
     const hero = document.querySelector<HTMLElement>("[data-hero]");
     if (!hero || hero.dataset.fx === "on") return;
     hero.dataset.fx = "on";
 
+    // Pausa las animaciones cuando el hero sale de pantalla.
+    new IntersectionObserver(([entry]) => hero.classList.toggle("is-paused", !entry.isIntersecting)).observe(hero);
+
     const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!canHover || reduced) return;
+
+    const photo = hero.querySelector<HTMLElement>('[data-fx="photo"]');
+    const overlay = hero.querySelector<HTMLElement>('[data-fx="overlay"]');
+    const spot = hero.querySelector<HTMLElement>('[data-fx="spot"]');
+    if (!photo || !overlay || !spot) return;
+
+    const apply = (px: number, py: number, dx: number, dy: number) => {
+      photo.style.transform = `translate3d(${px * -22}px, ${py * -14}px, 0)`;
+      overlay.style.transform = `translate3d(${px * 8}px, ${py * 5}px, 0) scale(1.02)`;
+      spot.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+    };
 
     let raf = 0;
     hero.addEventListener("pointermove", (event) => {
@@ -398,16 +430,14 @@ const bats = [
         const rect = hero.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        hero.style.setProperty("--mx", `${x}px`);
-        hero.style.setProperty("--my", `${y}px`);
-        hero.style.setProperty("--px", (x / rect.width - 0.5).toFixed(3));
-        hero.style.setProperty("--py", (y / rect.height - 0.5).toFixed(3));
+        // El foco parte de (74 %, 36 %): se mueve la diferencia respecto a esa posición.
+        apply(x / rect.width - 0.5, y / rect.height - 0.5, x - rect.width * 0.74, y - rect.height * 0.36);
       });
     });
 
     hero.addEventListener("pointerleave", () => {
       cancelAnimationFrame(raf);
-      ["--mx", "--my", "--px", "--py"].forEach((name) => hero.style.removeProperty(name));
+      apply(0, 0, 0, 0);
     });
   }
 
