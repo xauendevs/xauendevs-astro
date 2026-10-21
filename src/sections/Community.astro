@@ -1,5 +1,6 @@
 ---
 import { DISCORD_URL } from "@/consts/social-links";
+import SeasonCorner from "@/components/season/SeasonCorner.astro";
 
 // Tres formas de participar, cada una con un destino distinto.
 const ways = [
@@ -27,15 +28,18 @@ const ways = [
 ---
 
 <section
-  class="rounded-3xl bg-accent p-7 text-black fest:bg-season fest:text-season-ink md:p-10"
+  class="relative overflow-hidden rounded-3xl bg-accent p-7 text-black fest:bg-season fest:text-season-ink md:p-10"
   aria-labelledby="participation-title"
 >
-  <div class="max-w-3xl">
+  <!-- Telaraña (Halloween) o guirnalda (Navidad) en la esquina; sin temporada no pinta nada -->
+  <SeasonCorner class="pointer-events-none absolute right-0 top-0 hidden w-44 -scale-x-100 opacity-60 navidad:opacity-100 sm:block md:w-56" />
+
+  <div class="relative max-w-3xl">
     <h2 id="participation-title" class="text-3xl font-black tracking-tight md:text-4xl">¿Cómo quieres participar?</h2>
     <p class="mt-3 text-lg font-medium md:text-xl">XauenDevs crece cuando la comunidad comparte, aprende y propone.</p>
   </div>
 
-  <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+  <div class="relative mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
     {
       ways.map(({ title, text, cta, href, reload, external }) => (
         <a

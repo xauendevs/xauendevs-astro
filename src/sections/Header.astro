@@ -1,7 +1,7 @@
 ---
 import FromFor from "../components/FromFor.astro";
 import FestiveHero from "@/components/season/FestiveHero.astro";
-import { getSeason } from "@/lib/season";
+import { getSeason, SEASON_CONTENT } from "@/lib/season";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
 import { formatDate, formatTime } from "@/lib/format-date";
@@ -9,7 +9,8 @@ import { DISCORD_URL } from "@/consts/social-links";
 
 // Con una temporada activa el hero es el mismo; solo cambian el fondo (capas de <FestiveHero />),
 // los colores y el FROM :XAUEN FOR DEVS, que pasa a neón parpadeante.
-const festive = !!(await getSeason(Astro));
+const season = await getSeason(Astro);
+const festive = !!season;
 
 // La próxima Pivo&Code va en la propia cabecera: es lo que viene a buscar casi todo el mundo.
 const { STRAPI_HOST } = import.meta.env;
@@ -80,7 +81,7 @@ const when = daysLeft <= 0 ? "Hoy" : daysLeft === 1 ? "Mañana" : `En ${daysLeft
         >
           <div class="flex items-center justify-between gap-3">
             <span class="text-sm font-bold">Próxima Pivo&Code</span>
-            <span class="rounded-full bg-accent px-3 py-1 text-sm font-bold text-black fest:text-season-ink">{when}</span>
+            <span class="rounded-full bg-accent px-3 py-1 text-sm font-bold text-black fest:text-season-ink">{season && <span aria-hidden="true">{SEASON_CONTENT[season].cta} </span>}{when}</span>
           </div>
           <p class="mt-3 text-xl font-bold leading-snug group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4">
             {next.title}
