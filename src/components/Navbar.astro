@@ -4,18 +4,19 @@ import Logo from "./Logo.astro";
 import NextEvent from "./NextEvent.astro";
 import SeasonMark from "./season/SeasonMark.astro";
 // Los estilos de temporada son clases `fest:` (activas con <body data-festive>) que solo cambian colores.
-// La marca de temporada (<SeasonMark />) va en posición absoluta junto al logo: no desplaza nada.
+// La marca de temporada (<SeasonMark />) va junto al logo con aire a los lados; en escritorio ocupa su sitio
+// y empuja los enlaces, en móvil va en posición absoluta para no mover la hamburguesa.
 ---
 
 <header class="relative z-20 h-auto max-w-[100vw] bg-white/85 fest:bg-night/90 fest:shadow-[0_1px_0_rgb(255_255_255_/_0.1)] fest:text-white p-4 sm:p-6 lg:p-10">
   <nav class="hidden justify-between text-nowrap lg:flex" aria-label="Navegación principal">
     <div class="flex items-center gap-10">
-      <a href="/" aria-label="XauenDevs, inicio" class="relative shrink-0">
+      <a href="/" aria-label="XauenDevs, inicio" class="relative flex shrink-0 items-center gap-3">
         <Logo
           width="230"
           class="text-primary fest:text-white transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
         />
-        <SeasonMark class="season-flicker absolute left-full top-1/2 ml-1 h-7 w-auto -translate-y-1/2" />
+        <SeasonMark class="season-flicker h-8 w-auto" />
       </a>
       <div class="flex items-center gap-6 font-medium fest:text-white/90">
         <a class="nav-link" data-astro-reload href="/eventos?tipo=xauen">Pivo&Code</a>
@@ -35,7 +36,7 @@ import SeasonMark from "./season/SeasonMark.astro";
         width="190"
         class="text-primary fest:text-white transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
       />
-      <SeasonMark class="season-flicker absolute left-full top-1/2 ml-1 h-6 w-auto -translate-y-1/2" />
+      <SeasonMark class="season-flicker absolute left-full top-1/2 ml-2.5 h-6 w-auto -translate-y-1/2" />
     </a>
     <HamburgerButton class:list="block lg:hidden" id="menuButton" />
     <div
