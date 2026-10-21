@@ -53,6 +53,10 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:image" content={socialImage} />
   </head>
   <body>
+    <div class="halloween-lightning" aria-hidden="true"></div>
+    <img class="halloween-haunted-house" src="/img/halloween-haunted-house.svg" alt="" aria-hidden="true" />
+    <span class="halloween-spider" aria-hidden="true">🕷️</span>
+    <span class="halloween-ghost" aria-hidden="true">👻</span>
     <Header />
     <main class="min-w-0 px-4 sm:px-6 md:px-10">
       <slot class="" />
@@ -157,15 +161,11 @@ const socialImage = new URL(image, siteOrigin).href;
     z-index: 2;
     left: 5%;
     right: 8%;
-    bottom: -5px;
-    height: 12px;
+    bottom: -12px;
+    height: 22px;
     pointer-events: none;
-    background:
-      radial-gradient(ellipse at 13% 0%, #a20d18 0 4px, transparent 4.5px),
-      radial-gradient(ellipse at 31% 0%, #b51220 0 3px, transparent 3.5px),
-      radial-gradient(ellipse at 57% 0%, #a20d18 0 4px, transparent 4.5px),
-      radial-gradient(ellipse at 81% 0%, #b51220 0 3px, transparent 3.5px);
-    clip-path: polygon(0 0, 100% 0, 100% 20%, 84% 20%, 82% 100%, 78% 100%, 77% 20%, 59% 20%, 57% 72%, 53% 72%, 52% 20%, 33% 20%, 31% 100%, 27% 100%, 26% 20%, 15% 20%, 13% 65%, 9% 65%, 9% 20%, 0 20%);
+    background: linear-gradient(180deg, #9f0712 0%, #e11d2e 72%, #78040c 100%);
+    clip-path: polygon(0 0,100% 0,100% 25%,88% 25%,85% 65%,81% 65%,79% 25%,64% 25%,61% 100%,56% 100%,54% 25%,38% 25%,35% 72%,30% 72%,28% 25%,15% 25%,12% 55%,8% 55%,7% 25%,0 25%);
     filter: drop-shadow(0 2px 1px rgba(80, 0, 0, .25));
   }
 
@@ -259,6 +259,19 @@ const socialImage = new URL(image, siteOrigin).href;
     border-color: #393939 !important;
   }
 
+  body footer :where(p, span, small, li, h1, h2, h3, h4, a) {
+    color: #ededed;
+  }
+
+  body footer .text-black\/80,
+  body footer [class*="text-black"],
+  body footer [class*="text-gray-900"],
+  body footer [class*="text-neutral-900"] {
+    color: #ededed !important;
+  }
+
+  body footer a:hover { color: #f6b703 !important; }
+
   body main [class~="bg-white"],
   body main [class~="bg-gray-50"],
   body main [class~="bg-stone-50"],
@@ -300,19 +313,20 @@ const socialImage = new URL(image, siteOrigin).href;
   /* Relámpago: un destello blanco breve, no una pantalla parpadeando continuamente. */
   .halloween-lightning {
     position: fixed;
-    z-index: 49;
+    z-index: 999;
     inset: 0;
     pointer-events: none;
     opacity: 0;
-    background: rgba(255, 255, 255, .12);
-    animation: halloween-lightning-flash 11s linear infinite;
+    background: rgba(210, 225, 255, .22);
+    mix-blend-mode: screen;
+    animation: halloween-lightning-flash 8s linear infinite;
   }
 
   @keyframes halloween-lightning-flash {
-    0%, 17%, 17.4%, 17.8%, 18.3%, 100% { opacity: 0; }
-    17.2% { opacity: .65; }
-    17.6% { opacity: .08; }
-    18% { opacity: .38; }
+    0%, 22%, 22.5%, 23%, 23.7%, 100% { opacity: 0; }
+    22.2% { opacity: .82; }
+    22.7% { opacity: .04; }
+    23.3% { opacity: .55; }
   }
 
   @keyframes halloween-house-haunt {
