@@ -1,0 +1,11 @@
+---
+// Decoración de temporada: Cobweb en Halloween, Garland en Navidad. Sin temporada no pinta nada.
+import { getSeason } from "@/lib/season";
+import Cobweb from "../halloween/Cobweb.astro";
+import Garland from "../navidad/Garland.astro";
+
+const season = await getSeason(Astro);
+---
+
+{season === "halloween" && <Cobweb {...Astro.props} />}
+{season === "navidad" && <Garland {...Astro.props} />}

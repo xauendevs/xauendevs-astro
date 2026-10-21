@@ -1,7 +1,9 @@
 ---
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
+import { getSeason, SEASON_CONTENT } from "@/lib/season";
 
+const season = (await getSeason(Astro)) ?? "halloween";
 const pivos = await getPivosStrapi();
 const now = Date.now();
 const nextEvent = pivos?.find((pivo) => pivo.date.getTime() > now);
@@ -13,14 +15,14 @@ const label = nextEvent ? nextEvent.title : "Ver todos los eventos";
 <a
   href={href}
   aria-label={nextEvent ? `Ver próximo evento: ${nextEvent.title}` : "Ver todos los eventos"}
-  class="group inline-flex max-w-full rounded-full bg-gradient-to-r from-pumpkin via-pumpkin to-purple-500 p-px transition-shadow hover:shadow-[0_0_28px_rgba(255,138,31,0.45)] motion-reduce:transition-none"
+  class="group inline-flex max-w-full rounded-full bg-gradient-to-r from-season via-season to-[rgb(var(--glow-b-rgb))] p-px transition-shadow hover:shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.45)] motion-reduce:transition-none"
 >
   <span class="flex min-w-0 items-center gap-3 rounded-full bg-night/95 py-1.5 pl-1.5 pr-4">
-    <span class="flex size-7 shrink-0 items-center justify-center rounded-full border border-pumpkin/60 bg-pumpkin/10 text-sm" aria-hidden="true">💀</span>
-    <span class="hidden shrink-0 text-[11px] font-bold uppercase tracking-[0.18em] text-pumpkin sm:inline">Próximo evento</span>
-    <span class="min-w-0 truncate bg-gradient-to-r from-pumpkin to-fuchsia-400 bg-clip-text text-sm font-semibold text-transparent" title={label}>
+    <span class="flex size-7 shrink-0 items-center justify-center rounded-full border border-season/60 bg-season/10 text-sm" aria-hidden="true">{SEASON_CONTENT[season].pill}</span>
+    <span class="hidden shrink-0 text-[11px] font-bold uppercase tracking-[0.18em] text-season sm:inline">Próximo evento</span>
+    <span class="min-w-0 truncate bg-gradient-to-r from-season to-[rgb(var(--glow-b-rgb))] bg-clip-text text-sm font-semibold text-transparent" title={label}>
       {label}
     </span>
-    <span class="shrink-0 text-pumpkin transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none" aria-hidden="true">→</span>
+    <span class="shrink-0 text-season transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none" aria-hidden="true">→</span>
   </span>
 </a>

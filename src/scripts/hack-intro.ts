@@ -1,14 +1,38 @@
 /**
- * Animación de "hackeo" de Halloween. Se carga bajo demanda desde HackIntro.astro.
+ * Animación de "hackeo" de temporada. Se carga bajo demanda desde HackIntro.astro.
  * Todo el contenido es fijo (no se interpola nada del usuario salvo el navegador/SO/pantalla,
  * que se escriben con textContent) y no se hace ninguna petición de red.
  */
 const SEEN_KEY = "xd-hack";
+
+type Season = "halloween" | "navidad";
+
+/** Textos de cada temporada. Para una temporada nueva, añadir su entrada aquí. */
+const COPY: Record<Season, { mode: string; overlay: string; label: string; inject: string; mark: string; title: string; sub: string }> = {
+  halloween: {
+    mode: "halloween",
+    overlay: "/img/halloween-overlay.webp",
+    label: "Es una broma de Halloween",
+    inject: "[+] Inyectando calabazas en el DOM 🎃",
+    mark: "🎃",
+    title: "¡Feliz Halloween!",
+    sub: "Era una broma 😄 Tu navegador, tus cookies y tu historial de Stack Overflow están a salvo.",
+  },
+  navidad: {
+    mode: "navidad",
+    overlay: "/img/navidad-overlay.webp",
+    label: "Es una broma navideña",
+    inject: "[+] Colgando luces en el DOM 🎄",
+    mark: "🎄",
+    title: "¡Felices fiestas!",
+    sub: "Era una broma 😄 Tu navegador, tus cookies y tu historial de Stack Overflow están a salvo. Lo único que nos llevamos es tu sonrisa.",
+  },
+};
 /** Multiplicador de ritmo: >1 = más lento. Toda la animación escala con este valor. */
 const SLOW = 1.7;
 
-const TEMPLATE = `
-  <p class="hk-sr">Es una broma de Halloween: la web finge ser hackeada y enseguida se revela que es mentira. Pulsa Saltar, Escape o Enter para entrar directamente.</p>
+const template = (c: (typeof COPY)[Season]) => `
+  <p class="hk-sr">${c.label}: la web finge ser hackeada y enseguida se revela que es mentira. Pulsa Saltar, Escape o Enter para entrar directamente.</p>
   <button type="button" class="hk-skip" aria-label="Saltar la animación">Saltar · Esc</button>
   <div class="hk-term" aria-hidden="true">
     <div class="hk-titlebar"><i></i><i></i><i></i><span>root@xauendevs: ~</span></div>
@@ -19,9 +43,9 @@ const TEMPLATE = `
     <div class="hk-alert-sub">TODA LA WEB ES NUESTRA · TODA LA WEB ES NUESTRA</div>
   </div>
   <div class="hk-reveal">
-    <div class="hk-pumpkin" aria-hidden="true">🎃</div>
-    <h2 class="hk-title">¡Feliz Halloween!</h2>
-    <p class="hk-sub">Era una broma 😄 Tu navegador, tus cookies y tu historial de Stack Overflow están a salvo.</p>
+    <div class="hk-season" aria-hidden="true">${c.mark}</div>
+    <h2 class="hk-title">${c.title}</h2>
+    <p class="hk-sub">${c.sub}</p>
     <button type="button" class="hk-enter">Entrar a la web →</button>
     <p class="hk-foot">Una broma de XauenDevs · Jaén</p>
   </div>
@@ -64,8 +88,9 @@ export async function runHackIntro(): Promise<void> {
     /* navegación privada: no pasa nada, simplemente podría repetirse */
   }
 
-  new Image().src = "/img/halloween-overlay.webp"; // precarga para la pantalla final
-  root.innerHTML = TEMPLATE;
+  const copy = COPY[(root.dataset.theme as Season) in COPY ? (root.dataset.theme as Season) : "halloween"];
+  new Image().src = copy.overlay; // precarga para la pantalla final
+  root.innerHTML = template(copy);
 
   const out = root.querySelector<HTMLElement>(".hk-out")!;
   const skipButton = root.querySelector<HTMLButtonElement>(".hk-skip")!;
@@ -179,7 +204,7 @@ export async function runHackIntro(): Promise<void> {
 
   // --- guion ----------------------------------------------------------------
   await wait(300);
-  await typeCommand("./hackear_xauendevs.sh --modo=halloween");
+  await typeCommand(`./hackear_xauendevs.sh --modo=${copy.mode}`);
   if (skipped) return;
 
   text(`[+] Víctima detectada: ${detectVictim()}`);
@@ -187,7 +212,7 @@ export async function runHackIntro(): Promise<void> {
   await row("[+] Saltándose el firewall");
   await row("[+] Robando todas las cookies 🍪");
   await progress("[+] Descargando tu historial de Stack Overflow");
-  await row("[+] Inyectando calabazas en el DOM 🎃");
+  await row(copy.inject);
   if (skipped) return;
   text("[!] ACCESO TOTAL CONCEDIDO", "hk-warn");
   await wait(450);

@@ -1,10 +1,174 @@
 ---
-// Selector de tema: sin temporada activa se renderiza el diseño original (`AboutUs.default.astro`).
-import { isHalloweenSeason } from "@/lib/season";
-import Default from "./AboutUs.default.astro";
-import Halloween from "./AboutUs.halloween.astro";
+import SeasonCorner from "@/components/season/SeasonCorner.astro";
+import SeasonFlyer from "@/components/season/SeasonFlyer.astro";
+import Code from "@/components/icons/Code.astro";
+import Rocket from "@/components/icons/Rocket.astro";
+import Users from "@/components/icons/Users.astro";
+import { getSeason } from "@/lib/season";
 
-const halloween = await isHalloweenSeason(Astro);
+// Mismo contenido y marcado que siempre. Con una temporada activa se re-maqueta solo con clases `fest:`
+// (tres tarjetas con icono en lugar del acordeón) y se añade un titular de apoyo.
+const festive = !!(await getSeason(Astro));
+
+const items = [
+  {
+    title: "¿Qué somos?",
+    Icon: Users,
+    text: "XauenDevs\u00a0nace en 2017 como comunidad de\u00a0desarrolladores de software en la provincia de Jaén. Nuestro principal objetivo\u00a0es difundir conocimiento sobre desarrollo y tecnología en general.",
+  },
+  {
+    title: "¿Qué queremos?",
+    Icon: Rocket,
+    text: "Entre otras tantas actividades, nuestra principal labor se basa en organizar charlas mensuales con diferentes temáticas y profesionales de distintos campos, siempre relacionados con la tecnología.",
+  },
+  {
+    title: "¿Quiénes somos?",
+    Icon: Code,
+    text: "Actualmente, XauenDevs los conformamos 4 personas: Alberto Tejero, Alejandro, Adrián y Alberto. Todos somos muy apasionados por el desarrollo y la tecnologí y tratamos de transmitirlo en cada actividad que realizamos.",
+  },
+];
 ---
 
-{halloween ? <Halloween  /> : <Default />}
+<section
+  class="grid grid-cols-1 md:grid-cols-[40%_60%] fest:relative fest:scroll-mt-6 fest:gap-10 fest:py-4 fest:md:grid-cols-1 fest:lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.8fr)] fest:lg:gap-12"
+  id="own-mission"
+>
+  <div class="bg-black/5 rounded-3xl p-7 lg:p-10 md:mr-8 mb-8 md:mb-0 fest:contents">
+    <div class="fest:relative">
+      {
+        festive && (
+          <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-season">
+            Comunidad · Tecnología · Jaén
+          </p>
+        )
+      }
+      <h2 class="font-bold text-2xl fest:text-3xl fest:font-black fest:tracking-tight fest:text-white fest:sm:text-4xl">
+        Nuestra misión
+      </h2>
+      {
+        festive && (
+          <p class="mt-6 max-w-md leading-relaxed text-white/70">
+            Impulsar la comunidad de desarrolladores y profesionales de la tecnología en Jaén, creando un espacio
+            abierto para aprender, compartir y crecer juntos.
+          </p>
+        )
+      }
+      <SeasonFlyer
+        class="bat-float pointer-events-none absolute -top-2 right-6 hidden h-8 w-16 text-white/10 sm:block lg:right-12"
+      />
+    </div>
+    <section class="mt-4 fest:mt-0 fest:grid fest:grid-cols-1 fest:gap-4 fest:md:grid-cols-3">
+      {
+        items.map(({ title, text, Icon }, index) => (
+          <>
+            {index > 0 && <hr class="fest:hidden" />}
+            <details
+              name={festive ? undefined : "about-us"}
+              open={festive || index === 0}
+              data-glow
+              class="glow-card fest:relative fest:overflow-hidden fest:rounded-xl fest:border fest:border-season/70 fest:bg-gradient-to-b fest:from-white/[0.03] fest:to-transparent fest:p-5 fest:text-white fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.18),inset_0_0_30px_rgb(var(--season-rgb)_/_0.05)]"
+            >
+              <SeasonCorner class="pointer-events-none absolute right-0 top-0 h-20 w-20 -scale-x-100 text-season/25" />
+              <summary class="text-xl fest:pointer-events-none fest:flex-col fest:gap-6 fest:text-base fest:font-bold">
+                <Icon class="relative hidden size-9 text-season fest:block" />
+                {title}
+              </summary>
+              <p class="mt-4 fest:relative fest:mt-3 fest:text-sm fest:leading-relaxed fest:text-white/70">{text}</p>
+            </details>
+          </>
+        ))
+      }
+    </section>
+  </div>
+  <div class="max-h-[400px] min-h-[400px] overflow-hidden relative rounded-3xl fest:hidden">
+    <div
+      id="background-image"
+      class="absolute left-0 top-0 bottom-0 right-0 w-full h-full opacity-90 bg-blend-luminosity bg-center bg-cover bg-no-repeat z-10 saturate-50 brightness-75"
+      style=`background-image:url('/img/home.webp')`
+    >
+    </div>
+  </div>
+</section>
+
+<style>
+  summary {
+    display: flex;
+  }
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details {
+    overflow: clip;
+    cursor: pointer;
+  }
+  details::details-content {
+    height: 0;
+    transition:
+      height 0.3s,
+      content-visibility 0.3s allow-discrete;
+  }
+
+  details[open]::details-content {
+    height: auto;
+  }
+
+  hr {
+    display: block;
+    height: 2px;
+    border: 0;
+    border-top: 1px solid #003d40;
+    margin: 1em 0;
+    padding: 0;
+  }
+
+  /* Tarjetas de temporada: elevación y foco de luz que sigue al cursor */
+  :global([data-festive]) details {
+    cursor: default;
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.35s ease;
+  }
+  :global([data-festive]) details::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 0%), rgb(var(--season-rgb) / 0.22), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  :global([data-festive]) details:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 0 36px rgb(var(--season-rgb) / 0.35),
+      inset 0 0 30px rgb(var(--season-rgb) / 0.08);
+  }
+  :global([data-festive]) details:hover::before {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-festive]) details,
+    :global([data-festive]) details:hover {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Foco de luz de las tarjetas de temporada (solo hace algo si hay temporada activa).
+  function initGlowCards() {
+    if (!document.body.hasAttribute("data-festive")) return;
+    document.querySelectorAll<HTMLElement>("[data-glow]").forEach((card) => {
+      if (card.dataset.glowReady === "1") return;
+      card.dataset.glowReady = "1";
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--gx", `${event.clientX - rect.left}px`);
+        card.style.setProperty("--gy", `${event.clientY - rect.top}px`);
+      });
+    });
+  }
+  document.addEventListener("astro:page-load", initGlowCards);
+</script>

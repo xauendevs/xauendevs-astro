@@ -1,0 +1,22 @@
+---
+// Guirnalda de esquina con acebo y luces (equivalente a la telaraña). Nace en la esquina superior
+// izquierda; se refleja con `class="-scale-x-100"` para colocarla a la derecha.
+const lights = [
+  [18, 30, "#ff5c5c"],
+  [48, 52, "#ffd978"],
+  [82, 62, "#6bb7ff"],
+  [118, 60, "#5be59a"],
+  [152, 46, "#ff5c5c"],
+] as const;
+---
+
+<svg {...Astro.props} viewBox="0 0 200 110" fill="none" aria-hidden="true" focusable="false">
+  <path d="M0 8C40 34 90 78 200 36" stroke="currentColor" stroke-opacity=".55" stroke-width="2"></path>
+  {lights.map(([x, y, c]) => <circle cx={x} cy={y} r="5" fill={c}></circle>)}
+  <g fill="#2fae6b">
+    <path d="M6 4c10-2 18 2 22 10-9 2-18-1-22-10z"></path>
+    <path d="M30 6c8-6 17-5 24 1-7 6-17 6-24-1z"></path>
+  </g>
+  <circle cx="30" cy="12" r="3.6" fill="#ff4d5a"></circle>
+  <circle cx="35" cy="15" r="3.6" fill="#ff4d5a"></circle>
+</svg>

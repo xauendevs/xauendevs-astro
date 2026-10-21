@@ -1,0 +1,11 @@
+---
+// Decoración de temporada: Pumpkin en Halloween, Tree en Navidad. Sin temporada no pinta nada.
+import { getSeason } from "@/lib/season";
+import Pumpkin from "../halloween/Pumpkin.astro";
+import Tree from "../navidad/Tree.astro";
+
+const season = await getSeason(Astro);
+---
+
+{season === "halloween" && <Pumpkin {...Astro.props} />}
+{season === "navidad" && <Tree {...Astro.props} />}

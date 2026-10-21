@@ -6,11 +6,11 @@ import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
 import RealCommunity from "@/sections/RealCommunity.astro";
-import { isHalloweenSeason } from "@/lib/season";
+import { getSeason } from "@/lib/season";
 
 // Sin prerender: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
-const halloween = await isHalloweenSeason(Astro);
+const festive = !!(await getSeason(Astro));
 ---
 
 <Layout
@@ -20,7 +20,7 @@ const halloween = await isHalloweenSeason(Astro);
   <main class="flex flex-col gap-8">
     <Header />
     <AboutUs />
-    {halloween && <RealCommunity />}
+    {festive && <RealCommunity />}
     <Pivos />
     <Community />
     <Partners />

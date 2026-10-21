@@ -1,0 +1,20 @@
+---
+// Arbolito de Navidad con estrella y bolas de luz (equivalente a la calabaza de Halloween).
+---
+
+<svg {...Astro.props} viewBox="0 0 100 120" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="xmas-tree" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#2fae6b"></stop>
+      <stop offset="1" stop-color="#0f5c3a"></stop>
+    </linearGradient>
+  </defs>
+  <path d="M50 4l6.5 13.5 14.7 2-10.7 10.4 2.6 14.7L50 37.6l-13.1 7 2.6-14.7L28.8 19.5l14.7-2z" fill="#ffd978"></path>
+  <path d="M50 26L26 62h12L18 90h18L12 112h76L64 90h18L62 62h12z" fill="url(#xmas-tree)"></path>
+  <rect x="44" y="108" width="12" height="10" rx="2" fill="#6b3f1d"></rect>
+  <circle cx="42" cy="58" r="3.4" fill="#ff5c5c"></circle>
+  <circle cx="58" cy="76" r="3.4" fill="#ffd978"></circle>
+  <circle cx="38" cy="92" r="3.4" fill="#6bb7ff"></circle>
+  <circle cx="63" cy="100" r="3.4" fill="#ff5c5c"></circle>
+  <circle cx="50" cy="44" r="3" fill="#ffd978"></circle>
+</svg>

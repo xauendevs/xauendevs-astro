@@ -9,11 +9,12 @@
  * Y la broma del hackeo (solo con tema "halloween"):
  *   Edge Config `hack_intro` (true/false) → env `SITE_HACK_INTRO` → activada.
  *
- * Añadir una temporada nueva: ver README → "Temas estacionales".
+ * Añadir una temporada nueva: añadirla a THEMES, definir sus tokens en Layout.astro (y sus textos en
+ * HackIntro) — ver README → "Temas estacionales".
  */
 import { createClient } from "@vercel/global-config";
 
-export const THEMES = ["default", "halloween"] as const;
+export const THEMES = ["default", "halloween", "navidad"] as const;
 export type SiteTheme = (typeof THEMES)[number];
 
 const DEFAULT_THEME: SiteTheme = "default";

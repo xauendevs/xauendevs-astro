@@ -1,0 +1,47 @@
+/* ───────── Temporadas ─────────
+   Con otra temporada (o ninguna) la web se ve igual que antes. Cada temporada solo define estos
+   tokens; los componentes usan `bg-season`, `bg-night`, `fest:` y las variables `--season-*`.
+   Para una temporada nueva: añadirla a `THEMES` (src/lib/site-theme.ts) y definir sus tokens aquí. */
+:root {
+  /* Valores neutros (solo se usan dentro de [data-festive], que siempre los redefine) */
+  --season-rgb: 246 183 3;
+  --night-rgb: 8 8 11;
+}
+
+/* Cualquier temporada: diseño oscuro con el acento de la temporada */
+[data-festive] {
+  --color-accent: rgb(var(--season-rgb));
+  --color-accent-text: rgb(var(--season-rgb));
+  --color-focus: rgb(var(--season-soft-rgb));
+  color-scheme: dark;
+}
+
+/* 🎃 Halloween: naranja calabaza + niebla morada */
+[data-theme="halloween"] {
+  --season-rgb: 255 138 31;
+  --season-rgb-c: 255, 138, 31;
+  --season-soft-rgb: 255 177 92; /* tono claro: foco, brasas, foco visible */
+  --season-hot: #ffa63d; /* final del degradado de los botones */
+  --glow-a-rgb: 124 58 237; /* niebla / brillo */
+  --glow-b-rgb: 168 85 247;
+  --spark-rgb: 255 176 90; /* partículas */
+  --night-rgb: 8 8 11;
+  --season-overlay: url("/img/halloween-overlay.webp");
+  --season-hero-photo: url("/img/hero-halloween.webp");
+  --season-community-photo: url("/img/community-halloween.webp");
+}
+
+/* 🎄 Navidad: oro + niebla verde y roja sobre azul noche */
+[data-theme="navidad"] {
+  --season-rgb: 245 192 74;
+  --season-rgb-c: 245, 192, 74;
+  --season-soft-rgb: 255 225 150;
+  --season-hot: #ffd978;
+  --glow-a-rgb: 22 130 84;
+  --glow-b-rgb: 200 40 55;
+  --spark-rgb: 255 255 255;
+  --night-rgb: 6 12 22;
+  --season-overlay: url("/img/navidad-overlay.webp");
+  --season-hero-photo: url("/img/hero-navidad.webp");
+  --season-community-photo: url("/img/community-navidad.webp");
+}

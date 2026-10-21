@@ -1,26 +1,26 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import PageHeader from "@/components/PageHeader.astro";
-import { isHalloweenSeason } from "@/lib/season";
+import { getSeason } from "@/lib/season";
 
 export const prerender = false;
-const halloween = await isHalloweenSeason(Astro);
+const festive = !!(await getSeason(Astro));
 ---
 
 <Layout
   title="Política de privacidad · XauenDevs"
   description="Información sobre el tratamiento de datos personales en XauenDevs."
 >
-  {halloween && (
+  {festive && (
     <PageHeader eyebrow="XauenDevs" title="Política de privacidad">
       En XauenDevs respetamos tu privacidad y tratamos tus datos personales únicamente
       para gestionar las actividades y eventos en los que participas.
     </PageHeader>
   )}
 
-  <article class="mx-auto max-w-3xl py-16 hw:py-10 md:py-24 hw:md:py-14">
+  <article class="mx-auto max-w-3xl py-16 fest:py-10 md:py-24 fest:md:py-14">
     {
-      halloween ? null : (
+      festive ? null : (
         <>
     <p class="text-xs font-bold uppercase tracking-[0.14em] text-black/50">XauenDevs</p>
     <h1 class="mt-3 text-4xl font-black tracking-tight md:text-5xl">Política de privacidad</h1>
@@ -32,9 +32,9 @@ const halloween = await isHalloweenSeason(Astro);
       )
     }
 
-    <div class="mt-12 hw:mt-0 space-y-10 text-sm leading-7 text-black/75 hw:text-white/75">
+    <div class="mt-12 fest:mt-0 space-y-10 text-sm leading-7 text-black/75 fest:text-white/75">
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">1. Responsable del tratamiento</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">1. Responsable del tratamiento</h2>
         <p class="mt-3">
           El responsable del tratamiento de los datos facilitados a través de este sitio web
           es XauenDevs.
@@ -46,7 +46,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">2. Qué datos recogemos</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">2. Qué datos recogemos</h2>
         <p class="mt-3">
           Cuando te inscribes en una Pivo&Code u otra actividad mediante nuestro formulario
           de asistencia, podemos recoger:
@@ -60,7 +60,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">3. Para qué utilizamos tus datos</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">3. Para qué utilizamos tus datos</h2>
         <p class="mt-3">
           Utilizamos estos datos para gestionar tu inscripción y asistencia al evento,
           conocer el número de personas inscritas y organizar adecuadamente las actividades.
@@ -73,7 +73,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">4. Base jurídica</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">4. Base jurídica</h2>
         <p class="mt-3">
           La base jurídica del tratamiento de los datos de inscripción es tu consentimiento,
           que prestas al enviar el formulario y aceptar esta política de privacidad.
@@ -81,7 +81,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">5. Conservación de los datos</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">5. Conservación de los datos</h2>
         <p class="mt-3">
           Conservaremos los datos durante el tiempo necesario para gestionar el evento y
           atender las obligaciones legales que, en su caso, puedan resultar aplicables.
@@ -91,7 +91,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">6. Destinatarios y servicios utilizados</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">6. Destinatarios y servicios utilizados</h2>
         <p class="mt-3">
           Para prestar el servicio podemos utilizar proveedores tecnológicos que actúan
           como encargados del tratamiento, de acuerdo con las condiciones y garantías
@@ -104,7 +104,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">7. Tus derechos</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">7. Tus derechos</h2>
         <p class="mt-3">
           Puedes solicitar el acceso a tus datos personales, su rectificación, supresión,
           limitación u oposición al tratamiento, así como ejercer otros derechos reconocidos
@@ -118,7 +118,7 @@ const halloween = await isHalloweenSeason(Astro);
       </section>
 
       <section>
-        <h2 class="text-xl font-black text-black hw:text-white">8. Actualizaciones</h2>
+        <h2 class="text-xl font-black text-black fest:text-white">8. Actualizaciones</h2>
         <p class="mt-3">
           Esta política puede actualizarse para adaptarse a cambios legales, técnicos o
           en los servicios de XauenDevs. La versión publicada en esta página será la

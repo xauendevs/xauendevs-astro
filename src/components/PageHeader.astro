@@ -16,11 +16,11 @@ const { eyebrow, title, dim, class: className } = Astro.props;
     className,
   ]}
 >
-  <!-- Overlay de diseño (telarañas, luna, murciélagos, calabazas, tumbas y niebla) -->
+  <!-- Overlay de diseño (ilustración de la temporada) -->
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-0 -z-10 bg-cover bg-[position:100%_50%] bg-no-repeat md:bg-[position:50%_70%]"
-    style="background-image:url('/img/halloween-overlay.webp')"
+    style="background-image:var(--season-overlay)"
   >
   </div>
   <!-- Degradado para que el texto se lea sobre la luna y las calabazas -->
@@ -31,7 +31,7 @@ const { eyebrow, title, dim, class: className } = Astro.props;
   </div>
   <div
     aria-hidden="true"
-    class="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_25%_40%,rgba(124,58,237,0.22),transparent_65%)]"
+    class="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_25%_40%,rgb(var(--glow-a-rgb)_/_0.22),transparent_65%)]"
   >
   </div>
 
@@ -40,7 +40,7 @@ const { eyebrow, title, dim, class: className } = Astro.props;
       (eyebrow || Astro.slots.has("badge")) && (
         <div class="flex flex-wrap items-center gap-3">
           {eyebrow && (
-            <span class="text-[11px] font-bold uppercase tracking-[0.28em] text-pumpkin">{eyebrow}</span>
+            <span class="text-[11px] font-bold uppercase tracking-[0.28em] text-season">{eyebrow}</span>
           )}
           <slot name="badge" />
         </div>

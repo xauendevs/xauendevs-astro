@@ -1,10 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import PageHeader from "@/components/PageHeader.astro";
-import { isHalloweenSeason } from "@/lib/season";
+import { getSeason } from "@/lib/season";
 
 export const prerender = false;
-const halloween = await isHalloweenSeason(Astro);
+const festive = !!(await getSeason(Astro));
 ---
 
 <Layout
@@ -12,7 +12,7 @@ const halloween = await isHalloweenSeason(Astro);
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >
   {
-    halloween ? (
+    festive ? (
       <PageHeader eyebrow="XauenDevs" title="Blog">Estamos trabajando en nuestro blog.</PageHeader>
     ) : (
       <main class="flex flex-col gap-8">ESTAMOS TRABAJANDO EN NUESTRO BLOG</main>

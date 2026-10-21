@@ -112,24 +112,32 @@ Por favor, consulta nuestra [guía de contribución](https://github.com/xauendev
 [issues-url]: https://github.com/xauendevs/xauendevs-astro/issues
 [with-love]: https://img.shields.io/badge/with_%F0%9F%92%9A_from-JAEN-green
 
-## Temas estacionales (Halloween, Navidad…)
+## Temporadas (Halloween, Navidad…)
 
-La "temporada" se cambia **en caliente, sin desplegar**, con Vercel *Global Config* (antes Edge Config):
+La web tiene un diseño base (el de siempre) y **temporadas** que se activan y desactivan **sin desplegar**, con Vercel *Global Config* (antes Edge Config). Cada año se vuelve a activar la que toque; no hay que borrar nada.
 
+### Activar una temporada
 1. Vercel → *Storage* → crear un **Global Config** y conectarlo al proyecto (Vercel añade la variable `GLOBAL_CONFIG`).
 2. Claves del store:
-   - `site_theme`: `"halloween"`. **Cualquier otro valor (o ninguno, o `"default"`) deja la web exactamente como estaba antes de la temporada.**
-   - `hack_intro`: `true` / `false` (broma del hackeo; solo se ve con `halloween`).
-3. Guardar: el cambio se ve en ≤ 1 min (caché de la CDN, `s-maxage=60`).
+   - `site_theme`: `"halloween"` · `"navidad"` · `"default"`. **Cualquier otro valor (o ninguno) deja la web exactamente como siempre.**
+   - `hack_intro`: `true` / `false` (broma de entrada; usa los textos de la temporada activa).
+3. Guardar: se ve en ≤ 1 min (caché de la CDN, `s-maxage=60`).
 
-Alternativa sin Global Config: variables `SITE_THEME` y `SITE_HACK_INTRO`. **Ojo:** Vercel solo aplica las variables de entorno a despliegues nuevos, así que requieren *Redeploy*.
+Alternativa sin Global Config: variables `SITE_THEME` y `SITE_HACK_INTRO` (**requieren *Redeploy***: Vercel solo aplica las variables de entorno a despliegues nuevos).
 
 ### Cómo está montado
-- `src/lib/site-theme.ts` resuelve la temporada (Global Config → env → `default`); `src/lib/season.ts` la memoiza por petición.
-- Restyling (Navbar, Footer, tarjetas, páginas): un solo archivo con la variante `hw:` y, si hace falta, marcado extra condicional.
-- Solo hay dos versiones de archivo donde el contenido es realmente distinto: `Header` (hero), `AboutUs` y las páginas RSVP (`X.astro` selector → `X.default.astro` / `X.halloween.astro`).
-- Cambios pequeños de estilo: variante de Tailwind `hw:` (solo aplica con `<body data-theme="halloween">`), p. ej. `bg-white hw:bg-white/[0.04]`.
-- Las páginas dependientes de la temporada son SSR (`prerender = false`) para decidirla en cada petición.
-- Para una temporada nueva: añadirla a `THEMES` y crear sus variantes. Para **retirar Halloween del todo**: borrar los `*.halloween.astro`, `HackIntro`, `PageHeader`, `RealCommunity` y las clases `hw:`.
+- `src/lib/site-theme.ts` resuelve la temporada (Global Config → env → `default`); `src/lib/season.ts` la memoiza por petición y guarda los textos/rutas por temporada (`SEASON_CONTENT`).
+- `<body data-theme="navidad" data-festive>`: `data-festive` está con cualquier temporada, `data-theme` dice cuál.
+- **Colores y recursos por temporada = tokens CSS** en `src/styles/seasons.css` (`--season-rgb`, `--night-rgb`, `--glow-*`, `--season-overlay`, `--season-hero-photo`…). Tailwind los expone como `bg-season`, `text-season`, `bg-night`…
+- **Variantes de Tailwind**: `fest:` (cualquier temporada), `halloween:` y `navidad:` (solo esa). Ej.: `bg-white fest:bg-white/[0.04] navidad:border-red-500`.
+- Decoraciones que cambian de forma según la temporada: `SeasonMark` (calabaza/árbol), `SeasonFlyer` (murciélago/copo), `SeasonCorner` (telaraña/guirnalda) en `src/components/season/`.
+- Lo que solo existe con temporada: `FestiveHero` (hero), `PageHeader`, `RealCommunity`, `HackIntro`.
+- Las páginas dependientes de la temporada son SSR (`prerender = false`).
 
-Broma de entrada: `/?hack=1` la fuerza (también con la temporada apagada) · `/?nohack` la salta.
+### Añadir una temporada nueva (p. ej. Reyes, Semana Santa…)
+1. Añadirla a `THEMES` (`src/lib/site-theme.ts`) y a `SEASON_CONTENT` (`src/lib/season.ts`).
+2. Definir sus tokens en `src/styles/seasons.css` (+ variante `x:` en `tailwind.config.mjs` si quieres estilos propios).
+3. Generar sus imágenes (overlay, foto del hero y de la comunidad). Las de Navidad se generan con `python3 tools/make-navidad-assets.py`; sirve de plantilla.
+4. Decoraciones: añadir su rama en `SeasonMark/Flyer/Corner` y los textos de la broma en `COPY` (`src/scripts/hack-intro.ts`).
+
+Broma de entrada: `/?hack=1` la fuerza (también sin temporada) · `/?nohack` la salta.

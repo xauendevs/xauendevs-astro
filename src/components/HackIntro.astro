@@ -1,18 +1,23 @@
 ---
 /**
- * Broma de Halloween: al entrar, la web "se hackea" con un terminal falso, salta una
+ * Broma de temporada (Halloween, Navidad…): al entrar, la web "se hackea" con un terminal falso, salta una
  * alerta y acaba revelando que era una broma. Es 100 % local: no hace peticiones ni usa cookies.
  *
  * - Sale una sola vez por sesión (sessionStorage).
  * - Se salta con clic/toque, Esc, Enter o Espacio.
  * - No se muestra con "reducir movimiento" ni a bots/buscadores (para que no indexen "hackeado").
  * - Probarla: añade `?hack=1` a la URL. Saltarla siempre: `?nohack`.
- * - Quitarla: borra `<HackIntro />` del Layout.
+ * - Apagarla sin desplegar: Global Config `hack_intro = false`. Los textos de cada temporada están en
+ *   src/scripts/hack-intro.ts (COPY) y los colores salen de los tokens --season-* (src/styles/seasons.css).
  */
+interface Props {
+  season: "halloween" | "navidad";
+}
+const { season } = Astro.props;
 ---
 
 <!-- Se ejecuta nada más abrirse el <body> para que no se vea la web antes del "hackeo". -->
-<script is:inline>
+<script is:inline define:vars={{ season }}>
   (function () {
     try {
       var q = location.search;
@@ -27,7 +32,8 @@
       root.id = "hack-intro";
       root.setAttribute("role", "dialog");
       root.setAttribute("aria-modal", "true");
-      root.setAttribute("aria-label", "Animación de Halloween: una broma de hackeo ficticio");
+      root.setAttribute("aria-label", "Animación de temporada: una broma de hackeo ficticio");
+      root.setAttribute("data-theme", season); // aplica los colores de la temporada aunque el <body> no los tenga (?hack=1)
       document.body.insertBefore(root, document.body.firstChild);
       document.documentElement.setAttribute("data-hack", "on");
       // Salvavidas: si el script de la animación no llega a cargar, no dejamos la web tapada.
@@ -107,7 +113,7 @@
   }
   #hack-intro .hk-skip:hover,
   #hack-intro .hk-skip:focus-visible {
-    border-color: #ff8a1f;
+    border-color: rgb(var(--season-rgb));
     color: #fff;
     outline: none;
   }
@@ -278,7 +284,7 @@
     text-align: center;
     color: #fff;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: #08080b url("/img/halloween-overlay.webp") center bottom / cover no-repeat;
+    background: rgb(var(--night-rgb)) var(--season-overlay) center bottom / cover no-repeat;
   }
   #hack-intro.is-reveal .hk-term {
     opacity: 0;
@@ -294,10 +300,10 @@
       transform: scale(0.97);
     }
   }
-  #hack-intro .hk-pumpkin {
+  #hack-intro .hk-season {
     font-size: clamp(64px, 13vw, 124px);
     line-height: 1;
-    filter: drop-shadow(0 0 26px rgba(255, 138, 31, 0.8));
+    filter: drop-shadow(0 0 26px rgb(var(--season-rgb) / 0.8));
     animation: hk-bounce 1.3s ease-in-out infinite;
   }
   @keyframes hk-bounce {
@@ -311,11 +317,11 @@
     font-weight: 900;
     line-height: 1;
     letter-spacing: -0.02em;
-    background: linear-gradient(180deg, #ffd08a, #ff8a1f 70%);
+    background: linear-gradient(180deg, rgb(var(--season-soft-rgb)), rgb(var(--season-rgb)) 70%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 0 22px rgba(255, 138, 31, 0.55));
+    filter: drop-shadow(0 0 22px rgb(var(--season-rgb) / 0.55));
   }
   #hack-intro .hk-sub {
     max-width: 34rem;
@@ -330,11 +336,11 @@
     cursor: pointer;
     border: 0;
     border-radius: 999px;
-    background: linear-gradient(90deg, #ff8a1f, #ffa63d);
+    background: linear-gradient(90deg, rgb(var(--season-rgb)), var(--season-hot));
     padding: 13px 26px;
     color: #000;
     font: 700 16px/1 system-ui, sans-serif;
-    box-shadow: 0 0 30px rgba(255, 138, 31, 0.45);
+    box-shadow: 0 0 30px rgb(var(--season-rgb) / 0.45);
   }
   #hack-intro .hk-enter:focus-visible {
     outline: 3px solid #fff;

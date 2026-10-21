@@ -6,7 +6,7 @@ import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { getPivoTags } from "@/lib/get-pivo-tags";
 import { getExternalEventsStrapi } from "@/lib/get-info-external-events";
 import { slugify } from "@/lib/event-slug";
-import { isHalloweenSeason } from "@/lib/season";
+import { getSeason } from "@/lib/season";
 import type { Pivo } from "@/types/Pivo";
 import type { ExternalEvent } from "@/types/ExternalEvent";
 
@@ -25,7 +25,7 @@ if (!foundPivo && !foundExternal) {
 
 const kind: "pivo" | "external" = foundPivo ? "pivo" : "external";
 const event: Pivo | ExternalEvent = foundPivo ? { ...foundPivo, tags: getPivoTags(foundPivo.title) } : foundExternal!;
-const halloween = await isHalloweenSeason(Astro);
+const festive = !!(await getSeason(Astro));
 const STRAPI_HOST = import.meta.env.STRAPI_HOST;
 const isExternal = kind === "external";
 const pivoEvent = event as Pivo;
@@ -140,32 +140,32 @@ const shareMessage = [
   <main class="flex min-w-0 flex-col gap-6 pb-12 sm:gap-8 sm:pb-16 md:gap-10">
     <a
       href="/eventos"
-      class="inline-flex max-w-full items-center gap-2 text-sm font-semibold text-primary/55 hw:text-white/55 transition-colors hover:text-primary hw:hover:text-white"
+      class="inline-flex max-w-full items-center gap-2 text-sm font-semibold text-primary/55 fest:text-white/55 transition-colors hover:text-primary fest:hover:text-white"
     >
       ← Volver a eventos
     </a>
 
-    <article class="min-w-0 overflow-hidden rounded-3xl border border-primary/10 hw:border-white/10 bg-primary/[0.025] hw:bg-white/[0.025] sm:rounded-[2.5rem]">
+    <article class="min-w-0 overflow-hidden rounded-3xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] sm:rounded-[2.5rem]">
       {eventImage && (
-        <div class="relative aspect-[1200/630] overflow-hidden bg-primary hw:bg-night md:h-[26rem] md:aspect-auto">
+        <div class="relative aspect-[1200/630] overflow-hidden bg-primary fest:bg-night md:h-[26rem] md:aspect-auto">
           <img
             src={eventImage}
             alt=""
             class="size-full object-cover object-bottom"
             loading="eager"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-primary hw:from-night via-primary/35 hw:via-night/35 to-transparent"></div>
-          <div class="absolute inset-0 bg-primary/10 hw:bg-night/10"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-primary fest:from-night via-primary/35 fest:via-night/35 to-transparent"></div>
+          <div class="absolute inset-0 bg-primary/10 fest:bg-night/10"></div>
         </div>
       )}
 
-      <div class="relative isolate min-w-0 overflow-hidden bg-[#0d0d0d] hw:bg-night px-5 py-6 text-white sm:px-7 sm:py-8 md:px-12 md:py-10">
-        <div class="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/25 blur-3xl hw:hidden"></div>
-        {halloween && <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-cover bg-[position:100%_50%] bg-no-repeat md:bg-[position:50%_70%]" style="background-image:url('/img/halloween-overlay.webp')"></div>}
+      <div class="relative isolate min-w-0 overflow-hidden bg-[#0d0d0d] fest:bg-night px-5 py-6 text-white sm:px-7 sm:py-8 md:px-12 md:py-10">
+        <div class="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/25 blur-3xl fest:hidden"></div>
+        {festive && <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-cover bg-[position:100%_50%] bg-no-repeat md:bg-[position:50%_70%]" style="background-image:var(--season-overlay)"></div>}
 
         <div class="relative min-w-0 max-w-5xl">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary hw:text-black">
+            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary fest:text-black">
               {isExternal ? "Evento externo" : "XauenDevs"}
             </span>
             {tags.map((tag) => (
@@ -195,7 +195,7 @@ const shareMessage = [
           />
 
           <section
-            class="min-w-0 rounded-3xl border border-primary/10 hw:border-white/10 bg-primary/[0.025] hw:bg-white/[0.025] p-4 sm:rounded-[2rem] sm:p-6 md:p-7"
+            class="min-w-0 rounded-3xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] p-4 sm:rounded-[2rem] sm:p-6 md:p-7"
             aria-labelledby="event-description-title"
           >
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
@@ -204,7 +204,7 @@ const shareMessage = [
             <h2 id="event-description-title" class="mt-2 text-2xl font-bold">
               Sobre el evento
             </h2>
-            <div class="mt-4 max-w-3xl space-y-4 break-words text-base leading-relaxed text-primary/65 hw:text-white/65 md:text-lg">
+            <div class="mt-4 max-w-3xl space-y-4 break-words text-base leading-relaxed text-primary/65 fest:text-white/65 md:text-lg">
               {
                 description
                   .split(/\n\s*\n/)
@@ -223,7 +223,7 @@ const shareMessage = [
                 </span>
                 <div class="mt-4 flex flex-wrap gap-4">
                   {pivoEvent.speakers?.map((speaker) => (
-                    <div class="flex min-w-0 max-w-full items-center gap-3 rounded-2xl border border-primary/10 hw:border-white/10 px-3 py-3 sm:px-4">
+                    <div class="flex min-w-0 max-w-full items-center gap-3 rounded-2xl border border-primary/10 fest:border-white/10 px-3 py-3 sm:px-4">
                       <img
                         src={`${import.meta.env.STRAPI_HOST}${speaker.photo}`}
                         alt={speaker.name}
@@ -265,7 +265,7 @@ const shareMessage = [
 
     {
       !isExternal && pivoEvent.videoId && (
-        <section id="video" class="min-w-0 overflow-hidden rounded-3xl bg-primary hw:bg-night hw:border hw:border-pumpkin/30 p-3 sm:rounded-[2.5rem] sm:p-4 md:p-6">
+        <section id="video" class="min-w-0 overflow-hidden rounded-3xl bg-primary fest:bg-night fest:border fest:border-season/30 p-3 sm:rounded-[2.5rem] sm:p-4 md:p-6">
           <div class="mb-5 px-2">
             <span class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
               Vídeo

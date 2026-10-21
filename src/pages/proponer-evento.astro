@@ -1,9 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import PageHeader from "@/components/PageHeader.astro";
-import { isHalloweenSeason } from "@/lib/season";
+import { getSeason } from "@/lib/season";
 
-const halloween = await isHalloweenSeason(Astro);
+const festive = !!(await getSeason(Astro));
 ---
 
 <Layout
@@ -12,12 +12,12 @@ const halloween = await isHalloweenSeason(Astro);
 >
   <main class="flex flex-col gap-12">
     {
-      halloween ? (
+      festive ? (
         <PageHeader eyebrow="Jaén Tech Events" title="¿Organizas algo tech en Jaén?">
           Cuéntanos qué estás preparando y valoraremos añadirlo a la agenda de la comunidad.
         </PageHeader>
       ) : (
-    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary hw:bg-white px-7 py-10 text-white md:px-12 md:py-14">
+    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary fest:bg-white px-7 py-10 text-white md:px-12 md:py-14">
       <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/90 blur-3xl"></div>
 
       <div class="relative max-w-3xl">
@@ -39,11 +39,11 @@ const halloween = await isHalloweenSeason(Astro);
     <section class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
       <form
         id="event-proposal-form"
-        class="flex flex-col gap-7 rounded-[2rem] border border-primary/10 hw:border-pumpkin/40 hw:bg-white/[0.03] hw:shadow-[0_0_30px_rgba(255,138,31,0.12)] p-6 md:p-8"
+        class="flex flex-col gap-7 rounded-[2rem] border border-primary/10 fest:border-season/40 fest:bg-white/[0.03] fest:shadow-[0_0_30px_rgb(var(--season-rgb)_/_0.12)] p-6 md:p-8"
       >
         <div>
           <h2 class="text-2xl font-bold">Cuéntanos sobre el evento</h2>
-          <p class="mt-2 text-primary/60 hw:text-white/60">
+          <p class="mt-2 text-primary/60 fest:text-white/60">
             Rellena los datos básicos y envíanos la propuesta directamente.
           </p>
         </div>
@@ -63,7 +63,7 @@ const halloween = await isHalloweenSeason(Astro);
               name="title"
               type="text"
               placeholder="Ej. Meetup de JavaScript"
-              class="rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </label>
 
@@ -74,7 +74,7 @@ const halloween = await isHalloweenSeason(Astro);
               name="organizer"
               type="text"
               placeholder="Comunidad, empresa..."
-              class="rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </label>
 
@@ -86,7 +86,7 @@ const halloween = await isHalloweenSeason(Astro);
               type="email"
               autocomplete="email"
               placeholder="tu@email.com"
-              class="rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </label>
 
@@ -99,7 +99,7 @@ const halloween = await isHalloweenSeason(Astro);
               required
               name="date"
               type="date"
-              class="rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </label>
 
@@ -110,7 +110,7 @@ const halloween = await isHalloweenSeason(Astro);
               name="place"
               type="text"
               placeholder="Jaén, Universidad de Jaén..."
-              class="rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </label>
         </div>
@@ -121,7 +121,7 @@ const halloween = await isHalloweenSeason(Astro);
             name="url"
             type="url"
             placeholder="https://..."
-            class="rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </label>
 
@@ -132,13 +132,13 @@ const halloween = await isHalloweenSeason(Astro);
             name="description"
             rows="5"
             placeholder="¿De qué trata? ¿A quién va dirigido? ¿Qué tipo de evento es?"
-            class="resize-y rounded-2xl border border-primary/15 hw:border-white/15 bg-primary/[0.02] hw:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            class="resize-y rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
           ></textarea>
         </label>
 
         <button
           type="submit"
-          class="w-fit rounded-full bg-accent px-6 py-3 font-bold hw:text-black transition hover:-translate-y-0.5 hover:shadow-lg"
+          class="w-fit rounded-full bg-accent px-6 py-3 font-bold fest:text-black transition hover:-translate-y-0.5 hover:shadow-lg"
         >
           Enviar propuesta →
         </button>
@@ -151,7 +151,7 @@ const halloween = await isHalloweenSeason(Astro);
         ></p>
       </form>
 
-      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7 hw:text-black">
+      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7 fest:text-black">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
           ¿Qué buscamos?
         </span>
@@ -165,7 +165,7 @@ const halloween = await isHalloweenSeason(Astro);
           <li>→ Conferencias</li>
           <li>→ Actividades de comunidades tech</li>
         </ul>
-        <p class="border-t border-primary/15 hw:border-black/15 pt-5 text-sm text-primary/65 hw:text-black/70">
+        <p class="border-t border-primary/15 fest:border-black/15 pt-5 text-sm text-primary/65 fest:text-black/70">
           Revisaremos cada propuesta antes de incorporarla a la agenda.
         </p>
       </aside>

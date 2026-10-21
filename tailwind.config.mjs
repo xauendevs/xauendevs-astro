@@ -8,8 +8,9 @@ export default {
         accent: "var(--color-accent)",
         "accent-text": "var(--color-accent-text)",
         dark: "var(--color-dark)",
-        night: "#08080b",
-        pumpkin: "#ff8a1f",
+        // Colores de la temporada activa (tokens --season-* / --night-rgb en Layout.astro).
+        season: "rgb(var(--season-rgb) / <alpha-value>)",
+        night: "rgb(var(--night-rgb) / <alpha-value>)",
       },
       brightness: {
         25: ".25",
@@ -19,9 +20,12 @@ export default {
   },
   plugins: [
     animations,
-    // Variante del tema Halloween: `hw:bg-night` solo se aplica con <body data-theme="halloween">.
+    // Variantes de temporada. `fest:` aplica con cualquier temporada activa (<body data-festive>);
+    // `halloween:` / `navidad:` solo con esa temporada (<body data-theme="...">).
     function ({ addVariant }) {
-      addVariant("hw", '[data-theme="halloween"] &');
+      addVariant("fest", "[data-festive] &");
+      addVariant("halloween", '[data-theme="halloween"] &');
+      addVariant("navidad", '[data-theme="navidad"] &');
     },
     function ({ addVariant }) {
       // Agregamos la variante group-active

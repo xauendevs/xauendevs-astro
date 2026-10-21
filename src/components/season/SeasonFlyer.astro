@@ -1,0 +1,11 @@
+---
+// Decoración de temporada: Bat en Halloween, Snowflake en Navidad. Sin temporada no pinta nada.
+import { getSeason } from "@/lib/season";
+import Bat from "../halloween/Bat.astro";
+import Snowflake from "../navidad/Snowflake.astro";
+
+const season = await getSeason(Astro);
+---
+
+{season === "halloween" && <Bat {...Astro.props} />}
+{season === "navidad" && <Snowflake {...Astro.props} />}

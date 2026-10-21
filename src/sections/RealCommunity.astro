@@ -1,5 +1,9 @@
 ---
-import Bat from "@/components/halloween/Bat.astro";
+import SeasonFlyer from "@/components/season/SeasonFlyer.astro";
+import { getSeason, SEASON_CONTENT } from "@/lib/season";
+
+// Solo se muestra con una temporada activa (la página decide si la incluye).
+const season = (await getSeason(Astro)) ?? "halloween";
 ---
 
 <section
@@ -8,10 +12,10 @@ import Bat from "@/components/halloween/Bat.astro";
 >
   <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-12">
     <div
-      class="relative overflow-hidden rounded-xl border border-pumpkin/70 shadow-[0_0_30px_rgba(255,138,31,0.25)]"
+      class="relative overflow-hidden rounded-xl border border-season/70 shadow-[0_0_30px_rgb(var(--season-rgb)_/_0.25)]"
     >
       <img
-        src="/img/community-halloween.webp"
+        src={SEASON_CONTENT[season].community}
         alt="Asistentes a una charla de XauenDevs en un espacio de coworking en Jaén"
         width="1280"
         height="854"
@@ -21,13 +25,13 @@ import Bat from "@/components/halloween/Bat.astro";
       />
       <div
         aria-hidden="true"
-        class="absolute inset-0 bg-gradient-to-t from-night/60 via-transparent to-pumpkin/10"
+        class="absolute inset-0 bg-gradient-to-t from-night/60 via-transparent to-season/10"
       >
       </div>
     </div>
 
     <div class="relative">
-      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-pumpkin">
+      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-season">
         Personas · Eventos · Experiencias
       </p>
       <h2 id="real-community-title" class="text-3xl font-black tracking-tight text-white sm:text-4xl">
@@ -37,7 +41,7 @@ import Bat from "@/components/halloween/Bat.astro";
         Detrás de XauenDevs hay personas. Personas que se reúnen, comparten, aprenden y disfrutan de la tecnología en un
         ambiente cercano y abierto.
       </p>
-      <Bat
+      <SeasonFlyer
         class="bat-float pointer-events-none absolute -top-3 right-0 hidden h-9 w-[4.5rem] text-white/10 [animation-delay:-3s] sm:block lg:right-16"
       />
     </div>

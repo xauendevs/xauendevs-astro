@@ -1,9 +1,13 @@
 ---
-import FromFor from "../components/FromFor.halloween.astro";
-import NextEventPill from "../components/NextEventPill.astro";
-import Bat from "../components/halloween/Bat.astro";
+import FromFor from "../FromFor.astro";
+import NextEventPill from "../NextEventPill.astro";
+import SeasonFlyer from "./SeasonFlyer.astro";
+import { getSeason, SEASON_CONTENT } from "@/lib/season";
 
-// Brasas: posiciones deterministas (sin Math.random) para que el HTML sea estable entre builds.
+// Hero de temporada (Halloween, Navidad…): los colores, la foto y el overlay vienen de los tokens --season-* (Layout.astro).
+const season = (await getSeason(Astro)) ?? "halloween";
+
+// Partículas (brasas / nieve): posiciones deterministas (sin Math.random) para que el HTML sea estable entre builds.
 const rand = (i: number, n: number) => {
   const x = Math.sin(i * 97.13 + n * 13.7) * 10000;
   return x - Math.floor(x);
@@ -16,7 +20,7 @@ const embers = Array.from({ length: 12 }, (_, i) => ({
   drift: (rand(i, 5) - 0.5) * 120, // px
 }));
 
-const bats = [
+const flyers = [
   { top: "14%", duration: 26, delay: -4, size: "h-7 w-14" },
   { top: "34%", duration: 34, delay: -19, size: "h-5 w-10" },
   { top: "9%", duration: 41, delay: -30, size: "h-6 w-12" },
@@ -27,8 +31,8 @@ const bats = [
   data-hero
   class="hero relative isolate flex min-h-[620px] flex-col justify-center overflow-hidden rounded-3xl bg-night px-7 py-10 md:px-12 md:py-14 lg:aspect-[1983/793] lg:max-h-[820px] lg:min-h-[600px] lg:pb-24"
 >
-  <!-- 1. Foto en duotono morado→naranja (horneado en la imagen: sin filtros ni blend en tiempo real) -->
-  <div aria-hidden="true" class="layer hero-photo" data-fx="photo" style="background-image:url('/img/hero-halloween.webp')"></div>
+  <!-- 1. Foto en duotono de la temporada (horneado en la imagen: sin filtros ni blend en tiempo real) -->
+  <div aria-hidden="true" class="layer hero-photo" data-fx="photo" style="background-image:var(--season-hero-photo)"></div>
   <div aria-hidden="true" class="layer hero-scrim"></div>
 
   <!-- 2. Foco de luz que sigue al cursor -->
@@ -37,21 +41,21 @@ const bats = [
   <!-- 3. Niebla en movimiento -->
   <div aria-hidden="true" class="hero-fog"></div>
 
-  <!-- 4. Overlay de diseño: telarañas, luna, murciélagos, calabazas, tumbas y niebla -->
+  <!-- 4. Overlay de diseño de la temporada (Halloween: telarañas, luna, calabazas…; Navidad: pinos, luna, luces…) -->
   <div
     aria-hidden="true"
     class="layer hero-overlay"
     data-fx="overlay"
-    style="background-image:url('/img/halloween-overlay.webp')"
+    style="background-image:var(--season-overlay)"
   >
   </div>
 
-  <!-- 5. Luz de las calabazas (solo cuando el hero mantiene la proporción del overlay) -->
+  <!-- 5. Luz de las calabazas (solo Halloween y solo cuando el hero mantiene la proporción del overlay) -->
   <div aria-hidden="true" class="pglow" style="--x:4.8%;--y:82%"></div>
   <div aria-hidden="true" class="pglow" style="--x:93%;--y:87%"></div>
   <div aria-hidden="true" class="pglow pglow-sm" style="--x:88.5%;--y:93%"></div>
 
-  <!-- 6. Brasas y murciélagos -->
+  <!-- 6. Brasas y murciélagos (Halloween) / nieve y copos (Navidad) -->
   <div aria-hidden="true" class="hero-fx">
     {
       embers.map((e) => (
@@ -62,9 +66,9 @@ const bats = [
       ))
     }
     {
-      bats.map((b) => (
+      flyers.map((b) => (
         <div class="bat-fly" style={`--y:${b.top};--t:${b.duration};--d:${b.delay}`}>
-          <Bat class:list={["bat-flap text-black", b.size]} />
+          <SeasonFlyer class:list={["bat-flap text-black navidad:text-white/80", b.size]} />
         </div>
       ))
     }
@@ -75,7 +79,7 @@ const bats = [
       <NextEventPill server:defer>
         <span
           slot="fallback"
-          class="inline-flex rounded-full border border-pumpkin/60 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-pumpkin"
+          class="inline-flex rounded-full border border-season/60 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-season"
         >
           Próximo evento
         </span>
@@ -96,17 +100,17 @@ const bats = [
       aria-label="From XauenDevs for Devs"
     >
       <FromFor
-        variant="halloween"
+        variant="festive"
         part="light"
         aria-hidden="true"
-        class="block h-auto w-full [filter:drop-shadow(0_0_22px_rgba(255,138,31,0.55))]"
+        class="block h-auto w-full [filter:drop-shadow(0_0_22px_rgb(var(--season-rgb)_/_0.55))]"
       />
       <!-- Capa naranja aparte: el neón parpadea animando solo su opacidad (compositor) -->
       <FromFor
-        variant="halloween"
+        variant="festive"
         part="orange"
         aria-hidden="true"
-        class="fromfor-orange absolute inset-0 block h-auto w-full [filter:drop-shadow(0_0_22px_rgba(255,138,31,0.55))]"
+        class="fromfor-orange absolute inset-0 block h-auto w-full [filter:drop-shadow(0_0_22px_rgb(var(--season-rgb)_/_0.55))]"
       />
     </div>
 
@@ -120,15 +124,15 @@ const bats = [
     <div class="reveal mt-7 flex flex-wrap gap-3" style="--i:4">
       <a
         href="/eventos"
-        class="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-pumpkin to-[#ffa63d] px-6 py-3 font-semibold text-black shadow-[0_0_28px_rgba(255,138,31,0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(255,138,31,0.6)] motion-reduce:transition-none"
+        class="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-season to-[var(--season-hot)] px-6 py-3 font-semibold text-black shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgb(var(--season-rgb)_/_0.6)] motion-reduce:transition-none"
       >
-        <span aria-hidden="true">🎃</span>
+        <span aria-hidden="true">{SEASON_CONTENT[season].cta}</span>
         Ver próximos eventos
         <span aria-hidden="true">→</span>
       </a>
       <a
         href="/#own-mission"
-        class="inline-flex items-center rounded-full border border-pumpkin/70 bg-night/60 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-pumpkin hover:bg-pumpkin/10 motion-reduce:transition-none"
+        class="inline-flex items-center rounded-full border border-season/70 bg-night/60 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-season hover:bg-season/10 motion-reduce:transition-none"
       >
         Conoce nuestra misión
       </a>
@@ -157,9 +161,9 @@ const bats = [
   .hero-scrim {
     z-index: -28;
     background:
-      linear-gradient(90deg, rgba(8, 8, 11, 0.94) 0%, rgba(8, 8, 11, 0.72) 30%, rgba(8, 8, 11, 0.12) 62%, transparent 100%),
-      linear-gradient(0deg, rgba(8, 8, 11, 0.7) 0%, transparent 38%),
-      linear-gradient(180deg, rgba(8, 8, 11, 0.55) 0%, transparent 22%);
+      linear-gradient(90deg, rgb(var(--night-rgb) / 0.94) 0%, rgb(var(--night-rgb) / 0.72) 30%, rgb(var(--night-rgb) / 0.12) 62%, transparent 100%),
+      linear-gradient(0deg, rgb(var(--night-rgb) / 0.7) 0%, transparent 38%),
+      linear-gradient(180deg, rgb(var(--night-rgb) / 0.55) 0%, transparent 22%);
   }
 
   /* --- Foco con el cursor ---------------------------------------------- */
@@ -173,7 +177,7 @@ const bats = [
     margin: -440px 0 0 -440px;
     z-index: -20;
     pointer-events: none;
-    background: radial-gradient(circle, rgba(255, 176, 90, 0.3), rgba(255, 138, 31, 0.09) 38%, transparent 66%);
+    background: radial-gradient(circle, rgb(var(--spark-rgb) / 0.3), rgb(var(--season-rgb) / 0.09) 38%, transparent 66%);
     transition: transform 0.18s ease-out;
     will-change: transform;
   }
@@ -186,8 +190,8 @@ const bats = [
     z-index: -15;
     pointer-events: none;
     background:
-      radial-gradient(42% 75% at 18% 100%, rgba(124, 58, 237, 0.55), transparent 70%),
-      radial-gradient(46% 85% at 76% 100%, rgba(168, 85, 247, 0.42), transparent 70%);
+      radial-gradient(42% 75% at 18% 100%, rgb(var(--glow-a-rgb) / 0.55), transparent 70%),
+      radial-gradient(46% 85% at 76% 100%, rgb(var(--glow-b-rgb) / 0.42), transparent 70%);
     will-change: transform;
     animation: fog-drift 26s ease-in-out infinite alternate;
   }
@@ -215,10 +219,16 @@ const bats = [
       background-position: 50% 100%;
     }
   }
+  /* Navidad: los pinos nevados son muy claros; en pantallas estrechas se atenúan para que el texto se lea */
+  @media (max-width: 1023px) {
+    :global([data-theme="navidad"]) .hero-overlay {
+      opacity: 0.5;
+    }
+  }
 
   /* --- Luz de calabazas --------------------------------------------------- */
   .pglow {
-    display: none;
+    display: none; /* solo Halloween (ver abajo) */
     position: absolute;
     z-index: -9;
     left: var(--x);
@@ -236,7 +246,7 @@ const bats = [
     animation-delay: -1.2s;
   }
   @media (min-width: 1024px) {
-    .pglow {
+    :global([data-theme="halloween"]) .pglow {
       display: block;
     }
   }
@@ -264,7 +274,7 @@ const bats = [
     width: calc(var(--s) * 1px);
     height: calc(var(--s) * 1px);
     border-radius: 50%;
-    background: radial-gradient(circle, #fff0d0 0%, #ffb15c 35%, rgba(255, 138, 31, 0.55) 60%, transparent 75%);
+    background: radial-gradient(circle, #fff 0%, rgb(var(--season-soft-rgb)) 35%, rgb(var(--season-rgb) / 0.55) 60%, transparent 75%);
     opacity: 0;
     animation: ember-rise calc(var(--t) * 1s) linear calc(var(--d) * 1s) infinite;
   }
@@ -281,6 +291,30 @@ const bats = [
     }
     100% {
       transform: translate3d(calc(var(--x) * 1px), -620px, 0) scale(0.3);
+      opacity: 0;
+    }
+  }
+
+  /* Navidad: la partícula cae como nieve en lugar de subir como una brasa */
+  :global([data-theme="navidad"]) .ember {
+    bottom: auto;
+    top: -10px;
+    background: radial-gradient(circle, #fff 0%, rgb(255 255 255 / 0.7) 45%, transparent 72%);
+    animation-name: snow-fall;
+  }
+  @keyframes snow-fall {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.9;
+    }
+    90% {
+      opacity: 0.6;
+    }
+    100% {
+      transform: translate3d(calc(var(--x) * 1px), 640px, 0);
       opacity: 0;
     }
   }
@@ -311,9 +345,17 @@ const bats = [
   .bat-fly :global(.bat-flap) {
     animation: bat-flap 0.3s ease-in-out infinite alternate;
   }
+  :global([data-theme="navidad"]) .bat-fly :global(.bat-flap) {
+    animation: flake-spin 9s linear infinite;
+  }
+  @keyframes flake-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
   /* Borde naranja vectorial en lugar de drop-shadow (los filtros animados repintan cada fotograma) */
-  .bat-fly :global(.bat-flap path) {
-    stroke: rgba(255, 138, 31, 0.75);
+  :global([data-theme="halloween"]) .bat-fly :global(.bat-flap path) {
+    stroke: rgb(var(--season-rgb) / 0.75);
     stroke-width: 1.4px;
     paint-order: stroke;
   }

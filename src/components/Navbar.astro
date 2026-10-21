@@ -3,39 +3,39 @@ import HamburgerButton from "./HamburgerButton.astro";
 import Logo from "./Logo.astro";
 import NextEvent from "./NextEvent.astro";
 import { DISCORD_URL, SOCIAL_LINKS } from "@/consts/social-links";
-import { isHalloweenSeason } from "@/lib/season";
-import Pumpkin from "./halloween/Pumpkin.astro";
+import { getSeason } from "@/lib/season";
+import SeasonMark from "./season/SeasonMark.astro";
 import Discord from "./icons/Discord.astro";
 import Github from "./icons/Github.astro";
 import Instagram from "./icons/Instagram.astro";
 import Linkedin from "./icons/Linkedin.astro";
 import X from "./icons/X.astro";
 import Youtube from "./icons/Youtube.astro";
-// Los estilos de Halloween son clases `hw:` (activas con <body data-theme="halloween">);
-// aquí solo se decide el marcado extra (calabaza y redes sociales en lugar del próximo evento).
-const halloween = await isHalloweenSeason(Astro);
+// Los estilos de temporada son clases `fest:` (activas con <body data-festive>); aquí solo se decide el
+// marcado extra (redes sociales y botón en lugar del próximo evento; la marca va en <SeasonMark />).
+const festive = !!(await getSeason(Astro));
 const socialIcons = { Discord, X, GitHub: Github, YouTube: Youtube, Instagram, LinkedIn: Linkedin } as const;
 const socials = SOCIAL_LINKS.filter((link) => link.href);
 ---
 
-<header class="relative z-20 h-auto max-w-[100vw] bg-white/85 hw:border-b hw:border-white/10 hw:bg-night/90 hw:text-white p-4 sm:p-6 lg:p-10">
+<header class="relative z-20 h-auto max-w-[100vw] bg-white/85 fest:border-b fest:border-white/10 fest:bg-night/90 fest:text-white p-4 sm:p-6 lg:p-10">
   <nav class="hidden justify-between text-nowrap lg:flex" aria-label="Navegación principal">
     <div class="flex items-center gap-10">
-      <a href="/" aria-label="XauenDevs, inicio" class="shrink-0 hw:flex hw:items-center hw:gap-2">
+      <a href="/" aria-label="XauenDevs, inicio" class="shrink-0 fest:flex fest:items-center fest:gap-2">
         <Logo
           width="230"
-          class="text-primary hw:text-white transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+          class="text-primary fest:text-white transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
         />
-        {halloween && <Pumpkin class="pumpkin-flicker -mt-1 h-8 w-auto" />}
+        <SeasonMark class="season-flicker -mt-1 h-8 w-auto" />
       </a>
-      <div class="flex items-center gap-5 hw:text-sm hw:font-medium hw:text-white/90">
-        <a class="hw:transition-colors hw:hover:text-pumpkin" href="/#own-mission">Nuestra misión</a>
-        <a class="hw:transition-colors hw:hover:text-pumpkin" data-astro-reload href="/eventos?tipo=xauen">Charlas</a>
-        <a class="hw:transition-colors hw:hover:text-pumpkin" href="/eventos">Eventos</a>
+      <div class="flex items-center gap-5 fest:text-sm fest:font-medium fest:text-white/90">
+        <a class="fest:transition-colors fest:hover:text-season" href="/#own-mission">Nuestra misión</a>
+        <a class="fest:transition-colors fest:hover:text-season" data-astro-reload href="/eventos?tipo=xauen">Charlas</a>
+        <a class="fest:transition-colors fest:hover:text-season" href="/eventos">Eventos</a>
       </div>
     </div>
     {
-      halloween ? (
+      festive ? (
         <div class="flex items-center gap-6">
           <ul class="flex items-center gap-5 text-white/85">
             {socials.map(({ name, href }) => {
@@ -47,7 +47,7 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`XauenDevs en ${name}`}
-                    class="block transition-colors hover:text-pumpkin"
+                    class="block transition-colors hover:text-season"
                   >
                     <Icon class="size-[18px]" />
                   </a>
@@ -59,7 +59,7 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
             href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-full bg-pumpkin px-5 py-2 text-sm font-bold text-black shadow-[0_0_24px_rgba(255,138,31,0.35)] transition hover:-translate-y-0.5 hover:bg-[#ffa042] motion-reduce:transition-none"
+            class="inline-flex items-center gap-2 rounded-full bg-season px-5 py-2 text-sm font-bold text-black shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.35)] transition hover:-translate-y-0.5 hover:brightness-110 motion-reduce:transition-none"
           >
             Únete <span aria-hidden="true">→</span>
           </a>
@@ -73,12 +73,12 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
   </nav>
 
   <nav class="flex items-center justify-between lg:hidden" aria-label="Navegación principal">
-    <a href="/" aria-label="XauenDevs, ir a inicio" class="block shrink-0 hw:flex hw:items-center hw:gap-2">
+    <a href="/" aria-label="XauenDevs, ir a inicio" class="block shrink-0 fest:flex fest:items-center fest:gap-2">
       <Logo
         width="190"
-        class="text-primary hw:text-white transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
+        class="text-primary fest:text-white transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
       />
-      {halloween && <Pumpkin class="pumpkin-flicker -mt-1 h-7 w-auto" />}
+      <SeasonMark class="season-flicker -mt-1 h-7 w-auto" />
     </a>
     <HamburgerButton class:list="block lg:hidden" id="menuButton" />
     <div
@@ -104,7 +104,7 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
       <hr class="relative z-[888] mb-12 h-px w-1/2 border-0 bg-white" />
       <div class="relative z-[888]">
         {
-          halloween ? (
+          festive ? (
             <div class="flex flex-col items-center gap-8">
               <ul class="flex items-center gap-6 text-white">
                 {socials.map(({ name, href }) => {
@@ -128,7 +128,7 @@ const socials = SOCIAL_LINKS.filter((link) => link.href);
                 href={DISCORD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-full bg-pumpkin px-6 py-3 font-bold text-black"
+                class="inline-flex items-center gap-2 rounded-full bg-season px-6 py-3 font-bold text-black"
               >
                 Únete <span aria-hidden="true">→</span>
               </a>
