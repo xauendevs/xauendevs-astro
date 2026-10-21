@@ -5,12 +5,9 @@ import AboutUs from "@/sections/AboutUs.astro";
 import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
-import RealCommunity from "@/sections/RealCommunity.astro";
-import { getSeason } from "@/lib/season";
 
 // Sin prerender: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
-const festive = !!(await getSeason(Astro));
 ---
 
 <Layout
@@ -20,7 +17,6 @@ const festive = !!(await getSeason(Astro));
   <main class="flex flex-col gap-8">
     <Header />
     <AboutUs />
-    {festive && <RealCommunity />}
     <Pivos />
     <Community />
     <Partners />

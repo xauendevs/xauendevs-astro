@@ -6,6 +6,7 @@
   /* Valores neutros (solo se usan dentro de [data-festive], que siempre los redefine) */
   --season-rgb: 246 183 3;
   --night-rgb: 8 8 11;
+  --season-ink-rgb: 0 0 0;
 }
 
 /* Cualquier temporada: diseño oscuro con el acento de la temporada */
@@ -22,6 +23,8 @@
   --season-rgb-c: 255, 138, 31;
   --season-soft-rgb: 255 177 92; /* tono claro: foco, brasas, foco visible */
   --season-hot: #ffa63d; /* final del degradado de los botones */
+  --season-ink-rgb: 0 0 0; /* texto sobre el color de la temporada */
+  --season-alt-rgb: 168 85 247; /* color secundario: morado */
   --glow-a-rgb: 124 58 237; /* niebla / brillo */
   --glow-b-rgb: 168 85 247;
   --spark-rgb: 255 176 90; /* partículas */
@@ -31,12 +34,15 @@
   --season-community-photo: url("/img/community-halloween.webp");
 }
 
-/* 🎄 Navidad: oro + niebla verde y roja sobre azul noche */
+/* 🎄 Navidad: rojo, blanco y verde (nieve) sobre azul noche */
 [data-theme="navidad"] {
-  --season-rgb: 245 192 74;
-  --season-rgb-c: 245, 192, 74;
-  --season-soft-rgb: 255 225 150;
-  --season-hot: #ffd978;
+  --season-rgb: 226 45 58;
+  --season-rgb-c: 226, 45, 58;
+  --season-soft-rgb: 255 150 158;
+  --season-hot: #ff5a68;
+  --season-ink-rgb: 255 255 255; /* sobre rojo se lee mejor el blanco */
+  --season-alt-rgb: 46 170 100; /* color secundario: verde abeto */
+  --color-accent-text: rgb(var(--season-soft-rgb)); /* el rojo puro sobre fondo oscuro se lee peor */
   --glow-a-rgb: 22 130 84;
   --glow-b-rgb: 200 40 55;
   --spark-rgb: 255 255 255;

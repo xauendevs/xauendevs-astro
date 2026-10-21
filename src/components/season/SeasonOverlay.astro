@@ -1,0 +1,24 @@
+---
+// Ilustración de la temporada (Halloween: luna y calabazas; Navidad: pinos y luces) como fondo de una
+// cabecera. Va en posición absoluta: el contenedor debe ser `relative` + `overflow-hidden` y su contenido
+// `relative` para quedar encima. Sin temporada no pinta nada.
+import { getSeason } from "@/lib/season";
+
+const season = await getSeason(Astro);
+---
+
+{
+  season && (
+    <>
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 bg-cover bg-[position:100%_50%] bg-no-repeat md:bg-[position:50%_70%]"
+        style="background-image:var(--season-overlay)"
+      />
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 bg-gradient-to-r from-night/80 via-night/45 to-transparent"
+      />
+    </>
+  )
+}

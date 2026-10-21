@@ -1,9 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import PageHeader from "@/components/PageHeader.astro";
-import { getSeason } from "@/lib/season";
-
-const festive = !!(await getSeason(Astro));
+import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
 ---
 
 <Layout
@@ -11,14 +8,9 @@ const festive = !!(await getSeason(Astro));
   description="Propón un evento tecnológico para incluirlo en la agenda de Jaén Tech Events."
 >
   <main class="flex flex-col gap-12">
-    {
-      festive ? (
-        <PageHeader eyebrow="Jaén Tech Events" title="¿Organizas algo tech en Jaén?">
-          Cuéntanos qué estás preparando y valoraremos añadirlo a la agenda de la comunidad.
-        </PageHeader>
-      ) : (
-    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary fest:bg-white px-7 py-10 text-white md:px-12 md:py-14">
-      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/90 blur-3xl"></div>
+    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary fest:bg-night px-7 py-10 text-white md:px-12 md:py-14">
+      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/90 blur-3xl fest:hidden"></div>
+      <SeasonOverlay />
 
       <div class="relative max-w-3xl">
         <span class="text-accent text-sm font-bold uppercase tracking-[0.16em]">
@@ -33,8 +25,6 @@ const festive = !!(await getSeason(Astro));
         </p>
       </div>
     </header>
-      )
-    }
 
     <section class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
       <form
@@ -138,7 +128,7 @@ const festive = !!(await getSeason(Astro));
 
         <button
           type="submit"
-          class="w-fit rounded-full bg-accent px-6 py-3 font-bold fest:text-black transition hover:-translate-y-0.5 hover:shadow-lg"
+          class="w-fit rounded-full bg-accent px-6 py-3 font-bold fest:text-season-ink transition hover:-translate-y-0.5 hover:shadow-lg"
         >
           Enviar propuesta →
         </button>
@@ -151,7 +141,7 @@ const festive = !!(await getSeason(Astro));
         ></p>
       </form>
 
-      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7 fest:text-black">
+      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7 fest:text-season-ink">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
           ¿Qué buscamos?
         </span>
@@ -165,7 +155,7 @@ const festive = !!(await getSeason(Astro));
           <li>→ Conferencias</li>
           <li>→ Actividades de comunidades tech</li>
         </ul>
-        <p class="border-t border-primary/15 fest:border-black/15 pt-5 text-sm text-primary/65 fest:text-black/70">
+        <p class="border-t border-primary/15 fest:border-season-ink/15 pt-5 text-sm text-primary/65 fest:text-season-ink/70">
           Revisaremos cada propuesta antes de incorporarla a la agenda.
         </p>
       </aside>

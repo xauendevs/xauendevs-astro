@@ -36,7 +36,7 @@ const season = await getSeason(Astro);
 
             <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
               <div>
-                <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f4d400] text-2xl font-black shadow-[4px_4px_0_#000] fest:bg-season fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)]" aria-hidden="true">
+                <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f4d400] text-2xl font-black shadow-[4px_4px_0_#000] fest:bg-season fest:text-season-ink fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)]" aria-hidden="true">
                   ✓
                 </div>
 
@@ -139,7 +139,7 @@ const season = await getSeason(Astro);
               link.target = "_blank";
               link.rel = "noopener noreferrer";
               link.textContent = "Añadir al calendario →";
-              link.className = "inline-flex rounded-full bg-[#f4d400] fest:bg-season px-6 py-3.5 text-sm font-black text-black shadow-[4px_4px_0_#000] fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)] transition hover:-translate-y-0.5";
+              link.className = "inline-flex rounded-full bg-[#f4d400] fest:bg-season px-6 py-3.5 text-sm font-black text-black fest:text-season-ink shadow-[4px_4px_0_#000] fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)] transition hover:-translate-y-0.5";
               actions.appendChild(link);
             }
           })

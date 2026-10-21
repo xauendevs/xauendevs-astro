@@ -17,7 +17,7 @@ const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).s
 <div class="mt-6 min-w-0 space-y-8 sm:mt-8 sm:space-y-12">
   {
     nextEvent && (
-      <article class="grid min-w-0 grid-cols-1 overflow-hidden rounded-3xl bg-black/5 fest:border fest:border-season/40 fest:bg-white/5 md:grid-cols-[1.35fr_0.65fr]">
+      <article class="grid min-w-0 grid-cols-1 overflow-hidden rounded-3xl bg-black/5 fest:ring-1 fest:ring-season/40 fest:bg-white/5 md:grid-cols-[1.35fr_0.65fr]">
         <div class="relative min-h-[220px] min-w-0 overflow-hidden sm:min-h-[280px] md:min-h-[410px]">
           <div
             aria-hidden="true"
@@ -25,7 +25,7 @@ const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).s
             style={"background-image:url('" + STRAPI_HOST + nextEvent.image + "'),url('/img/pivos/default.png')"}
           ></div>
           <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent"></div>
-          <span class="absolute bottom-5 left-5 rounded-full bg-accent fest:bg-season px-3 py-1.5 text-xs font-black uppercase tracking-wide text-black">
+          <span class="absolute bottom-5 left-5 rounded-full bg-accent fest:bg-season px-3 py-1.5 text-xs font-black uppercase tracking-wide text-black fest:text-season-ink">
             Próxima Pivo&Code
           </span>
         </div>
@@ -67,7 +67,7 @@ const pastPivos = pivos?.filter((pivo) => pivo.date.getTime() < now.getTime()).s
 
           <a
             href={"/eventos/" + slugify(nextEvent.title)}
-            class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-black fest:bg-season px-5 py-3 text-center font-bold text-white fest:text-black transition-transform hover:scale-[1.02] motion-reduce:transition-none sm:w-fit"
+            class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-black fest:bg-season px-5 py-3 text-center font-bold text-white fest:text-season-ink transition-transform hover:scale-[1.02] motion-reduce:transition-none sm:w-fit"
           >
             Ver la charla <span aria-hidden="true">↗</span>
           </a>

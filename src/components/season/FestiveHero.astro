@@ -1,11 +1,9 @@
 ---
-import FromFor from "../FromFor.astro";
-import NextEventPill from "../NextEventPill.astro";
 import SeasonFlyer from "./SeasonFlyer.astro";
-import { getSeason, SEASON_CONTENT } from "@/lib/season";
 
-// Hero de temporada (Halloween, Navidad…): los colores, la foto y el overlay vienen de los tokens --season-* (Layout.astro).
-const season = (await getSeason(Astro)) ?? "halloween";
+// Capas decorativas del hero con una temporada activa (foto, niebla, overlay, partículas…). Solo es fondo:
+// va dentro del <header> de siempre (src/sections/Header.astro) y no cambia su contenido ni su distribución.
+// Los colores, la foto y el overlay vienen de los tokens --season-* (src/styles/seasons.css).
 
 // Partículas (brasas / nieve): posiciones deterministas (sin Math.random) para que el HTML sea estable entre builds.
 const rand = (i: number, n: number) => {
@@ -27,36 +25,26 @@ const flyers = [
 ];
 ---
 
-<header
-  data-hero
-  class="hero relative isolate flex min-h-[620px] flex-col justify-center overflow-hidden rounded-3xl bg-night px-7 py-10 md:px-12 md:py-14 lg:aspect-[1983/793] lg:max-h-[820px] lg:min-h-[600px] lg:pb-24"
->
+<div data-hero-fx aria-hidden="true" class="hero-fx-root">
   <!-- 1. Foto en duotono de la temporada (horneado en la imagen: sin filtros ni blend en tiempo real) -->
-  <div aria-hidden="true" class="layer hero-photo" data-fx="photo" style="background-image:var(--season-hero-photo)"></div>
-  <div aria-hidden="true" class="layer hero-scrim"></div>
+  <div class="layer hero-photo" data-fx="photo" style="background-image:var(--season-hero-photo)"></div>
+  <div class="layer hero-scrim"></div>
 
   <!-- 2. Foco de luz que sigue al cursor -->
-  <div aria-hidden="true" class="hero-spotlight" data-fx="spot"></div>
+  <div class="hero-spotlight" data-fx="spot"></div>
 
   <!-- 3. Niebla en movimiento -->
-  <div aria-hidden="true" class="hero-fog"></div>
+  <div class="hero-fog"></div>
 
   <!-- 4. Overlay de diseño de la temporada (Halloween: telarañas, luna, calabazas…; Navidad: pinos, luna, luces…) -->
-  <div
-    aria-hidden="true"
-    class="layer hero-overlay"
-    data-fx="overlay"
-    style="background-image:var(--season-overlay)"
-  >
-  </div>
+  <div class="layer hero-overlay" data-fx="overlay" style="background-image:var(--season-overlay)"></div>
 
-  <!-- 5. Luz de las calabazas (solo Halloween y solo cuando el hero mantiene la proporción del overlay) -->
-  <div aria-hidden="true" class="pglow" style="--x:4.8%;--y:82%"></div>
-  <div aria-hidden="true" class="pglow" style="--x:93%;--y:87%"></div>
-  <div aria-hidden="true" class="pglow pglow-sm" style="--x:88.5%;--y:93%"></div>
+
+  <!-- 5. Sombra abajo a la izquierda para que el FROM :XAUEN FOR DEVS se lea sobre el overlay (nieve, calabazas…) -->
+  <div class="layer hero-readability"></div>
 
   <!-- 6. Brasas y murciélagos (Halloween) / nieve y copos (Navidad) -->
-  <div aria-hidden="true" class="hero-fx">
+  <div class="hero-fx">
     {
       embers.map((e) => (
         <span
@@ -73,74 +61,16 @@ const flyers = [
       ))
     }
   </div>
-
-  <div class="relative z-10 max-w-[min(100%,60rem)]">
-    <div class="reveal" style="--i:0">
-      <NextEventPill server:defer>
-        <span
-          slot="fallback"
-          class="inline-flex rounded-full border border-season/60 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-season"
-        >
-          Próximo evento
-        </span>
-      </NextEventPill>
-    </div>
-
-    <h1
-      class="reveal mt-6 max-w-xl text-lg text-white/95 [text-shadow:0_2px_14px_rgba(0,0,0,0.9)] sm:text-xl"
-      style="--i:1"
-    >
-      La comunidad de desarrollo y tecnología de Jaén.
-    </h1>
-
-    <div
-      class="reveal relative mt-2 w-full max-w-[min(100%,clamp(560px,40vw,880px))]"
-      style="--i:2"
-      role="img"
-      aria-label="From XauenDevs for Devs"
-    >
-      <FromFor
-        variant="festive"
-        part="light"
-        aria-hidden="true"
-        class="block h-auto w-full [filter:drop-shadow(0_0_22px_rgb(var(--season-rgb)_/_0.55))]"
-      />
-      <!-- Capa naranja aparte: el neón parpadea animando solo su opacidad (compositor) -->
-      <FromFor
-        variant="festive"
-        part="orange"
-        aria-hidden="true"
-        class="fromfor-orange absolute inset-0 block h-auto w-full [filter:drop-shadow(0_0_22px_rgb(var(--season-rgb)_/_0.55))]"
-      />
-    </div>
-
-    <p
-      class="reveal mt-5 max-w-[34rem] text-base leading-relaxed text-white/80 [text-shadow:0_2px_14px_rgba(0,0,0,0.95)] sm:text-lg"
-      style="--i:3"
-    >
-      Charlas, eventos y personas que comparten la misma pasión por la tecnología en la provincia de Jaén.
-    </p>
-
-    <div class="reveal mt-7 flex flex-wrap gap-3" style="--i:4">
-      <a
-        href="/eventos"
-        class="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-season to-[var(--season-hot)] px-6 py-3 font-semibold text-black shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.4)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgb(var(--season-rgb)_/_0.6)] motion-reduce:transition-none"
-      >
-        <span aria-hidden="true">{SEASON_CONTENT[season].cta}</span>
-        Ver próximos eventos
-        <span aria-hidden="true">→</span>
-      </a>
-      <a
-        href="/#own-mission"
-        class="inline-flex items-center rounded-full border border-season/70 bg-night/60 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-season hover:bg-season/10 motion-reduce:transition-none"
-      >
-        Conoce nuestra misión
-      </a>
-    </div>
-  </div>
-</header>
+</div>
 
 <style>
+  .hero-fx-root {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+  }
   .layer {
     position: absolute;
     inset: 0;
@@ -149,10 +79,11 @@ const flyers = [
 
   /* --- Foto en duotono ------------------------------------------------ */
   .hero-photo {
-    inset: -5%;
+    /* Mismo encuadre que la foto del hero sin temporada (centrada); el margen solo cubre el parallax (±11px) */
+    inset: -16px;
     z-index: -30;
     background-size: cover;
-    background-position: 72% 30%;
+    background-position: center;
     background-repeat: no-repeat;
     transition: transform 0.25s ease-out;
     will-change: transform;
@@ -226,37 +157,11 @@ const flyers = [
     }
   }
 
-  /* --- Luz de calabazas --------------------------------------------------- */
-  .pglow {
-    display: none; /* solo Halloween (ver abajo) */
-    position: absolute;
+  .hero-readability {
     z-index: -9;
-    left: var(--x);
-    top: var(--y);
-    width: 17%;
-    aspect-ratio: 1;
-    translate: -50% -50%;
-    pointer-events: none;
-    background: radial-gradient(circle, rgba(255, 150, 40, 0.6), rgba(255, 100, 0, 0.2) 40%, transparent 68%);
-    animation: pglow 3.4s ease-in-out infinite alternate;
-  }
-  .pglow-sm {
-    width: 9%;
-    animation-duration: 2.6s;
-    animation-delay: -1.2s;
-  }
-  @media (min-width: 1024px) {
-    :global([data-theme="halloween"]) .pglow {
-      display: block;
-    }
-  }
-  @keyframes pglow {
-    from {
-      opacity: 0.5;
-    }
-    to {
-      opacity: 1;
-    }
+    background:
+      radial-gradient(75% 65% at 0% 100%, rgb(var(--night-rgb) / 0.85), rgb(var(--night-rgb) / 0.5) 50%, transparent 80%),
+      linear-gradient(90deg, rgb(var(--night-rgb) / 0.35), transparent 55%);
   }
 
   /* --- Brasas y murciélagos ------------------------------------------------ */
@@ -369,7 +274,7 @@ const flyers = [
   }
 
   /* --- Neón parpadeante en :XAUEN y \ -------------------------------------- */
-  .hero :global(.fromfor-orange) {
+  :global(.fromfor-orange) {
     animation: neon 8s steps(1, end) infinite;
   }
   @keyframes neon {
@@ -392,39 +297,20 @@ const flyers = [
     }
   }
 
-  /* --- Entrada escalonada del contenido ------------------------------------ */
-  .reveal {
-    animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: calc(var(--i, 0) * 110ms + 120ms);
-  }
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 18px, 0);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
-
   /* Pausa los efectos cuando el hero no se ve (ahorra GPU/CPU al hacer scroll) */
-  .hero.is-paused .ember,
-  .hero.is-paused .hero-fog,
-  .hero.is-paused .pglow,
-  .hero.is-paused .bat-fly,
-  .hero.is-paused :global(.bat-flap),
-  .hero.is-paused :global(.fromfor-orange) {
+  :global(.is-paused) .ember,
+  :global(.is-paused) .hero-fog,
+  :global(.is-paused) .bat-fly,
+  :global(.is-paused) :global(.bat-flap),
+  :global(.is-paused .fromfor-orange) {
     animation-play-state: paused;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-fog,
-    .pglow,
-    .reveal,
     .bat-fly,
     .bat-fly :global(.bat-flap),
-    .hero :global(.fromfor-orange) {
+    :global(.fromfor-orange) {
       animation: none !important;
     }
     .ember,
@@ -443,7 +329,8 @@ const flyers = [
   // Foco de luz + parallax con el cursor. Solo escribe `transform` (sin variables CSS ni repintados).
   // Solo con ratón y sin "reducir movimiento".
   function initHero() {
-    const hero = document.querySelector<HTMLElement>("[data-hero]");
+    // El foco y el parallax siguen al cursor sobre todo el hero (el <header> que contiene las capas).
+    const hero = document.querySelector<HTMLElement>("[data-hero-fx]")?.parentElement;
     if (!hero || hero.dataset.fx === "on") return;
     hero.dataset.fx = "on";
 

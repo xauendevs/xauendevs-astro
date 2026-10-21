@@ -11,6 +11,10 @@ export default {
         // Colores de la temporada activa (tokens --season-* / --night-rgb en Layout.astro).
         season: "rgb(var(--season-rgb) / <alpha-value>)",
         night: "rgb(var(--night-rgb) / <alpha-value>)",
+        // Texto legible sobre el color de la temporada (negro en Halloween, blanco en Navidad).
+        "season-ink": "rgb(var(--season-ink-rgb) / <alpha-value>)",
+        // Color secundario de la temporada (Halloween: morado, Navidad: verde).
+        "season-alt": "rgb(var(--season-alt-rgb) / <alpha-value>)",
       },
       brightness: {
         25: ".25",

@@ -1,7 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import PageHeader from "@/components/PageHeader.astro";
-import { getSeason } from "@/lib/season";
+import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
 import PivoCard from "@/components/PivoCard.astro";
 import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
@@ -12,7 +11,6 @@ import type { Pivo } from "@/types/Pivo";
 
 // SSR: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
-const festive = !!(await getSeason(Astro));
 
 const events = (await getPivosStrapi()) ?? [];
 const externalEvents = (await getExternalEventsStrapi()) ?? [];
@@ -51,19 +49,9 @@ const availableTags = Array.from(
   description="Agenda de eventos de tecnología y desarrollo en Jaén. Charlas, meetups y actividades de la comunidad."
 >
   <main class="flex min-w-0 flex-col gap-8 py-2 sm:gap-10 md:gap-14">
-    {
-      festive ? (
-        <PageHeader eyebrow="Jaén Tech Events" title="Tecnología en Jaén." dim="Todo en un mismo sitio.">
-          {totalUpcoming > 0 && (
-            <span slot="badge" class="rounded-full bg-accent px-3 py-1 text-xs font-bold text-black">
-              {totalUpcoming} próximos
-            </span>
-          )}
-          Charlas, meetups, talleres y eventos para descubrir qué está pasando en la comunidad tecnológica de Jaén.
-        </PageHeader>
-      ) : (
     <header class="relative min-w-0 overflow-hidden rounded-3xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] px-5 py-7 sm:rounded-[2.5rem] sm:px-7 sm:py-10 md:px-12 md:py-14">
-      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl"></div>
+      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl fest:hidden"></div>
+      <SeasonOverlay />
 
       <div class="relative flex flex-col gap-5">
         <div class="flex flex-wrap items-center gap-3">
@@ -71,7 +59,7 @@ const availableTags = Array.from(
             JAÉN TECH EVENTS
           </span>
           {totalUpcoming > 0 && (
-            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold">
+            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold fest:text-season-ink">
               {totalUpcoming} próximos
             </span>
           )}
@@ -88,8 +76,6 @@ const availableTags = Array.from(
         </p>
       </div>
     </header>
-      )
-    }
 
     <nav aria-label="Filtrar eventos" class="flex flex-col gap-5">
       <div class="flex flex-col gap-2">
@@ -188,7 +174,7 @@ const availableTags = Array.from(
       )
     }
 
-    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 fest:text-black sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
+    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 fest:text-season-ink sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
       <div class="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-white/30 blur-3xl"></div>
       <div class="relative">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
@@ -197,7 +183,7 @@ const availableTags = Array.from(
         <h2 class="mt-2 text-2xl font-black md:text-3xl">
           Ayúdanos a mantener la agenda al día.
         </h2>
-        <p class="mt-2 max-w-2xl text-sm text-primary/65 fest:text-black/70">
+        <p class="mt-2 max-w-2xl text-sm text-primary/65 fest:text-season-ink/70">
           Si conoces un evento relacionado con tecnología en Jaén, compártelo
           con la comunidad y lo revisamos.
         </p>

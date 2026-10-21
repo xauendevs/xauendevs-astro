@@ -1,21 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import PageHeader from "@/components/PageHeader.astro";
-import { getSeason } from "@/lib/season";
 
+// SSR: la temporada (colores del Layout) se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
-const festive = !!(await getSeason(Astro));
 ---
 
 <Layout
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >
-  {
-    festive ? (
-      <PageHeader eyebrow="XauenDevs" title="Blog">Estamos trabajando en nuestro blog.</PageHeader>
-    ) : (
-      <main class="flex flex-col gap-8">ESTAMOS TRABAJANDO EN NUESTRO BLOG</main>
-    )
-  }
+  <main class="flex flex-col gap-8">ESTAMOS TRABAJANDO EN NUESTRO BLOG</main>
 </Layout>
