@@ -6,6 +6,8 @@ export interface PressItem {
   description?: string;
   image?: string;
   outlet: string;
+  /** Logo o icono del medio, para el sello sobre la imagen. */
+  logo?: string;
   date?: Date;
 }
 
@@ -14,6 +16,7 @@ interface PageMeta {
   description?: string;
   image?: string;
   siteName?: string;
+  logo?: string;
   published?: string;
 }
 
@@ -133,8 +136,35 @@ function textDate(html: string): string | undefined {
   return undefined;
 }
 
+/**
+ * Logo del medio: el del JSON-LD (publisher.logo, suele ser el logotipo completo) y, si no, el icono más
+ * grande que declare la página (apple-touch-icon antes que favicon). Último recurso: /favicon.ico.
+ */
+function siteLogo(html: string, ld: Json, base: string): string {
+  // Algunos CMS dejan sin rellenar variables de plantilla en el href («$iterVelocityTools…»): se descartan.
+  const usable = (href?: string) => (href && !/[\s${}<>]/.test(href) ? href : undefined);
+  const publisherLogo = usable(ldImage(ld.publisher?.logo));
+  if (publisherLogo) return new URL(publisherLogo, base).href;
+  const icons = (html.match(/<link\b[^>]*>/gi) ?? [])
+    .map((tag) => {
+      const rel = tag.match(/\brel\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() ?? "";
+      const href = usable(decode(tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] ?? ""));
+      if (!href || !/(^|\s)(apple-touch-icon(-precomposed)?|icon|shortcut icon)(\s|$)/.test(rel)) return undefined;
+      const size = Number(tag.match(/\bsizes\s*=\s*["'](\d+)x\d+/i)?.[1] ?? (rel.startsWith("apple") ? 180 : 32));
+      return { href, size };
+    })
+    .filter((icon): icon is { href: string; size: number } => Boolean(icon))
+    .sort((a, b) => b.size - a.size);
+  return new URL(icons[0]?.href ?? "/favicon.ico", base).href;
+}
+
 /** Algunos medios ponen su dominio como og:site_name («www.diariojaen.es»): se deja en «diariojaen.es». */
-const prettySiteName = (name?: string) => (name && /^[\w.-]+\.[a-z]{2,}$/i.test(name) ? name.replace(/^www\./, "") : name);
+// Y otros añaden un lema («Hora Jaén - Medio de Comunicación…»): si es largo, se queda la primera parte.
+const prettySiteName = (name?: string) => {
+  if (!name) return name;
+  if (/^[\w.-]+\.[a-z]{2,}$/i.test(name)) return name.replace(/^www\./, "");
+  return name.length > 24 ? name.split(/\s+[|\-–—]\s+/)[0] : name;
+};
 
 /** Quita el nombre del medio cuando va pegado al titular: «Extra Jaén | Titular» o «Titular - Diario Jaén». */
 function cleanTitle(title: string, siteName?: string): string {
@@ -190,11 +220,14 @@ async function readMeta(url: string): Promise<PageMeta> {
           body.description,
         image: image ? new URL(decode(image), base).href : undefined,
         siteName,
+        logo: siteLogo(html, ld, base),
         published:
           metaContent(html, ["article:published_time", "og:published_time", "datepublished", "date", "dc.date"]) ??
           ld.datePublished ??
           html.match(/<time\b[^>]*datetime\s*=\s*["']([^"']+)["']/i)?.[1] ??
-          textDate(html),
+          textDate(html) ??
+          // Último recurso: una fecha en el propio titular («Noticias 2 Jaén - 30/09/2026»).
+          title?.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/)?.slice(1).reverse().map((n) => n.padStart(2, "0")).join("-"),
       };
       ttl = OK_TTL;
     }
@@ -227,6 +260,7 @@ async function toItem(entry: PressEntry): Promise<PressItem> {
     description: entry.description ?? meta.description,
     image: entry.image ?? meta.image,
     outlet: entry.outlet ?? meta.siteName ?? hostname(entry.url),
+    logo: entry.logo ?? meta.logo,
     date: parseDate(entry.date) ?? parseDate(meta.published),
   };
 }

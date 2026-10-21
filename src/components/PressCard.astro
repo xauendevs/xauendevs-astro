@@ -32,6 +32,22 @@ const date = item.date?.toLocaleDateString("es-ES", { day: "numeric", month: "lo
     <span class="absolute inset-0 flex items-center justify-center p-6 text-center text-2xl font-black text-white/90">
       {item.outlet}
     </span>
+    <!-- Sello con el logo del medio, como marca de agua en la esquina. Si el logo no carga, desaparece. -->
+    {
+      item.logo && (
+        <span class="press-seal absolute bottom-3 left-3 z-10 flex h-10 max-w-[45%] items-center rounded-xl bg-white/90 px-2.5 py-1.5 backdrop-blur-sm">
+          <img
+            src={item.logo}
+            alt={`Logo de ${item.outlet}`}
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            onerror="this.closest('.press-seal').remove()"
+            class="h-full w-auto max-w-full object-contain"
+          />
+        </span>
+      )
+    }
   </div>
 
   <div class="flex flex-1 flex-col gap-3 p-5">
