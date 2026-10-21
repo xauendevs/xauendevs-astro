@@ -4,6 +4,8 @@
  * que se escriben con textContent) y no se hace ninguna petición de red.
  */
 const SEEN_KEY = "xd-hack";
+/** Multiplicador de ritmo: >1 = más lento. Toda la animación escala con este valor. */
+const SLOW = 1.7;
 
 const TEMPLATE = `
   <p class="hk-sr">Es una broma de Halloween: la web finge ser hackeada y enseguida se revela que es mentira. Pulsa Saltar, Escape o Enter para entrar directamente.</p>
@@ -80,7 +82,7 @@ export async function runHackIntro(): Promise<void> {
       const timer = window.setTimeout(() => {
         wake = null;
         resolve();
-      }, ms);
+      }, ms * SLOW);
       wake = () => {
         window.clearTimeout(timer);
         resolve();
@@ -193,7 +195,7 @@ export async function runHackIntro(): Promise<void> {
 
   // Alerta
   root.classList.add("is-alert");
-  await wait(1600);
+  await wait(2000);
   if (skipped) return;
   root.classList.remove("is-alert");
 
@@ -207,6 +209,6 @@ export async function runHackIntro(): Promise<void> {
   // Revelación
   root.classList.add("is-reveal");
   enterButton.focus({ preventScroll: true });
-  await wait(4200);
+  await wait(3600);
   finish();
 }
