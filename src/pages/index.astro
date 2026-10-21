@@ -7,11 +7,11 @@ import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
 
-export const prerender = true;
+// Sin prerender: el tema estacional se decide en cada petición (ver src/lib/site-theme.ts).
+export const prerender = false;
 ---
 
 <Layout
-  theme="halloween"
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >

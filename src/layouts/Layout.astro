@@ -4,14 +4,15 @@ import Footer from "@/sections/Footer.astro";
 import ClientRouter from "astro/components/ClientRouter.astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import HackIntro from "@/components/HackIntro.astro";
+import { getHackIntroEnabled, getSiteTheme, type SiteTheme } from "@/lib/site-theme";
 
 interface Props {
   title: string;
   description: string;
   image?: string;
   imageType?: string;
-  /** "halloween" activa el tema oscuro de la portada (barra, fondo y decoraciones). */
-  theme?: "default" | "halloween";
+  /** Fuerza un tema. Normalmente se omite: lo decide `getSiteTheme()` (Edge Config / env). */
+  theme?: SiteTheme;
 }
 
 const {
@@ -19,9 +20,17 @@ const {
   description,
   image = "/img/og-xauendevs.svg",
   imageType,
-  theme = "halloween",
+  theme: themeOverride,
 } = Astro.props;
-const isHalloween = theme === "halloween";
+// Temporada activa (Edge Config / env). Controla lo "efímero": la broma de entrada, etc.
+const season = themeOverride ?? (await getSiteTheme());
+const isHalloween = season === "halloween";
+// El diseño base (oscuro + acento naranja) es el de la web actual y NO depende de la temporada:
+// las secciones nuevas no tienen versión clara, así que apagar la temporada no puede dejarlas ilegibles.
+const theme: SiteTheme = "halloween";
+// El tema puede cambiar sin desplegar: la CDN de Vercel lo refresca como mucho cada minuto.
+Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+const showHackIntro = isHalloween && (await getHackIntroEnabled());
 
 const siteOrigin = import.meta.env.PROD
   ? Astro.site
@@ -57,8 +66,8 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
   </head>
-  <body data-theme={theme} class:list={[isHalloween && "bg-night text-white"]}>
-    {isHalloween && <HackIntro />}
+  <body data-theme={theme} data-season={season} class="bg-night text-white">
+    {showHackIntro && <HackIntro />}
     <Header variant={theme} />
     <main class="min-w-0 px-4 sm:px-6 md:px-10">
       <slot class="" />
@@ -90,7 +99,7 @@ const socialImage = new URL(image, siteOrigin).href;
   }
 
   /* Tema Halloween (temporada): acento naranja y tinta blanca sobre fondo oscuro.
-     Para volver al diseño anterior basta con cambiar el `theme` por defecto del Layout. */
+     La temporada (src/lib/site-theme.ts) solo activa lo efímero, como la broma de entrada. */
   [data-theme="halloween"] {
     --color-primary-rgb: 255 255 255;
     --color-accent: #ff8a1f;

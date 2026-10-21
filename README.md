@@ -111,3 +111,19 @@ Por favor, consulta nuestra [guía de contribución](https://github.com/xauendev
 [issues-shield]: https://img.shields.io/github/issues/xauendevs/xauendevs-astro.svg?style=for-the-badge
 [issues-url]: https://github.com/xauendevs/xauendevs-astro/issues
 [with-love]: https://img.shields.io/badge/with_%F0%9F%92%9A_from-JAEN-green
+
+## Temas estacionales (Halloween, Navidad…)
+
+La "temporada" se cambia **en caliente, sin desplegar**, con [Vercel Edge Config](https://vercel.com/docs/edge-config):
+
+1. Vercel → *Storage* → crear un **Edge Config** y conectarlo al proyecto (Vercel añade solo la variable `EDGE_CONFIG`).
+2. En el Edge Config, añadir las claves:
+   - `site_theme`: `"halloween"` o `"default"`.
+   - `hack_intro`: `true` / `false` (la broma del hackeo; solo se ve con `halloween`).
+3. Guardar: el cambio se ve en la web en ≤ 1 min (caché de la CDN).
+
+Alternativa sin Edge Config: variables `SITE_THEME` y `SITE_HACK_INTRO`. **Ojo:** Vercel solo aplica las variables de entorno a despliegues nuevos, así que requieren pulsar *Redeploy* (sin cambiar código).
+
+Lógica en `src/lib/site-theme.ts` (Edge Config → env → `default`). Para una temporada nueva, añadirla a `THEMES` y colgar de `season` (en `Layout.astro`, `data-season` del `<body>`) sus decoraciones.
+
+Probar la broma en local: `/?hack=1` · saltarla: `/?nohack`.

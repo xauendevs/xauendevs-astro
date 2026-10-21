@@ -1,8 +1,9 @@
 ---
 import PreFooter from "@/components/PreFooter.astro";
+import type { SiteTheme } from "@/lib/site-theme";
 
 interface Props {
-  theme?: "default" | "halloween";
+  theme?: SiteTheme;
 }
 
 const { theme = "default" } = Astro.props;
