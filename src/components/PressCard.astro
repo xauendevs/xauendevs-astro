@@ -1,0 +1,76 @@
+---
+import type { PressItem } from "@/lib/press";
+
+interface Props {
+  item: PressItem;
+}
+
+// Misma forma que <PivoCard />: imagen de cabecera de la noticia, medio y fecha, titular y entradilla.
+// La imagen se pide sin referrer: algunos medios bloquean el hotlinking cuando lo llevan.
+const { item } = Astro.props;
+const date = item.date?.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" });
+---
+
+<article
+  class="group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl bg-black/5 transition-transform duration-200 hover:-translate-y-1 fest:bg-white/5 fest:ring-1 fest:ring-white/10 motion-reduce:transition-none"
+>
+  <div class="relative aspect-[16/9] overflow-hidden bg-black">
+    {
+      item.image ? (
+        <img
+          src={item.image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="this.remove()"
+          class="relative z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+        />
+      ) : null
+    }
+    <!-- Si la noticia no trae imagen (o no carga), queda el nombre del medio sobre negro -->
+    <span class="absolute inset-0 flex items-center justify-center p-6 text-center text-2xl font-black text-white/90">
+      {item.outlet}
+    </span>
+    <!-- Sello con el logo del medio, como marca de agua en la esquina. Si el logo no carga, desaparece. -->
+    {
+      item.logo && (
+        <span class="press-seal absolute bottom-3 left-3 z-10 flex h-10 max-w-[45%] items-center rounded-xl bg-white/90 px-2.5 py-1.5 backdrop-blur-sm">
+          <img
+            src={item.logo}
+            alt={`Logo de ${item.outlet}`}
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            onerror="this.closest('.press-seal').remove()"
+            class="h-full w-auto max-w-full object-contain"
+          />
+        </span>
+      )
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <p class="text-sm font-semibold text-black/70 fest:text-white/70">
+      <span class="text-black fest:text-white">{item.outlet}</span>
+      {date && <> · <time datetime={item.date!.toISOString()}>{date}</time></>}
+    </p>
+
+    <h3 class="text-lg font-bold leading-snug">
+      <a
+        href={item.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="after:absolute after:inset-0 after:z-20 after:content-[''] group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4"
+      >
+        {item.title}
+      </a>
+    </h3>
+
+    {item.description && <p class="line-clamp-3 text-sm leading-relaxed text-black/75 fest:text-white/75">{item.description}</p>}
+
+    <span class="mt-auto pt-1 text-sm font-bold underline decoration-accent decoration-2 underline-offset-4">
+      Leer en {item.outlet} <span aria-hidden="true">↗</span>
+    </span>
+  </div>
+</article>

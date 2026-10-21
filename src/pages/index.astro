@@ -5,6 +5,7 @@ import AboutUs from "@/sections/AboutUs.astro";
 import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
+import Press from "@/sections/Press.astro";
 
 // Sin prerender: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
@@ -19,6 +20,7 @@ export const prerender = false;
     <AboutUs />
     <Pivos />
     <Community />
+    <Press server:defer />
     <Partners />
   </main>
 </Layout>
