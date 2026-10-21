@@ -183,6 +183,99 @@ const socialImage = new URL(image, siteOrigin).href;
     body::after { animation: none; }
   }
 
+  /* Noche de Halloween: paleta monocroma con sangre como único acento. */
+  html {
+    color-scheme: dark;
+    background: #090909;
+  }
+
+  body {
+    color: #ededed;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(65, 65, 65, .28), transparent 55%),
+      #090909;
+  }
+
+  body::marker { color: #eee; }
+
+  /* Oscurece las superficies claras existentes sin rehacer los componentes. */
+  body header,
+  body footer {
+    color: #ededed;
+    background-color: rgba(12, 12, 12, .96) !important;
+    border-color: #393939 !important;
+  }
+
+  body main [class~="bg-white"],
+  body main [class~="bg-gray-50"],
+  body main [class~="bg-stone-50"],
+  body main [class~="bg-neutral-50"],
+  body main [class~="bg-zinc-50"] {
+    background-color: #171717 !important;
+    color: #ededed !important;
+    border-color: #393939 !important;
+  }
+
+  body main [class~="text-black"],
+  body main [class~="text-gray-900"],
+  body main [class~="text-neutral-900"],
+  body main [class~="text-stone-900"] {
+    color: #f1f1f1 !important;
+  }
+
+  body main [class~="border-gray-200"],
+  body main [class~="border-neutral-200"],
+  body main [class~="border-stone-200"] {
+    border-color: #414141 !important;
+  }
+
+  body a:hover { text-decoration-color: #b51220; }
+
+  /* Casa encantada anclada a la parte inferior, detrás del contenido. */
+  .halloween-haunted-house {
+    position: fixed;
+    z-index: 1;
+    left: -18px;
+    bottom: -10px;
+    width: clamp(170px, 25vw, 340px);
+    opacity: .46;
+    pointer-events: none;
+    filter: grayscale(1) contrast(1.15);
+    animation: halloween-house-haunt 6s ease-in-out infinite;
+  }
+
+  /* Relámpago: un destello blanco breve, no una pantalla parpadeando continuamente. */
+  .halloween-lightning {
+    position: fixed;
+    z-index: 49;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(255, 255, 255, .12);
+    animation: halloween-lightning-flash 11s linear infinite;
+  }
+
+  @keyframes halloween-lightning-flash {
+    0%, 17%, 17.4%, 17.8%, 18.3%, 100% { opacity: 0; }
+    17.2% { opacity: .65; }
+    17.6% { opacity: .08; }
+    18% { opacity: .38; }
+  }
+
+  @keyframes halloween-house-haunt {
+    0%, 100% { transform: translateY(0); opacity: .4; }
+    50% { transform: translateY(-4px); opacity: .55; }
+  }
+
+  @media (max-width: 640px) {
+    .halloween-haunted-house { width: 175px; left: -24px; bottom: -5px; opacity: .28; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .halloween-haunted-house,
+    .halloween-lightning { animation: none; }
+  }
+
   #header-nav {
     animation: blur linear both;
     animation-timeline: scroll();
