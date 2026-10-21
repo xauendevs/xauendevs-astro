@@ -1,29 +1,19 @@
-import { format } from "@formkit/tempo";
+const TZ = "Europe/Madrid";
 
+/** «vie 23 oct» */
 export function formatDate(date: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-  };
-
   return new Date(date)
-    .toLocaleDateString("es-ES", options)
-    .replace(/^(\w+)\. (\d+)\/(\d+)$/, "$1. $2\\$3");
+    .toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short", timeZone: TZ })
+    .replace(/\./g, "")
+    .replace(",", "");
 }
 
+/** «19:30» */
 export function formatTime(date: Date): string {
-  return `:${format({
-    date,
-    format: "HH.mm",
-    tz: "Europe/Madrid",
-  })}`;
+  return new Date(date).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
 }
 
+/** «vie 23 oct · 19:30» */
 export function formatDateTime(date: Date): string {
-  return format({
-    date,
-    format: "DD/MM/YYYY * HH:mm",
-    tz: "Europe/Madrid",
-  });
+  return `${formatDate(date)} · ${formatTime(date)}`;
 }

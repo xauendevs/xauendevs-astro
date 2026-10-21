@@ -3,21 +3,75 @@ import Discord from "./icons/Discord.astro";
 import Instagram from "./icons/Instagram.astro";
 import Twitter from "./icons/Twitter.astro";
 import Logo from "./Logo.astro";
+import { DISCORD_URL } from "@/consts/social-links";
+
+const links = [
+  { href: "/eventos?tipo=xauen", label: "Pivo&Code", reload: true },
+  { href: "/eventos", label: "Agenda de eventos" },
+  { href: "/proponer-evento", label: "Propón un evento" },
+  { href: "/#own-mission", label: "Quiénes somos" },
+  { href: "/privacidad", label: "Privacidad" },
+];
 ---
 
 <div
-  class="bg-black fest:ring-1 fest:ring-white/10 rounded-3xl flex flex-col md:flex-row justify-between w-full p-7 md:p-10 text-white gap-5"
+  class="grid w-full gap-10 rounded-3xl bg-black p-7 text-white fest:ring-1 fest:ring-white/10 md:grid-cols-[minmax(0,1fr)_auto_auto] md:gap-16 md:p-10"
 >
-  <Logo class="text-white w-28 md:w-52" />
-  <div class="flex gap-4 items-center">
-    <a href="https://www.instagram.com/xauendevs" aria-label="Enlace al perfil en instagram de xauendevs">
-      <Instagram class="size-6 md:size-10" />
-    </a>
-    <a href="https://discord.gg/CC9e6dtqxQ" aria-label="Enlace al discord de xauendevs">
-      <Discord class="size-6 md:size-10" />
-    </a>
-    <a href="https://x.com/xauendevs" aria-label="Enlace al perfil en X de xauendevs">
-      <Twitter class="size-6 md:size-10" />
-    </a>
+  <div>
+    <Logo class="w-40 text-white md:w-52" />
+    <p class="mt-4 max-w-sm text-base text-white/80">
+      Comunidad de desarrollo y tecnología de la provincia de Jaén, desde 2017.
+    </p>
+  </div>
+
+  <nav aria-label="Pie de página">
+    <ul class="flex flex-col gap-3 text-base">
+      {
+        links.map(({ href, label, reload }) => (
+          <li>
+            <a
+              href={href}
+              data-astro-reload={reload ? "" : undefined}
+              class="underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:decoration-accent"
+            >
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div>
+    <p class="font-bold">Síguenos</p>
+    <div class="mt-3 flex items-center gap-2">
+      <a
+        href="https://www.instagram.com/xauendevs"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="XauenDevs en Instagram"
+        class="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white/15"
+      >
+        <Instagram class="size-6" />
+      </a>
+      <a
+        href={DISCORD_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Discord de XauenDevs"
+        class="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white/15"
+      >
+        <Discord class="size-6" />
+      </a>
+      <a
+        href="https://x.com/xauendevs"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="XauenDevs en X"
+        class="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white/15"
+      >
+        <Twitter class="size-6" />
+      </a>
+    </div>
   </div>
 </div>

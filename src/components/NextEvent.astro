@@ -2,11 +2,12 @@
 import NextEventInfo from "./NextEventInfo.astro";
 ---
 
-<div
-  class="flex items-center bg-accent px-4 py-2 lg:px-6 lg:py-3 text-[10px] lg:text-xs rounded-full z-[888] fest:text-season-ink"
->
-  <span class="font-bold">Próximo evento:</span>
-  <NextEventInfo server:defer>
-    <span slot="fallback" class="ml-2">No hay evento programado</span>
-  </NextEventInfo>
-</div>
+<NextEventInfo server:defer>
+  <a
+    slot="fallback"
+    href="/eventos"
+    class="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-bold text-black fest:text-season-ink"
+  >
+    Ver la agenda
+  </a>
+</NextEventInfo>

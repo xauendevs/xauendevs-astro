@@ -3,85 +3,51 @@ import SeasonFlyer from "@/components/season/SeasonFlyer.astro";
 
 // Mismo contenido, marcado y distribución con o sin temporada. Con una temporada activa solo cambian
 // los colores (clases `fest:`), la foto (--season-community-photo) y un murciélago/copo decorativo.
+// Son tres párrafos cortos: se leen abiertos, sin acordeón.
 const items = [
   {
     title: "¿Qué somos?",
-    text: "XauenDevs nace en 2017 como comunidad de desarrolladores de software en la provincia de Jaén. Nuestro principal objetivo es difundir conocimiento sobre desarrollo y tecnología en general.",
+    text: "XauenDevs nace en 2017 como comunidad de desarrolladores de software en la provincia de Jaén. Nuestro principal objetivo es difundir conocimiento sobre desarrollo y tecnología en general.",
   },
   {
-    title: "¿Qué queremos?",
-    text: "Entre otras tantas actividades, nuestra principal labor se basa en organizar charlas mensuales con diferentes temáticas y profesionales de distintos campos, siempre relacionados con la tecnología.",
+    title: "¿Qué hacemos?",
+    text: "Organizamos charlas mensuales, las Pivo&Code, con diferentes temáticas y profesionales de distintos campos, siempre relacionados con la tecnología.",
   },
   {
     title: "¿Quiénes somos?",
-    text: "Actualmente, XauenDevs los conformamos 4 personas: Alberto Tejero, Alejandro, Adrián y Alberto. Todos somos muy apasionados por el desarrollo y la tecnologí y tratamos de transmitirlo en cada actividad que realizamos.",
+    text: "XauenDevs lo formamos 4 personas: Alberto Tejero, Alejandro, Adrián y Alberto. Nos apasionan el desarrollo y la tecnología y tratamos de transmitirlo en cada actividad que hacemos.",
   },
 ];
 ---
 
-<section class="grid grid-cols-1 md:grid-cols-[40%_60%]" id="own-mission">
-  <div
-    class="relative bg-black/5 rounded-3xl p-7 lg:p-10 md:mr-8 mb-8 md:mb-0 fest:bg-white/[0.04] fest:ring-1 fest:ring-season-alt/50 fest:shadow-[0_0_24px_rgb(var(--season-alt-rgb)_/_0.15)]"
-  >
-    <h2 class="font-bold text-2xl">Nuestra misión</h2>
+<section
+  class="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-8"
+  id="own-mission"
+  aria-labelledby="mission-title"
+>
+  <div class="relative rounded-3xl bg-black/5 p-7 lg:p-10 fest:bg-white/[0.04] fest:ring-1 fest:ring-season-alt/50">
+    <h2 id="mission-title" class="text-3xl font-black tracking-tight">Nuestra misión</h2>
     <SeasonFlyer
       class="bat-float pointer-events-none absolute right-6 top-6 hidden h-8 w-16 text-white/10 sm:block lg:right-10 lg:top-10"
     />
-    <section class="mt-4">
+    <div class="mt-6 flex flex-col gap-6">
       {
-        items.map(({ title, text }, index) => (
-          <>
-            {index > 0 && <hr />}
-            <details name="about-us" open={index === 0}>
-              <summary class="text-xl fest:transition-colors fest:hover:text-season">{title}</summary>
-              <p class="mt-4 fest:text-white/75">{text}</p>
-            </details>
-          </>
+        items.map(({ title, text }) => (
+          <div>
+            <h3 class="text-lg font-bold fest:text-season">{title}</h3>
+            <p class="mt-1.5 text-base leading-relaxed text-black/80 fest:text-white/80">{text}</p>
+          </div>
         ))
       }
-    </section>
+    </div>
   </div>
-  <div class="max-h-[400px] min-h-[400px] overflow-hidden relative rounded-3xl fest:ring-1 fest:ring-season/50 fest:shadow-[0_0_30px_rgb(var(--season-rgb)_/_0.25)]">
+  <div class="relative min-h-[280px] overflow-hidden rounded-3xl fest:ring-1 fest:ring-season/50">
     <div
-      id="background-image"
-      class="absolute left-0 top-0 bottom-0 right-0 w-full h-full opacity-90 bg-blend-luminosity bg-center bg-cover bg-no-repeat z-10 saturate-50 brightness-75 fest:opacity-100 fest:saturate-100 fest:brightness-100"
+      role="img"
+      aria-label="La sala llena durante una Pivo&Code en Cuatro Gatos Coworking"
+      class="absolute inset-0 bg-cover bg-center bg-no-repeat"
       style="background-image:var(--season-community-photo, url('/img/home.webp'))"
     >
     </div>
   </div>
 </section>
-
-<style>
-  summary {
-    display: flex;
-  }
-  :root {
-    interpolate-size: allow-keywords;
-  }
-  details {
-    overflow: clip;
-    cursor: pointer;
-  }
-  details::details-content {
-    height: 0;
-    transition:
-      height 0.3s,
-      content-visibility 0.3s allow-discrete;
-  }
-
-  details[open]::details-content {
-    height: auto;
-  }
-
-  hr {
-    display: block;
-    height: 2px;
-    border: 0;
-    border-top: 1px solid #003d40;
-    margin: 1em 0;
-    padding: 0;
-  }
-  :global([data-festive]) hr {
-    border-top-color: rgb(var(--season-rgb) / 0.35);
-  }
-</style>
