@@ -183,6 +183,59 @@ const socialImage = new URL(image, siteOrigin).href;
     body::after { animation: none; }
   }
 
+  .halloween-spider {
+    position: fixed;
+    z-index: 51;
+    top: 0;
+    left: clamp(12px, 5vw, 70px);
+    font-size: 24px;
+    pointer-events: none;
+    transform-origin: top center;
+    animation: halloween-spider-drop 8s ease-in-out infinite;
+  }
+
+  .halloween-spider::before {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 48px;
+    left: 50%;
+    bottom: 100%;
+    background: #aaa;
+    transform: translateY(0);
+  }
+
+  .halloween-ghost {
+    position: fixed;
+    z-index: 51;
+    right: clamp(18px, 7vw, 90px);
+    bottom: 18%;
+    font-size: clamp(24px, 4vw, 42px);
+    opacity: .45;
+    pointer-events: none;
+    filter: grayscale(1);
+    animation: halloween-ghost-float 9s ease-in-out infinite;
+  }
+
+  @keyframes halloween-spider-drop {
+    0%, 100% { transform: translateY(-8px) rotate(-5deg); }
+    50% { transform: translateY(22px) rotate(6deg); }
+  }
+
+  @keyframes halloween-ghost-float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-18px, -22px); }
+  }
+
+  @media (max-width: 640px) {
+    .halloween-spider { left: 8px; font-size: 20px; }
+    .halloween-ghost { bottom: 24%; right: 12px; font-size: 26px; opacity: .3; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .halloween-spider, .halloween-ghost { animation: none; }
+  }
+
   /* Noche de Halloween: paleta monocroma con sangre como único acento. */
   html {
     color-scheme: dark;
