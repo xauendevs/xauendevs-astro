@@ -375,6 +375,53 @@ const socialImage = new URL(image, siteOrigin).href;
       backdrop-filter: blur(10px);
     }
   }
+    <div class="halloween-web" aria-hidden="true"></div>
+
+  /* Halloween treatment for real UI controls and content cards. */
+  body main a[class*="bg-accent"],
+  body main button[class*="bg-accent"] {
+    box-shadow: 0 4px 0 #8d3518, 0 8px 22px rgba(230, 91, 30, .12);
+    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  }
+  body main a[class*="bg-accent"]:hover,
+  body main button[class*="bg-accent"]:hover {
+    transform: translateY(-3px);
+    filter: saturate(1.15) brightness(1.04);
+    box-shadow: 0 7px 0 #8d3518, 0 12px 30px rgba(230, 91, 30, .22);
+  }
+
+  body main a[class*="bg-black"],
+  body main button[class*="bg-black"],
+  body main a[class*="rounded-full"][class*="border"] {
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  }
+  body main a[class*="bg-black"]:hover,
+  body main button[class*="bg-black"]:hover,
+  body main a[class*="rounded-full"][class*="border"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .35), 0 0 0 1px rgba(225, 94, 43, .28);
+  }
+
+  /* Fine web filigree in the top-right, intentionally restrained. */
+  body > .halloween-web {
+    position: fixed;
+    z-index: 39;
+    top: -58px;
+    right: -58px;
+    width: 210px;
+    height: 210px;
+    pointer-events: none;
+    opacity: .23;
+    background:
+      repeating-radial-gradient(circle at 100% 0%, transparent 0 17px, rgba(218, 190, 173, .5) 18px 19px, transparent 20px 28px),
+      conic-gradient(from 8deg at 100% 0%, transparent 0deg 8deg, rgba(218, 190, 173, .45) 8.3deg 8.8deg, transparent 9deg 21deg, rgba(218, 190, 173, .45) 21.3deg 21.8deg, transparent 22deg 35deg, rgba(218, 190, 173, .45) 35.3deg 35.8deg, transparent 36deg);
+    mask-image: radial-gradient(circle at 100% 0%, #000 0%, transparent 78%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body main a, body main button { transition: none !important; }
+  }
+
 </style>
 <SpeedInsights />
 <script>
