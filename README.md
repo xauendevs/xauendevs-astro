@@ -114,16 +114,21 @@ Por favor, consulta nuestra [guía de contribución](https://github.com/xauendev
 
 ## Temas estacionales (Halloween, Navidad…)
 
-La "temporada" se cambia **en caliente, sin desplegar**, con [Vercel Edge Config](https://vercel.com/docs/edge-config):
+La "temporada" se cambia **en caliente, sin desplegar**, con Vercel *Global Config* (antes Edge Config):
 
-1. Vercel → *Storage* → crear un **Edge Config** y conectarlo al proyecto (Vercel añade solo la variable `GLOBAL_CONFIG`).
-2. En el Edge Config, añadir las claves:
-   - `site_theme`: `"halloween"` o `"default"`.
-   - `hack_intro`: `true` / `false` (la broma del hackeo; solo se ve con `halloween`).
-3. Guardar: el cambio se ve en la web en ≤ 1 min (caché de la CDN).
+1. Vercel → *Storage* → crear un **Global Config** y conectarlo al proyecto (Vercel añade la variable `GLOBAL_CONFIG`).
+2. Claves del store:
+   - `site_theme`: `"halloween"`. **Cualquier otro valor (o ninguno, o `"default"`) deja la web exactamente como estaba antes de la temporada.**
+   - `hack_intro`: `true` / `false` (broma del hackeo; solo se ve con `halloween`).
+3. Guardar: el cambio se ve en ≤ 1 min (caché de la CDN, `s-maxage=60`).
 
-Alternativa sin Edge Config: variables `SITE_THEME` y `SITE_HACK_INTRO`. **Ojo:** Vercel solo aplica las variables de entorno a despliegues nuevos, así que requieren pulsar *Redeploy* (sin cambiar código).
+Alternativa sin Global Config: variables `SITE_THEME` y `SITE_HACK_INTRO`. **Ojo:** Vercel solo aplica las variables de entorno a despliegues nuevos, así que requieren *Redeploy*.
 
-Lógica en `src/lib/site-theme.ts` (Edge Config → env → `default`). Para una temporada nueva, añadirla a `THEMES` y colgar de `season` (en `Layout.astro`, `data-season` del `<body>`) sus decoraciones.
+### Cómo está montado
+- `src/lib/site-theme.ts` resuelve la temporada (Global Config → env → `default`); `src/lib/season.ts` la memoiza por petición.
+- Componentes grandes con dos versiones y un selector: `X.astro` (selector) → `X.default.astro` (diseño original) / `X.halloween.astro` (`Navbar`, `Footer`, `Header`, `AboutUs`, `views/rsvp/*`).
+- Cambios pequeños de estilo: variante de Tailwind `hw:` (solo aplica con `<body data-theme="halloween">`), p. ej. `bg-white hw:bg-white/[0.04]`.
+- Las páginas dependientes de la temporada son SSR (`prerender = false`) para decidirla en cada petición.
+- Para una temporada nueva: añadirla a `THEMES` y crear sus variantes. Para **retirar Halloween del todo**: borrar los `*.halloween.astro`, `HackIntro`, `PageHeader`, `RealCommunity` y las clases `hw:`.
 
-Probar la broma (también en producción, aunque esté apagada): `/?hack=1` · saltarla: `/?nohack`.
+Broma de entrada: `/?hack=1` la fuerza (también con la temporada apagada) · `/?nohack` la salta.

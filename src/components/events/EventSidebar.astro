@@ -41,7 +41,7 @@ const {
 } = Astro.props;
 ---
 
-<aside class="flex h-fit min-w-0 flex-col gap-4 rounded-3xl bg-accent p-4 text-black sm:rounded-[2rem] sm:p-6">
+<aside class="flex h-fit min-w-0 flex-col gap-4 rounded-3xl bg-accent p-4 hw:text-black sm:rounded-[2rem] sm:p-6">
   <span class="text-xs font-bold uppercase tracking-[0.16em]">
     {isExternal ? "Evento externo" : "XauenDevs"}
   </span>
@@ -131,7 +131,7 @@ const {
           referrerpolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
-      <a href={mapsUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm font-bold text-black transition-colors hover:bg-white/30">
+      <a href={mapsUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm font-bold text-primary hw:text-black transition-colors hover:bg-white/30">
         <span>Cómo llegar</span>
         <span aria-hidden="true">↗</span>
       </a>

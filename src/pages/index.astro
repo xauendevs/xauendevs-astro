@@ -2,25 +2,29 @@
 import Header from "@/sections/Header.astro";
 import Layout from "@/layouts/Layout.astro";
 import AboutUs from "@/sections/AboutUs.astro";
-import RealCommunity from "@/sections/RealCommunity.astro";
 import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
+import RealCommunity from "@/sections/RealCommunity.astro";
+import { isHalloweenSeason } from "@/lib/season";
 
-// Sin prerender: el tema estacional se decide en cada petición (ver src/lib/site-theme.ts).
+// Sin prerender: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
 export const prerender = false;
+const halloween = await isHalloweenSeason(Astro);
 ---
 
 <Layout
   title="XauenDevs 🫒 Desarrollo en Jaén"
   description="Comunidad de desarrollo y tecnología de la provincia de Jaén. ¡Únete!"
 >
-  <div class="flex flex-col gap-8">
+  <main class="flex flex-col gap-8">
     <Header />
     <AboutUs />
-    <RealCommunity />
+    {halloween && <RealCommunity />}
     <Pivos />
     <Community />
     <Partners />
-  </div>
+  </main>
 </Layout>
+
+<style></style>

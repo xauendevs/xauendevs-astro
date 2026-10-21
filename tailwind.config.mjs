@@ -8,7 +8,6 @@ export default {
         accent: "var(--color-accent)",
         "accent-text": "var(--color-accent-text)",
         dark: "var(--color-dark)",
-        primary: "rgb(var(--color-primary-rgb) / <alpha-value>)",
         night: "#08080b",
         pumpkin: "#ff8a1f",
       },
@@ -20,6 +19,10 @@ export default {
   },
   plugins: [
     animations,
+    // Variante del tema Halloween: `hw:bg-night` solo se aplica con <body data-theme="halloween">.
+    function ({ addVariant }) {
+      addVariant("hw", '[data-theme="halloween"] &');
+    },
     function ({ addVariant }) {
       // Agregamos la variante group-active
       addVariant("group-active", ({ modifySelectors }) => {

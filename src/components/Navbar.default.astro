@@ -1,0 +1,131 @@
+---
+import HamburgerButton from "./HamburgerButton.astro";
+import Logo from "./Logo.astro";
+import NextEvent from "./NextEvent.astro";
+---
+
+<header class="relative z-20 h-auto max-w-[100vw] bg-white/85 p-4 sm:p-6 lg:p-10">
+  <nav class="hidden justify-between text-nowrap lg:flex">
+    <div class="flex items-center gap-10">
+      <a href="/" aria-label="XauenDevs, inicio" class="shrink-0">
+        <Logo
+          width="230"
+          class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0"
+        />
+      </a>
+      <div class="flex items-center gap-5">
+        <a href="/#own-mission">Nuestra misión</a>
+        <a data-astro-reload href="/eventos?tipo=xauen">Charlas</a>
+        <a href="/eventos">Eventos</a>
+      </div>
+    </div>
+    <div>
+      <NextEvent />
+    </div>
+  </nav>
+
+  <nav class="flex items-center justify-between lg:hidden" aria-label="Navegación principal">
+    <a href="/" aria-label="XauenDevs, ir a inicio" class="block shrink-0">
+      <Logo
+        width="190"
+        class="text-primary transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
+      />
+    </a>
+    <HamburgerButton class:list="block lg:hidden" id="menuButton" />
+    <div
+      id="menuMobileContent"
+      aria-hidden="true"
+      class="fixed inset-0 z-[888] flex h-[100dvh] w-screen flex-col items-center overflow-y-auto overflow-x-hidden px-5 pb-10 lg:hidden"
+    >
+      <div class="absolute inset-0 bg-black/90" aria-hidden="true"></div>
+      <div class="relative z-[888] flex w-full items-center justify-between py-6 text-white">
+        <a href="/" aria-label="XauenDevs, ir a inicio" class="block shrink-0">
+          <Logo
+            width="190"
+            class="text-accent transition-colors duration-300 hover:text-accent motion-reduce:duration-0 sm:w-[230px]"
+          />
+        </a>
+        <HamburgerButton id="innerMenuButton" />
+      </div>
+      <div class="relative z-[888] mb-12 flex flex-col items-center gap-5 text-center text-2xl uppercase text-white">
+        <a class="transition duration-300 hover:text-accent" href="/#own-mission">Nuestra misión</a>
+        <a class="transition duration-300 hover:text-accent" data-astro-reload href="/eventos?tipo=xauen">Charlas</a>
+        <a class="transition duration-300 hover:text-accent" href="/eventos">Eventos</a>
+      </div>
+      <hr class="relative z-[888] mb-12 h-px w-1/2 border-0 bg-white" />
+      <div class="relative z-[888]">
+        <NextEvent />
+      </div>
+    </div>
+  </nav>
+</header>
+
+<style>
+  #menuMobileContent {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    overscroll-behavior: contain;
+  }
+
+  #menuMobileContent.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #menuMobileContent {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Use document-level delegation: Astro's ClientRouter swaps page DOM without
+  // re-running already-loaded scripts, so listeners attached to old buttons go stale.
+  function setMenuOpen(isOpen: boolean) {
+    const menu = document.getElementById("menuMobileContent");
+    if (!menu) return;
+
+    menu.classList.toggle("open", isOpen);
+    menu.setAttribute("aria-hidden", String(!isOpen));
+    document.body.style.overflow = isOpen ? "hidden" : "";
+
+    document.querySelectorAll<HTMLElement>(".hamburgerButton").forEach((button) => {
+      button.classList.toggle("open", isOpen);
+      button.setAttribute("aria-expanded", String(isOpen));
+      button.setAttribute(
+        "aria-label",
+        isOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"
+      );
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const button = target.closest<HTMLElement>(".hamburgerButton");
+    if (button) {
+      event.preventDefault();
+      const menu = document.getElementById("menuMobileContent");
+      setMenuOpen(!menu?.classList.contains("open"));
+      return;
+    }
+
+    if (target.closest("#menuMobileContent a")) {
+      setMenuOpen(false);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenuOpen(false);
+  });
+
+  // Reset after every Astro client-side navigation, when the new DOM is in place.
+  document.addEventListener("astro:page-load", () => setMenuOpen(false));
+  document.addEventListener("astro:after-swap", () => setMenuOpen(false));
+  setMenuOpen(false);
+</script>

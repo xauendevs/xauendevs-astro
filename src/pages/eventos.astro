@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import PageHeader from "@/components/PageHeader.astro";
+import { isHalloweenSeason } from "@/lib/season";
 import PivoCard from "@/components/PivoCard.astro";
 import ExternalEventCard from "@/components/ExternalEventCard.astro";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
@@ -9,7 +10,9 @@ import { slugify } from "@/lib/event-slug";
 import { getExternalEventsStrapi } from "@/lib/get-info-external-events";
 import type { Pivo } from "@/types/Pivo";
 
-export const prerender = true;
+// SSR: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
+export const prerender = false;
+const halloween = await isHalloweenSeason(Astro);
 
 const events = (await getPivosStrapi()) ?? [];
 const externalEvents = (await getExternalEventsStrapi()) ?? [];
@@ -48,44 +51,78 @@ const availableTags = Array.from(
   description="Agenda de eventos de tecnología y desarrollo en Jaén. Charlas, meetups y actividades de la comunidad."
 >
   <main class="flex min-w-0 flex-col gap-8 py-2 sm:gap-10 md:gap-14">
-    <PageHeader eyebrow="Jaén Tech Events" title="Tecnología en Jaén." dim="Todo en un mismo sitio.">
-      {totalUpcoming > 0 && (
-        <span slot="badge" class="rounded-full bg-accent px-3 py-1 text-xs font-bold text-black">
-          {totalUpcoming} próximos
-        </span>
-      )}
-      Charlas, meetups, talleres y eventos para descubrir qué está pasando en la comunidad tecnológica de Jaén.
-    </PageHeader>
+    {
+      halloween ? (
+        <PageHeader eyebrow="Jaén Tech Events" title="Tecnología en Jaén." dim="Todo en un mismo sitio.">
+          {totalUpcoming > 0 && (
+            <span slot="badge" class="rounded-full bg-accent px-3 py-1 text-xs font-bold text-black">
+              {totalUpcoming} próximos
+            </span>
+          )}
+          Charlas, meetups, talleres y eventos para descubrir qué está pasando en la comunidad tecnológica de Jaén.
+        </PageHeader>
+      ) : (
+    <header class="relative min-w-0 overflow-hidden rounded-3xl border border-primary/10 hw:border-white/10 bg-primary/[0.025] hw:bg-white/[0.025] px-5 py-7 sm:rounded-[2.5rem] sm:px-7 sm:py-10 md:px-12 md:py-14">
+      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/20 blur-3xl"></div>
+
+      <div class="relative flex flex-col gap-5">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-accent-text text-sm font-bold uppercase tracking-[0.16em]">
+            JAÉN TECH EVENTS
+          </span>
+          {totalUpcoming > 0 && (
+            <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold">
+              {totalUpcoming} próximos
+            </span>
+          )}
+        </div>
+
+        <h1 class="max-w-4xl break-words text-3xl font-black tracking-tight sm:text-4xl md:text-6xl">
+          Tecnología en Jaén.
+          <span class="text-primary/35 hw:text-white/35">Todo en un mismo sitio.</span>
+        </h1>
+
+        <p class="max-w-2xl text-base leading-relaxed text-primary/65 hw:text-white/65 sm:text-lg md:text-xl">
+          Charlas, meetups, talleres y eventos para descubrir qué está pasando
+          en la comunidad tecnológica de Jaén.
+        </p>
+      </div>
+    </header>
+      )
+    }
 
     <nav aria-label="Filtrar eventos" class="flex flex-col gap-5">
       <div class="flex flex-col gap-2">
-        <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">Tipo</span>
+        <span class="text-primary/40 hw:text-white/40 text-xs font-bold uppercase tracking-[0.16em]">Tipo</span>
         <div class="flex flex-wrap items-center gap-2">
           <button type="button" data-type-filter="xauen" aria-pressed="false" class="filter-chip">XauenDevs</button>
           <button type="button" data-type-filter="external" aria-pressed="false" class="filter-chip">Eventos externos</button>
         </div>
       </div>
       <div class="flex flex-col gap-2">
-        <span class="text-primary/40 text-xs font-bold uppercase tracking-[0.16em]">Tema</span>
+        <span class="text-primary/40 hw:text-white/40 text-xs font-bold uppercase tracking-[0.16em]">Tema</span>
         <div class="flex flex-wrap items-center gap-2">
           {availableTags.map((tag) => (
             <button type="button" data-tag-filter={tag} aria-pressed="false" class="filter-chip">{tag}</button>
           ))}
         </div>
-        <p class="text-xs text-primary/45">Mostrar eventos de cualquiera de los temas seleccionados.</p>
+        <p class="text-xs text-primary/45 hw:text-white/45">Mostrar eventos de cualquiera de los temas seleccionados.</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <button type="button" data-clear-filters class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 underline underline-offset-4 hover:text-primary">Quitar filtros</button>
-        <p data-filter-status class="text-xs font-semibold text-primary/45" role="status" aria-live="polite"><span data-filter-result>0 próximos</span></p>
+        <button type="button" data-clear-filters class="hidden rounded-full px-3 py-2 text-xs font-semibold text-primary/45 hw:text-white/45 underline underline-offset-4 hover:text-primary hw:hover:text-white">Quitar filtros</button>
+        <p data-filter-status class="text-xs font-semibold text-primary/45 hw:text-white/45" role="status" aria-live="polite"><span data-filter-result>0 próximos</span></p>
       </div>
-      <div data-filter-empty class="hidden rounded-2xl border border-primary/10 bg-primary/[0.025] p-5">
+      <div data-filter-empty class="hidden rounded-2xl border border-primary/10 hw:border-white/10 bg-primary/[0.025] hw:bg-white/[0.025] p-5">
         <p class="font-semibold">No hay eventos que coincidan con estos filtros.</p>
-        <button type="button" data-clear-filters-empty class="mt-2 font-semibold text-primary underline decoration-accent decoration-2 underline-offset-4">Quitar filtros</button>
+        <button type="button" data-clear-filters-empty class="mt-2 font-semibold text-primary hw:text-white underline decoration-accent decoration-2 underline-offset-4">Quitar filtros</button>
       </div>
       <style>
-        .filter-chip { border-radius:9999px; border:1px solid rgb(var(--color-primary-rgb) / .15); background:rgb(var(--color-primary-rgb) / .04); padding:.5rem 1rem; font-size:.875rem; font-weight:600; color:rgb(var(--color-primary-rgb) / .75); transition:border-color 150ms,background-color 150ms,color 150ms; }
-        .filter-chip:hover { border-color:rgba(var(--color-accent-rgb), .6); background:rgba(var(--color-accent-rgb), .18); color:rgb(var(--color-primary-rgb)); }
-        .filter-chip[aria-pressed="true"] { border-color:var(--color-accent); background:var(--color-accent); color:#000; }
+        .filter-chip { border-radius:9999px; border:1px solid rgb(0 0 0 / .1); background:rgb(0 0 0 / .03); padding:.5rem 1rem; font-size:.875rem; font-weight:600; color:rgb(0 0 0 / .65); transition:border-color 150ms,background-color 150ms,color 150ms; }
+        .filter-chip:hover { border-color:rgb(246 183 3 / .5); background:rgb(246 183 3 / .2); color:#000; }
+        :global([data-theme="halloween"]) .filter-chip { border-color:rgb(255 255 255 / .15); background:rgb(255 255 255 / .04); color:rgb(255 255 255 / .75); }
+        :global([data-theme="halloween"]) .filter-chip:hover { border-color:rgb(255 138 31 / .6); background:rgb(255 138 31 / .18); color:#fff; }
+        :global([data-theme="halloween"]) .filter-chip[aria-pressed="true"] { border-color:#ff8a1f; background:#ff8a1f; color:#000; }
+        .filter-chip[aria-pressed="true"] { border-color:rgb(246 183 3); background:rgb(246 183 3); color:#000; }
       </style>
     </nav>
     {
@@ -134,7 +171,7 @@ const availableTags = Array.from(
                 También está pasando
               </h2>
             </div>
-            <p class="max-w-md text-sm leading-relaxed text-primary/55 md:text-right">
+            <p class="max-w-md text-sm leading-relaxed text-primary/55 hw:text-white/55 md:text-right">
               Eventos de otras comunidades, empresas y organizaciones que
               pueden interesarte.
             </p>
@@ -151,7 +188,7 @@ const availableTags = Array.from(
       )
     }
 
-    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 text-black py-6 sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
+    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 hw:text-black sm:rounded-[2rem] sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
       <div class="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-white/30 blur-3xl"></div>
       <div class="relative">
         <span class="text-xs font-bold uppercase tracking-[0.16em]">
@@ -160,7 +197,7 @@ const availableTags = Array.from(
         <h2 class="mt-2 text-2xl font-black md:text-3xl">
           Ayúdanos a mantener la agenda al día.
         </h2>
-        <p class="mt-2 max-w-2xl text-sm text-black/70">
+        <p class="mt-2 max-w-2xl text-sm text-primary/65 hw:text-black/70">
           Si conoces un evento relacionado con tecnología en Jaén, compártelo
           con la comunidad y lo revisamos.
         </p>
@@ -175,15 +212,15 @@ const availableTags = Array.from(
 
     {
       pastEvents.length > 0 && (
-        <section data-event-section class="border-t border-primary/10 pt-12">
+        <section data-event-section class="border-t border-primary/10 hw:border-white/10 pt-12">
           <div class="mb-6 flex flex-col gap-1">
-            <span class="text-primary/35 text-xs font-bold uppercase tracking-[0.16em]">
+            <span class="text-primary/35 hw:text-white/35 text-xs font-bold uppercase tracking-[0.16em]">
               Archivo
             </span>
             <h2 class="text-2xl font-bold">Eventos anteriores</h2>
           </div>
 
-          <div class="overflow-hidden rounded-3xl border border-primary/10">
+          <div class="overflow-hidden rounded-3xl border border-primary/10 hw:border-white/10">
             {pastEvents.map(({ title, speakers, place, date, tags }, index) => (
               <a
                 href={`/eventos/${slugify(title)}`}
@@ -191,8 +228,8 @@ const availableTags = Array.from(
                 data-event-type="xauen"
                 data-event-organizer="XauenDevs"
                 class:list={[
-                  "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] md:flex-row md:items-center md:px-6",
-                  index > 0 && "border-t border-primary/10",
+                  "group flex flex-col gap-4 px-5 py-5 transition-colors hover:bg-primary/[0.025] hw:hover:bg-white/[0.025] md:flex-row md:items-center md:px-6",
+                  index > 0 && "border-t border-primary/10 hw:border-white/10",
                 ]}
               >
                 <time class="flex shrink-0 flex-col md:w-28" datetime={date.toISOString()}>
@@ -202,28 +239,28 @@ const availableTags = Array.from(
                       month: "short",
                     })}
                   </span>
-                  <span class="text-xs text-primary/40">{date.getFullYear()}</span>
+                  <span class="text-xs text-primary/40 hw:text-white/40">{date.getFullYear()}</span>
                 </time>
 
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70">
+                    <h3 class="truncate font-semibold transition-colors group-hover:text-primary/70 hw:group-hover:text-white/70">
                       {title}
                     </h3>
                     {tags.map((tag) => (
-                      <span class="rounded-full bg-primary/[0.05] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary/45">
+                      <span class="rounded-full bg-primary/[0.05] hw:bg-white/[0.05] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary/45 hw:text-white/45">
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <p class="mt-1 truncate text-sm text-primary/50">
+                  <p class="mt-1 truncate text-sm text-primary/50 hw:text-white/50">
                     {speakers?.map((speaker) => speaker.name).join(" · ")}
                     {place && speakers?.length ? " · " : ""}
                     {place}
                   </p>
                 </div>
 
-                <span class="hidden text-primary/25 transition-transform group-hover:translate-x-1 md:block">
+                <span class="hidden text-primary/25 hw:text-white/25 transition-transform group-hover:translate-x-1 md:block">
                   ↗
                 </span>
               </a>
