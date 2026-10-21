@@ -30,3 +30,5 @@ xauendevs.ducklet
 pnpm-lock.yaml
 
 api.rest
+# Capturas y notas de la revisión de diseño (taste skill)
+.taste-skill/
