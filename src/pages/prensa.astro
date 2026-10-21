@@ -1,0 +1,57 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
+import PressCard from "@/components/PressCard.astro";
+import { getPress } from "@/lib/press";
+
+// SSR: la temporada se decide en cada petición. Las noticias se leen de src/data/press.ts y sus
+// metadatos se guardan en caché (ver src/lib/press.ts).
+export const prerender = false;
+
+const items = await getPress();
+const mailto = `mailto:hola@xauendevs.io?subject=${encodeURIComponent("Noticia sobre XauenDevs")}`;
+---
+
+<Layout title="Prensa · XauenDevs" description="XauenDevs y las Pivo&Code en los medios: noticias, entrevistas y reportajes.">
+  <main class="flex min-w-0 flex-col gap-8 py-2 sm:gap-10 md:gap-14">
+    <header class="relative min-w-0 overflow-hidden rounded-3xl bg-black/[0.04] px-5 py-7 fest:bg-white/[0.04] sm:px-7 sm:py-10 md:px-12 md:py-14">
+      <SeasonOverlay />
+      <div class="relative flex flex-col gap-5">
+        <h1 class="text-4xl font-black tracking-tight md:text-6xl">Prensa</h1>
+        <p class="max-w-2xl text-lg leading-relaxed text-black/80 fest:text-white/80 md:text-xl">
+          Lo que se ha publicado sobre XauenDevs y las Pivo&Code: noticias, entrevistas y reportajes.
+          {items.length > 0 && <strong class="font-bold"> {items.length === 1 ? "1 aparición." : `${items.length} apariciones.`}</strong>}
+        </p>
+      </div>
+    </header>
+
+    {
+      items.length > 0 ? (
+        <section aria-label="Noticias" class="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {items.map((item) => (
+            <PressCard item={item} />
+          ))}
+        </section>
+      ) : (
+        <p class="rounded-3xl bg-black/[0.04] p-6 text-lg fest:bg-white/[0.04]">
+          Todavía no hemos recopilado ninguna noticia. En cuanto salgamos en algún medio, la verás aquí.
+        </p>
+      )
+    }
+
+    <section class="relative min-w-0 overflow-hidden rounded-3xl bg-accent px-5 py-6 text-black fest:text-season-ink sm:px-7 sm:py-8 md:flex md:items-center md:justify-between md:gap-10 md:px-10">
+      <div>
+        <h2 class="text-2xl font-black md:text-3xl">¿Has visto una noticia que falta?</h2>
+        <p class="mt-2 max-w-2xl text-base text-black/80 fest:text-season-ink/80">
+          Mándanos el enlace y la añadimos. Si eres periodista y quieres hablar con nosotros, escríbenos también.
+        </p>
+      </div>
+      <a
+        href={mailto}
+        class="mt-6 inline-flex min-h-12 shrink-0 items-center rounded-full bg-black px-6 py-3 font-bold text-white transition-transform duration-200 hover:-translate-y-0.5 md:mt-0"
+      >
+        hola@xauendevs.io
+      </a>
+    </section>
+  </main>
+</Layout>
