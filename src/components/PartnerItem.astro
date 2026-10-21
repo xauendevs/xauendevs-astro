@@ -10,6 +10,6 @@ const { name, logo, url } = Astro.props;
 const { STRAPI_HOST } = import.meta.env;
 ---
 
-<a href={url} class="h-full">
+<a href={url} class="h-full fest:rounded-xl fest:bg-white">
   <img src={`${STRAPI_HOST}${logo}`} alt={`Logo de ${name}`} class="h-full" />
 </a>

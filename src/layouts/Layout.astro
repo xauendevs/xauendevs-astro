@@ -3,6 +3,10 @@ import Header from "@/components/Navbar.astro";
 import Footer from "@/sections/Footer.astro";
 import ClientRouter from "astro/components/ClientRouter.astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
+import HackIntro from "@/components/HackIntro.astro";
+import { getHackIntroEnabled } from "@/lib/site-theme";
+import { getSeason } from "@/lib/season";
+import "@/styles/seasons.css";
 
 interface Props {
   title: string;
@@ -17,6 +21,15 @@ const {
   image = "/img/og-xauendevs.svg",
   imageType,
 } = Astro.props;
+// Temporada activa (Edge Config / env, ver src/lib/site-theme.ts). Sin temporada (o con un valor
+// desconocido) la web se renderiza exactamente igual que antes.
+const season = await getSeason(Astro);
+// El tema puede cambiar sin desplegar: la CDN de Vercel lo refresca como mucho cada minuto.
+Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+// `?hack=1` fuerza la broma para probarla, aunque la temporada o `hack_intro` la tengan apagada.
+const forceHack = Astro.url.searchParams.get("hack") === "1";
+// Con `?hack=1` y sin temporada, la broma sale con los textos de Halloween.
+const showHackIntro = forceHack || (!!season && (await getHackIntroEnabled()));
 
 const siteOrigin = import.meta.env.PROD
   ? Astro.site
@@ -52,7 +65,8 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
   </head>
-  <body>
+  <body data-theme={season} data-festive={season ? "" : undefined} class:list={[season && "bg-night text-white"]}>
+    {showHackIntro && <HackIntro season={season ?? "halloween"} />}
     <Header />
     <main class="min-w-0 px-4 sm:px-6 md:px-10">
       <slot class="" />
@@ -76,6 +90,7 @@ const socialImage = new URL(image, siteOrigin).href;
 
     --color-twitch: #9146ff;
     --color-twitch-ice: #f0f0ff;
+
   }
 
   html {
@@ -106,6 +121,32 @@ const socialImage = new URL(image, siteOrigin).href;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+
+  /* Decoraciones del tema Halloween */
+  @keyframes bat-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(-3deg);
+    }
+    50% {
+      transform: translate3d(10px, -8px, 0) rotate(3deg);
+    }
+  }
+  @keyframes season-flicker {
+    from {
+      opacity: 0.82;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .bat-float {
+    animation: bat-float 6s ease-in-out infinite;
+  }
+  .season-flicker {
+    filter: drop-shadow(0 0 16px rgb(var(--season-rgb) / 0.8));
+    animation: season-flicker 2.8s ease-in-out infinite alternate;
   }
 
   #header-nav {

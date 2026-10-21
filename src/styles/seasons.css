@@ -1,0 +1,53 @@
+/* ───────── Temporadas ─────────
+   Con otra temporada (o ninguna) la web se ve igual que antes. Cada temporada solo define estos
+   tokens; los componentes usan `bg-season`, `bg-night`, `fest:` y las variables `--season-*`.
+   Para una temporada nueva: añadirla a `THEMES` (src/lib/site-theme.ts) y definir sus tokens aquí. */
+:root {
+  /* Valores neutros (solo se usan dentro de [data-festive], que siempre los redefine) */
+  --season-rgb: 246 183 3;
+  --night-rgb: 8 8 11;
+  --season-ink-rgb: 0 0 0;
+}
+
+/* Cualquier temporada: diseño oscuro con el acento de la temporada */
+[data-festive] {
+  --color-accent: rgb(var(--season-rgb));
+  --color-accent-text: rgb(var(--season-rgb));
+  --color-focus: rgb(var(--season-soft-rgb));
+  color-scheme: dark;
+}
+
+/* 🎃 Halloween: naranja calabaza + niebla morada */
+[data-theme="halloween"] {
+  --season-rgb: 255 138 31;
+  --season-rgb-c: 255, 138, 31;
+  --season-soft-rgb: 255 177 92; /* tono claro: foco, brasas, foco visible */
+  --season-hot: #ffa63d; /* final del degradado de los botones */
+  --season-ink-rgb: 0 0 0; /* texto sobre el color de la temporada */
+  --season-alt-rgb: 168 85 247; /* color secundario: morado */
+  --glow-a-rgb: 124 58 237; /* niebla / brillo */
+  --glow-b-rgb: 168 85 247;
+  --spark-rgb: 255 176 90; /* partículas */
+  --night-rgb: 8 8 11;
+  --season-overlay: url("/img/halloween-overlay.webp");
+  --season-hero-photo: url("/img/hero-halloween.webp");
+  --season-community-photo: url("/img/community-halloween.webp");
+}
+
+/* 🎄 Navidad: rojo, blanco y verde (nieve) sobre azul noche */
+[data-theme="navidad"] {
+  --season-rgb: 226 45 58;
+  --season-rgb-c: 226, 45, 58;
+  --season-soft-rgb: 255 150 158;
+  --season-hot: #ff5a68;
+  --season-ink-rgb: 255 255 255; /* sobre rojo se lee mejor el blanco */
+  --season-alt-rgb: 46 170 100; /* color secundario: verde abeto */
+  --color-accent-text: rgb(var(--season-soft-rgb)); /* el rojo puro sobre fondo oscuro se lee peor */
+  --glow-a-rgb: 22 130 84;
+  --glow-b-rgb: 200 40 55;
+  --spark-rgb: 255 255 255;
+  --night-rgb: 6 12 22;
+  --season-overlay: url("/img/navidad-overlay.webp");
+  --season-hero-photo: url("/img/hero-navidad.webp");
+  --season-community-photo: url("/img/community-navidad.webp");
+}

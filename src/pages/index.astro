@@ -6,7 +6,8 @@ import Partners from "@/sections/Partners.astro";
 import Pivos from "@/sections/Pivos.astro";
 import Community from "@/sections/Community.astro";
 
-export const prerender = true;
+// Sin prerender: la temporada se decide en cada petición (ver src/lib/site-theme.ts).
+export const prerender = false;
 ---
 
 <Layout

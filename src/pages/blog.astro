@@ -1,6 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-export const prerender = true;
+
+// SSR: la temporada (colores del Layout) se decide en cada petición (ver src/lib/site-theme.ts).
+export const prerender = false;
 ---
 
 <Layout

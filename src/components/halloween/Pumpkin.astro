@@ -1,0 +1,29 @@
+---
+// Calabaza con la cara iluminada. El brillo se controla con `--glow` desde fuera.
+---
+
+<svg
+  {...Astro.props}
+  viewBox="0 0 120 104"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <radialGradient id="pumpkin-body" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#ff9a2e"></stop>
+      <stop offset="0.7" stop-color="#e8590c"></stop>
+      <stop offset="1" stop-color="#9c3203"></stop>
+    </radialGradient>
+  </defs>
+  <path d="M56 18c0-8 4-13 11-15 0 5-2 9-5 13z" fill="#3d5a1a"></path>
+  <ellipse cx="32" cy="62" rx="26" ry="34" fill="url(#pumpkin-body)"></ellipse>
+  <ellipse cx="88" cy="62" rx="26" ry="34" fill="url(#pumpkin-body)"></ellipse>
+  <ellipse cx="60" cy="60" rx="34" ry="38" fill="url(#pumpkin-body)"></ellipse>
+  <path d="M60 22v76" stroke="#7a2802" stroke-opacity=".45" stroke-width="2"></path>
+  <g fill="#ffd45e">
+    <path d="M36 50l16 6-16 10z"></path>
+    <path d="M84 50l-16 6 16 10z"></path>
+    <path d="M60 64l-7 12h14z"></path>
+    <path d="M32 80c8 10 18 14 28 14s20-4 28-14c-6 3-12 4-18 1l-5 5-5-5-5 5-5-5c-6 3-12 2-18-1z"></path>
+  </g>
+</svg>

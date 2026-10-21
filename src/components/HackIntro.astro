@@ -1,0 +1,353 @@
+---
+/**
+ * Broma de temporada (Halloween, Navidad…): al entrar, la web "se hackea" con un terminal falso, salta una
+ * alerta y acaba revelando que era una broma. Es 100 % local: no hace peticiones ni usa cookies.
+ *
+ * - Sale una sola vez por sesión (sessionStorage).
+ * - Se salta con clic/toque, Esc, Enter o Espacio.
+ * - No se muestra con "reducir movimiento" ni a bots/buscadores (para que no indexen "hackeado").
+ * - Probarla: añade `?hack=1` a la URL. Saltarla siempre: `?nohack`.
+ * - Apagarla sin desplegar: Global Config `hack_intro = false`. Los textos de cada temporada están en
+ *   src/scripts/hack-intro.ts (COPY) y los colores salen de los tokens --season-* (src/styles/seasons.css).
+ */
+interface Props {
+  season: "halloween" | "navidad";
+}
+const { season } = Astro.props;
+---
+
+<!-- Se ejecuta nada más abrirse el <body> para que no se vea la web antes del "hackeo". -->
+<script is:inline define:vars={{ season }}>
+  (function () {
+    try {
+      var q = location.search;
+      if (/[?&]nohack(=|&|$)/.test(q)) return;
+      var force = /[?&]hack(=1)?(&|$)/.test(q);
+      if (!force) {
+        if (sessionStorage.getItem("xd-hack")) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|pagespeed|headless|preview/i.test(navigator.userAgent)) return;
+      }
+      var root = document.createElement("div");
+      root.id = "hack-intro";
+      root.setAttribute("role", "dialog");
+      root.setAttribute("aria-modal", "true");
+      root.setAttribute("aria-label", "Animación de temporada: una broma de hackeo ficticio");
+      root.setAttribute("data-theme", season); // aplica los colores de la temporada aunque el <body> no los tenga (?hack=1)
+      document.body.insertBefore(root, document.body.firstChild);
+      document.documentElement.setAttribute("data-hack", "on");
+      // Salvavidas: si el script de la animación no llega a cargar, no dejamos la web tapada.
+      setTimeout(function () {
+        if (root.dataset.run !== "1") {
+          root.remove();
+          document.documentElement.removeAttribute("data-hack");
+        }
+      }, 6000);
+    } catch (e) {}
+  })();
+</script>
+
+<script>
+  if (document.documentElement.dataset.hack === "on") {
+    // El código de la animación solo se descarga cuando va a usarse.
+    import("../scripts/hack-intro").then((module) => module.runHackIntro());
+  }
+</script>
+
+<style is:global>
+  html[data-hack="on"] {
+    overflow: hidden;
+  }
+
+  #hack-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    overflow: hidden;
+    background: #030504;
+    color: #3dff8f;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    transition: opacity 0.6s ease;
+  }
+  #hack-intro.is-leaving {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Líneas de monitor CRT + viñeta (estáticas, sin coste) */
+  #hack-intro::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0, rgba(0, 0, 0, 0.2) 1px, transparent 1px, transparent 3px),
+      radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  }
+  #hack-intro .hk-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Botón saltar */
+  #hack-intro .hk-skip {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 8;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 7px 14px;
+    color: rgba(255, 255, 255, 0.85);
+    font: 600 12px/1 system-ui, sans-serif;
+    letter-spacing: 0.04em;
+  }
+  #hack-intro .hk-skip:hover,
+  #hack-intro .hk-skip:focus-visible {
+    border-color: rgb(var(--season-rgb));
+    color: #fff;
+    outline: none;
+  }
+
+  /* Terminal */
+  #hack-intro .hk-term {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: min(920px, 100%);
+    max-height: calc(100dvh - 32px);
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(61, 255, 143, 0.35);
+    border-radius: 12px;
+    background: rgba(0, 14, 7, 0.86);
+    box-shadow: 0 0 70px rgba(61, 255, 143, 0.13);
+    transition: opacity 0.4s ease;
+  }
+  #hack-intro .hk-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-bottom: 1px solid rgba(61, 255, 143, 0.2);
+    padding: 10px 14px;
+    color: rgba(61, 255, 143, 0.6);
+    font-size: 12px;
+  }
+  #hack-intro .hk-titlebar i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff5f56;
+  }
+  #hack-intro .hk-titlebar i:nth-child(2) {
+    background: #ffbd2e;
+  }
+  #hack-intro .hk-titlebar i:nth-child(3) {
+    background: #27c93f;
+  }
+  #hack-intro .hk-titlebar span {
+    margin-left: 8px;
+  }
+  #hack-intro .hk-out {
+    min-height: 300px;
+    padding: 16px 18px 22px;
+    font-size: clamp(12px, 1.4vw + 7px, 16px);
+    line-height: 1.75;
+    text-shadow: 0 0 7px rgba(61, 255, 143, 0.5);
+    overflow: hidden;
+  }
+  #hack-intro .hk-line {
+    overflow-wrap: anywhere;
+  }
+  #hack-intro .hk-prompt {
+    color: #9dffcf;
+  }
+  #hack-intro .hk-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+  }
+  #hack-intro .hk-dots {
+    flex: 1;
+    min-width: 1em;
+    border-bottom: 2px dotted currentColor;
+    opacity: 0.35;
+    transform: translateY(-0.25em);
+  }
+  #hack-intro .hk-ok {
+    color: #b8ffdc;
+  }
+  #hack-intro .hk-warn {
+    color: #ff5252;
+    text-shadow: 0 0 8px rgba(255, 82, 82, 0.6);
+  }
+  #hack-intro .hk-meter {
+    flex: 1;
+    min-width: 4em;
+    height: 0.8em;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    transform: translateY(0.05em);
+  }
+  #hack-intro .hk-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: currentColor;
+    opacity: 0.8;
+  }
+  #hack-intro .hk-pct {
+    min-width: 3.2em;
+    text-align: right;
+  }
+  #hack-intro .hk-cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.1em;
+    background: currentColor;
+    vertical-align: -0.15em;
+    animation: hk-blink 1s steps(1) infinite;
+  }
+  @keyframes hk-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Alerta roja (pulso lento, sin estroboscopio) */
+  #hack-intro .hk-alert {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: none;
+    place-content: center;
+    gap: 14px;
+    padding: 20px;
+    text-align: center;
+    color: #ff4747;
+    background: rgba(48, 0, 0, 0.9);
+  }
+  #hack-intro.is-alert .hk-alert {
+    display: grid;
+    animation: hk-redpulse 1.2s ease-in-out infinite;
+  }
+  #hack-intro .hk-alert-title {
+    font-size: clamp(26px, 6.2vw, 68px);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-shadow:
+      2px 0 #00e5ff,
+      -2px 0 #ff00c8,
+      0 0 24px rgba(255, 71, 71, 0.7);
+    animation: hk-jitter 0.32s steps(2) infinite;
+  }
+  #hack-intro .hk-alert-sub {
+    font-size: clamp(12px, 2vw + 6px, 20px);
+    letter-spacing: 0.12em;
+  }
+  @keyframes hk-redpulse {
+    50% {
+      background: rgba(92, 0, 0, 0.94);
+    }
+  }
+  @keyframes hk-jitter {
+    0% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(2px, -1px);
+    }
+    100% {
+      transform: translate(-2px, 1px);
+    }
+  }
+
+  /* Revelación */
+  #hack-intro .hk-reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: none;
+    place-content: center;
+    justify-items: center;
+    gap: 14px;
+    padding: 24px;
+    text-align: center;
+    color: #fff;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: rgb(var(--night-rgb)) var(--season-overlay) center bottom / cover no-repeat;
+  }
+  #hack-intro.is-reveal .hk-term {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #hack-intro.is-reveal .hk-reveal {
+    display: grid;
+    animation: hk-in 0.6s ease both;
+  }
+  @keyframes hk-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+  #hack-intro .hk-season {
+    font-size: clamp(64px, 13vw, 124px);
+    line-height: 1;
+    filter: drop-shadow(0 0 26px rgb(var(--season-rgb) / 0.8));
+    animation: hk-bounce 1.3s ease-in-out infinite;
+  }
+  @keyframes hk-bounce {
+    50% {
+      transform: translateY(-10px) rotate(-3deg);
+    }
+  }
+  #hack-intro .hk-title {
+    margin: 0;
+    font-size: clamp(32px, 8vw, 84px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, rgb(var(--season-soft-rgb)), rgb(var(--season-rgb)) 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 22px rgb(var(--season-rgb) / 0.55));
+  }
+  #hack-intro .hk-sub {
+    max-width: 34rem;
+    margin: 0;
+    font-size: clamp(15px, 2vw + 8px, 20px);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+  }
+  #hack-intro .hk-enter {
+    margin-top: 6px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgb(var(--season-rgb)), var(--season-hot));
+    padding: 13px 26px;
+    color: #000;
+    font: 700 16px/1 system-ui, sans-serif;
+    box-shadow: 0 0 30px rgb(var(--season-rgb) / 0.45);
+  }
+  #hack-intro .hk-enter:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+  }
+  #hack-intro .hk-foot {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+</style>

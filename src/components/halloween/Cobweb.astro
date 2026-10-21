@@ -1,0 +1,45 @@
+---
+// Telaraña de esquina (nace en la esquina superior izquierda). Se refleja con
+// `class="-scale-x-100"` para colocarla a la derecha.
+const SPOKES = 7;
+const RINGS = 6;
+const SIZE = 200;
+
+const spokeAngles = Array.from({ length: SPOKES }, (_, i) => (i / (SPOKES - 1)) * (Math.PI / 2));
+const point = (r: number, a: number) => [r * Math.cos(a), r * Math.sin(a)] as const;
+
+const spokes = spokeAngles.map((a) => {
+  const [x, y] = point(SIZE, a);
+  return `M0 0L${x.toFixed(1)} ${y.toFixed(1)}`;
+});
+
+const rings = Array.from({ length: RINGS }, (_, ring) => {
+  const r = ((ring + 1) / RINGS) * SIZE * (0.55 + ring * 0.09);
+  let d = "";
+  spokeAngles.forEach((a, i) => {
+    const [x, y] = point(r, a);
+    if (i === 0) {
+      d += `M${x.toFixed(1)} ${y.toFixed(1)}`;
+      return;
+    }
+    const mid = (spokeAngles[i - 1] + a) / 2;
+    const [cx, cy] = point(r * 0.82, mid);
+    d += `Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  });
+  return d;
+});
+---
+
+<svg
+  {...Astro.props}
+  viewBox={`0 0 ${SIZE} ${SIZE}`}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.1"
+  stroke-linecap="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {spokes.map((d) => <path d={d} />)}
+  {rings.map((d) => <path d={d} />)}
+</svg>

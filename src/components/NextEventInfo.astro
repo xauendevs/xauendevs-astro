@@ -12,7 +12,7 @@ const nextEvent = pivos?.find((pivo) => {
   nextEvent && (
     <>
       <span class="ml-2">
-        <img src="/img/calendar_today.svg" class="size-4 lg:size-5" />
+        <img src="/img/calendar_today.svg" class="size-4 lg:size-5 navidad:invert" />
       </span>
       <a
         href={`/eventos/${slugify(nextEvent.title)}`}

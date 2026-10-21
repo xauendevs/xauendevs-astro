@@ -1,0 +1,374 @@
+---
+import SeasonFlyer from "./SeasonFlyer.astro";
+
+// Capas decorativas del hero con una temporada activa (foto, niebla, overlay, partículas…). Solo es fondo:
+// va dentro del <header> de siempre (src/sections/Header.astro) y no cambia su contenido ni su distribución.
+// Los colores, la foto y el overlay vienen de los tokens --season-* (src/styles/seasons.css).
+
+// Partículas (brasas / nieve): posiciones deterministas (sin Math.random) para que el HTML sea estable entre builds.
+const rand = (i: number, n: number) => {
+  const x = Math.sin(i * 97.13 + n * 13.7) * 10000;
+  return x - Math.floor(x);
+};
+const embers = Array.from({ length: 12 }, (_, i) => ({
+  left: 3 + rand(i, 1) * 94, // % del ancho
+  size: 2 + rand(i, 2) * 3.5, // px
+  delay: -rand(i, 3) * 16, // s (negativo: ya están en marcha al cargar)
+  duration: 9 + rand(i, 4) * 9, // s
+  drift: (rand(i, 5) - 0.5) * 120, // px
+}));
+
+const flyers = [
+  { top: "14%", duration: 26, delay: -4, size: "h-7 w-14" },
+  { top: "34%", duration: 34, delay: -19, size: "h-5 w-10" },
+  { top: "9%", duration: 41, delay: -30, size: "h-6 w-12" },
+];
+---
+
+<div data-hero-fx aria-hidden="true" class="hero-fx-root">
+  <!-- 1. Foto en duotono de la temporada (horneado en la imagen: sin filtros ni blend en tiempo real) -->
+  <div class="layer hero-photo" data-fx="photo" style="background-image:var(--season-hero-photo)"></div>
+  <div class="layer hero-scrim"></div>
+
+  <!-- 2. Foco de luz que sigue al cursor -->
+  <div class="hero-spotlight" data-fx="spot"></div>
+
+  <!-- 3. Niebla en movimiento -->
+  <div class="hero-fog"></div>
+
+  <!-- 4. Overlay de diseño de la temporada (Halloween: telarañas, luna, calabazas…; Navidad: pinos, luna, luces…) -->
+  <div class="layer hero-overlay" data-fx="overlay" style="background-image:var(--season-overlay)"></div>
+
+
+  <!-- 5. Sombra abajo a la izquierda para que el FROM :XAUEN FOR DEVS se lea sobre el overlay (nieve, calabazas…) -->
+  <div class="layer hero-readability"></div>
+
+  <!-- 6. Brasas y murciélagos (Halloween) / nieve y copos (Navidad) -->
+  <div class="hero-fx">
+    {
+      embers.map((e) => (
+        <span
+          class="ember"
+          style={`--l:${e.left.toFixed(1)};--s:${e.size.toFixed(1)};--d:${e.delay.toFixed(1)};--t:${e.duration.toFixed(1)};--x:${e.drift.toFixed(0)}`}
+        />
+      ))
+    }
+    {
+      flyers.map((b) => (
+        <div class="bat-fly" style={`--y:${b.top};--t:${b.duration};--d:${b.delay}`}>
+          <SeasonFlyer class:list={["bat-flap text-black navidad:text-white/80", b.size]} />
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .hero-fx-root {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* --- Foto en duotono ------------------------------------------------ */
+  .hero-photo {
+    /* Mismo encuadre que la foto del hero sin temporada (centrada); el margen solo cubre el parallax (±11px) */
+    inset: -16px;
+    z-index: -30;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+  }
+  /* Legibilidad del texto a la izquierda + fundido con el resto de la página */
+  .hero-scrim {
+    z-index: -28;
+    background:
+      linear-gradient(90deg, rgb(var(--night-rgb) / 0.94) 0%, rgb(var(--night-rgb) / 0.72) 30%, rgb(var(--night-rgb) / 0.12) 62%, transparent 100%),
+      linear-gradient(0deg, rgb(var(--night-rgb) / 0.7) 0%, transparent 38%),
+      linear-gradient(180deg, rgb(var(--night-rgb) / 0.55) 0%, transparent 22%);
+  }
+
+  /* --- Foco con el cursor ---------------------------------------------- */
+  /* Se mueve solo con transform (compositor); el degradado se pinta una vez */
+  .hero-spotlight {
+    position: absolute;
+    left: 74%;
+    top: 36%;
+    width: 880px;
+    height: 880px;
+    margin: -440px 0 0 -440px;
+    z-index: -20;
+    pointer-events: none;
+    background: radial-gradient(circle, rgb(var(--spark-rgb) / 0.3), rgb(var(--season-rgb) / 0.09) 38%, transparent 66%);
+    transition: transform 0.18s ease-out;
+    will-change: transform;
+  }
+
+  /* --- Niebla ----------------------------------------------------------- */
+  .hero-fog {
+    position: absolute;
+    inset: auto -10% -10% -10%;
+    height: 48%;
+    z-index: -15;
+    pointer-events: none;
+    background:
+      radial-gradient(42% 75% at 18% 100%, rgb(var(--glow-a-rgb) / 0.55), transparent 70%),
+      radial-gradient(46% 85% at 76% 100%, rgb(var(--glow-b-rgb) / 0.42), transparent 70%);
+    will-change: transform;
+    animation: fog-drift 26s ease-in-out infinite alternate;
+  }
+  @keyframes fog-drift {
+    from {
+      transform: translate3d(-3%, 0, 0);
+    }
+    to {
+      transform: translate3d(3%, -3%, 0);
+    }
+  }
+
+  /* --- Overlay de diseño ---------------------------------------------- */
+  .hero-overlay {
+    z-index: -10;
+    background-size: cover;
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    transform: scale(1.02);
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+  }
+  @media (min-width: 768px) {
+    .hero-overlay {
+      background-position: 50% 100%;
+    }
+  }
+  /* Navidad: los pinos nevados son muy claros; en pantallas estrechas se atenúan para que el texto se lea */
+  @media (max-width: 1023px) {
+    :global([data-theme="navidad"]) .hero-overlay {
+      opacity: 0.5;
+    }
+  }
+
+  .hero-readability {
+    z-index: -9;
+    background:
+      radial-gradient(75% 65% at 0% 100%, rgb(var(--night-rgb) / 0.85), rgb(var(--night-rgb) / 0.5) 50%, transparent 80%),
+      linear-gradient(90deg, rgb(var(--night-rgb) / 0.35), transparent 55%);
+  }
+
+  /* --- Brasas y murciélagos ------------------------------------------------ */
+  .hero-fx {
+    position: absolute;
+    inset: 0;
+    z-index: -8;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ember {
+    position: absolute;
+    bottom: -10px;
+    left: calc(var(--l) * 1%);
+    width: calc(var(--s) * 1px);
+    height: calc(var(--s) * 1px);
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, rgb(var(--season-soft-rgb)) 35%, rgb(var(--season-rgb) / 0.55) 60%, transparent 75%);
+    opacity: 0;
+    animation: ember-rise calc(var(--t) * 1s) linear calc(var(--d) * 1s) infinite;
+  }
+  @keyframes ember-rise {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.95;
+    }
+    70% {
+      opacity: 0.55;
+    }
+    100% {
+      transform: translate3d(calc(var(--x) * 1px), -620px, 0) scale(0.3);
+      opacity: 0;
+    }
+  }
+
+  /* Navidad: la partícula cae como nieve en lugar de subir como una brasa */
+  :global([data-theme="navidad"]) .ember {
+    bottom: auto;
+    top: -10px;
+    background: radial-gradient(circle, #fff 0%, rgb(255 255 255 / 0.7) 45%, transparent 72%);
+    animation-name: snow-fall;
+  }
+  @keyframes snow-fall {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.9;
+    }
+    90% {
+      opacity: 0.6;
+    }
+    100% {
+      transform: translate3d(calc(var(--x) * 1px), 640px, 0);
+      opacity: 0;
+    }
+  }
+
+  .bat-fly {
+    position: absolute;
+    left: -10%;
+    top: var(--y);
+    animation: bat-cross calc(var(--t) * 1s) linear calc(var(--d) * 1s) infinite;
+  }
+  @keyframes bat-cross {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    25% {
+      transform: translate3d(30vw, -28px, 0);
+    }
+    50% {
+      transform: translate3d(62vw, 16px, 0);
+    }
+    75% {
+      transform: translate3d(92vw, -20px, 0);
+    }
+    100% {
+      transform: translate3d(128vw, 6px, 0);
+    }
+  }
+  .bat-fly :global(.bat-flap) {
+    animation: bat-flap 0.3s ease-in-out infinite alternate;
+  }
+  :global([data-theme="navidad"]) .bat-fly :global(.bat-flap) {
+    animation: flake-spin 9s linear infinite;
+  }
+  @keyframes flake-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  /* Borde naranja vectorial en lugar de drop-shadow (los filtros animados repintan cada fotograma) */
+  :global([data-theme="halloween"]) .bat-fly :global(.bat-flap path) {
+    stroke: rgb(var(--season-rgb) / 0.75);
+    stroke-width: 1.4px;
+    paint-order: stroke;
+  }
+  @keyframes bat-flap {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0.45);
+    }
+  }
+
+  /* --- Neón parpadeante en :XAUEN y \ -------------------------------------- */
+  :global(.fromfor-orange) {
+    animation: neon 8s steps(1, end) infinite;
+  }
+  @keyframes neon {
+    0%,
+    91%,
+    100% {
+      opacity: 1;
+    }
+    92% {
+      opacity: 0.55;
+    }
+    93% {
+      opacity: 1;
+    }
+    95% {
+      opacity: 0.7;
+    }
+    96% {
+      opacity: 1;
+    }
+  }
+
+  /* Pausa los efectos cuando el hero no se ve (ahorra GPU/CPU al hacer scroll) */
+  :global(.is-paused) .ember,
+  :global(.is-paused) .hero-fog,
+  :global(.is-paused) .bat-fly,
+  :global(.is-paused) :global(.bat-flap),
+  :global(.is-paused .fromfor-orange) {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-fog,
+    .bat-fly,
+    .bat-fly :global(.bat-flap),
+    :global(.fromfor-orange) {
+      animation: none !important;
+    }
+    .ember,
+    .bat-fly {
+      display: none;
+    }
+    .hero-photo,
+    .hero-overlay,
+    .hero-spotlight {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Foco de luz + parallax con el cursor. Solo escribe `transform` (sin variables CSS ni repintados).
+  // Solo con ratón y sin "reducir movimiento".
+  function initHero() {
+    // El foco y el parallax siguen al cursor sobre todo el hero (el <header> que contiene las capas).
+    const hero = document.querySelector<HTMLElement>("[data-hero-fx]")?.parentElement;
+    if (!hero || hero.dataset.fx === "on") return;
+    hero.dataset.fx = "on";
+
+    // Pausa las animaciones cuando el hero sale de pantalla.
+    new IntersectionObserver(([entry]) => hero.classList.toggle("is-paused", !entry.isIntersecting)).observe(hero);
+
+    const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!canHover || reduced) return;
+
+    const photo = hero.querySelector<HTMLElement>('[data-fx="photo"]');
+    const overlay = hero.querySelector<HTMLElement>('[data-fx="overlay"]');
+    const spot = hero.querySelector<HTMLElement>('[data-fx="spot"]');
+    if (!photo || !overlay || !spot) return;
+
+    const apply = (px: number, py: number, dx: number, dy: number) => {
+      photo.style.transform = `translate3d(${px * -22}px, ${py * -14}px, 0)`;
+      overlay.style.transform = `translate3d(${px * 8}px, ${py * 5}px, 0) scale(1.02)`;
+      spot.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+    };
+
+    let raf = 0;
+    hero.addEventListener("pointermove", (event) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = hero.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        // El foco parte de (74 %, 36 %): se mueve la diferencia respecto a esa posición.
+        apply(x / rect.width - 0.5, y / rect.height - 0.5, x - rect.width * 0.74, y - rect.height * 0.36);
+      });
+    });
+
+    hero.addEventListener("pointerleave", () => {
+      cancelAnimationFrame(raf);
+      apply(0, 0, 0, 0);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initHero);
+</script>

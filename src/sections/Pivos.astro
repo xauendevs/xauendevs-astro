@@ -5,13 +5,13 @@ import PivosContainer from "@/components/PivosContainer.astro";
 <section id="pivos" aria-labelledby="pivos-title">
   <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
     <div class="max-w-2xl">
-      <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-accent">
+      <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-accent fest:text-season">
         Comunidad · Tecnología · Jaén
       </p>
-      <h2 id="pivos-title" class="text-4xl font-black tracking-tight md:text-5xl">
+      <h2 id="pivos-title" class="text-4xl font-black tracking-tight fest:text-white md:text-5xl">
         Pivo&Code
       </h2>
-      <p class="mt-3 text-base text-black/65 md:text-lg">
+      <p class="mt-3 text-base text-black/65 fest:text-white/70 md:text-lg">
         Charlas para aprender, compartir lo que sabes y conocer a la gente que
         hace tecnología en nuestra provincia.
       </p>
@@ -20,7 +20,7 @@ import PivosContainer from "@/components/PivosContainer.astro";
     <a
       data-astro-reload
       href="/eventos?tipo=xauen"
-      class="shrink-0 font-semibold underline decoration-accent decoration-2 underline-offset-4 hover:text-accent"
+      class="shrink-0 font-semibold underline fest:text-white decoration-accent fest:decoration-season decoration-2 underline-offset-4 hover:text-accent fest:hover:text-season"
     >
       Ver todas las charlas →
     </a>

@@ -1,4 +1,9 @@
 ---
+import "@/styles/seasons.css";
+import { getSeason } from "@/lib/season";
+
+// Mismo diseño de siempre; con una temporada activa se aplican las clases `fest:` y se añade el fondo ilustrado.
+const season = await getSeason(Astro);
 ---
 <!doctype html>
 <html lang="es">
@@ -8,21 +13,30 @@
     <meta name="referrer" content="no-referrer" />
     <title>Asistencia confirmada · XauenDevs</title>
   </head>
-  <body class="m-0">
-    <main class="min-h-screen bg-[#f3f1eb] px-4 py-8 text-black sm:px-6 sm:py-12">
+  <body data-theme={season} data-festive={season ? "" : undefined} class="m-0 fest:bg-night">
+    <main class="min-h-screen bg-[#f3f1eb] fest:relative fest:isolate fest:overflow-hidden fest:bg-night fest:text-white px-4 py-8 text-black sm:px-6 sm:py-12">
+      {
+        season && (
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 -z-10 bg-cover bg-no-repeat bg-[position:100%_0%] md:bg-top"
+            style="background-image:var(--season-overlay)"
+          />
+        )
+      }
       <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl items-center justify-center sm:min-h-[calc(100vh-6rem)]">
-        <section class="w-full overflow-hidden rounded-[2.5rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.09)]">
-          <div class="h-2 bg-[#f4d400]"></div>
+        <section class="w-full overflow-hidden rounded-[2.5rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.09)] fest:border-season/40 fest:bg-night/80 fest:shadow-[0_0_50px_rgb(var(--season-rgb)_/_0.18)] fest:backdrop-blur-sm">
+          <div class="h-2 bg-[#f4d400] fest:bg-season"></div>
 
           <div class="p-7 sm:p-10 lg:p-12">
             <div class="flex items-center justify-between gap-4">
-              <p class="text-[11px] font-black uppercase tracking-[0.2em] text-black/45">XauenDevs · Pivo&Code</p>
-              <span class="rounded-full bg-black/5 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-black/45">RSVP</span>
+              <p class="text-[11px] font-black uppercase tracking-[0.2em] text-black/45 fest:text-white/45">XauenDevs · Pivo&Code</p>
+              <span class="rounded-full bg-black/5 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-black/45 fest:bg-white/10 fest:text-white/45">RSVP</span>
             </div>
 
             <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
               <div>
-                <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f4d400] text-2xl font-black shadow-[4px_4px_0_#000]" aria-hidden="true">
+                <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f4d400] text-2xl font-black shadow-[4px_4px_0_#000] fest:bg-season fest:text-season-ink fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)]" aria-hidden="true">
                   ✓
                 </div>
 
@@ -30,7 +44,7 @@
                   <span data-title>Confirmando tu asistencia…</span>
                 </h1>
 
-                <p class="mt-5 max-w-xl text-base leading-7 text-black/60" data-message>
+                <p class="mt-5 max-w-xl text-base leading-7 text-black/60 fest:text-white/60" data-message>
                   Un momento, estamos confirmando tu plaza.
                 </p>
 
@@ -38,38 +52,38 @@
               </div>
 
               <div class="relative hidden h-56 lg:block" aria-hidden="true">
-                <div class="absolute inset-8 rounded-full bg-[#f4d400]/20 blur-2xl"></div>
-                <div class="absolute left-8 top-16 h-28 w-16 -rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-[#f4d400] shadow-[5px_5px_0_#000]"></div>
-                <div class="absolute left-16 top-7 h-8 w-16 -rotate-12 rounded-full border-[5px] border-black bg-white"></div>
-                <div class="absolute right-8 top-16 h-28 w-16 rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-[#f4d400] shadow-[5px_5px_0_#000]"></div>
-                <div class="absolute right-16 top-7 h-8 w-16 rotate-12 rounded-full border-[5px] border-black bg-white"></div>
+                <div class="absolute inset-8 rounded-full bg-[#f4d400]/20 blur-2xl fest:bg-season/20"></div>
+                <div class="absolute left-8 top-16 h-28 w-16 -rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-[#f4d400] shadow-[5px_5px_0_#000] fest:border-white/90 fest:bg-season fest:shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.4)]"></div>
+                <div class="absolute left-16 top-7 h-8 w-16 -rotate-12 rounded-full border-[5px] border-black bg-white fest:border-white/90"></div>
+                <div class="absolute right-8 top-16 h-28 w-16 rotate-12 rounded-b-[1.7rem] rounded-t-md border-[5px] border-black bg-[#f4d400] shadow-[5px_5px_0_#000] fest:border-white/90 fest:bg-season fest:shadow-[0_0_28px_rgb(var(--season-rgb)_/_0.4)]"></div>
+                <div class="absolute right-16 top-7 h-8 w-16 rotate-12 rounded-full border-[5px] border-black bg-white fest:border-white/90"></div>
                 <span class="absolute left-1/2 top-4 text-3xl font-black">✦</span>
-                <span class="absolute left-5 top-28 text-xl font-black text-[#f4d400]">✦</span>
-                <span class="absolute right-2 bottom-9 text-2xl font-black text-[#f4d400]">✦</span>
+                <span class="absolute left-5 top-28 text-xl font-black text-[#f4d400] fest:text-season">✦</span>
+                <span class="absolute right-2 bottom-9 text-2xl font-black text-[#f4d400] fest:text-season">✦</span>
               </div>
             </div>
 
-            <div class="mt-10 hidden overflow-hidden rounded-3xl border border-black/10 bg-[#f7f6f2]" data-card>
+            <div class="mt-10 hidden overflow-hidden rounded-3xl border border-black/10 bg-[#f7f6f2] fest:border-white/10 fest:bg-white/[0.04]" data-card>
               <div class="p-6 sm:p-7">
-                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-black/40">Tu inscripción</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-black/40 fest:text-white/40">Tu inscripción</p>
                 <p class="mt-2 text-xl font-black" data-name></p>
-                <p class="mt-1 text-sm font-bold text-black/45" data-event></p>
+                <p class="mt-1 text-sm font-bold text-black/45 fest:text-white/45" data-event></p>
 
-                <div class="mt-6 grid gap-3 border-t border-black/10 pt-5 sm:grid-cols-3">
+                <div class="mt-6 grid gap-3 border-t border-black/10 pt-5 sm:grid-cols-3 fest:border-white/10">
                   <div>
-                    <p class="text-[10px] font-black uppercase tracking-wider text-black/35">Cuándo</p>
+                    <p class="text-[10px] font-black uppercase tracking-wider text-black/35 fest:text-white/35">Cuándo</p>
                     <p class="mt-1 text-sm font-semibold" data-date></p>
-                    <p class="text-sm text-black/55" data-time></p>
+                    <p class="text-sm text-black/55 fest:text-white/55" data-time></p>
                   </div>
                   <div>
-                    <p class="text-[10px] font-black uppercase tracking-wider text-black/35">Dónde</p>
+                    <p class="text-[10px] font-black uppercase tracking-wider text-black/35 fest:text-white/35">Dónde</p>
                     <p class="mt-1 text-sm font-semibold" data-place></p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <a href="/" class="mt-8 inline-flex items-center gap-2 text-sm font-bold underline decoration-black/25 underline-offset-4 transition hover:decoration-black">
+            <a href="/" class="mt-8 inline-flex items-center gap-2 text-sm font-bold underline decoration-black/25 underline-offset-4 transition hover:decoration-black fest:decoration-white/30 fest:hover:decoration-season">
               <span aria-hidden="true">←</span> Volver a XauenDevs
             </a>
           </div>
@@ -125,7 +139,7 @@
               link.target = "_blank";
               link.rel = "noopener noreferrer";
               link.textContent = "Añadir al calendario →";
-              link.className = "inline-flex rounded-full bg-[#f4d400] px-6 py-3.5 text-sm font-black text-black shadow-[4px_4px_0_#000] transition hover:-translate-y-0.5";
+              link.className = "inline-flex rounded-full bg-[#f4d400] fest:bg-season px-6 py-3.5 text-sm font-black text-black fest:text-season-ink shadow-[4px_4px_0_#000] fest:shadow-[0_0_24px_rgb(var(--season-rgb)_/_0.45)] transition hover:-translate-y-0.5";
               actions.appendChild(link);
             }
           })
