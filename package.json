@@ -20,7 +20,7 @@
     "@libsql/client": "^0.18.0",
     "@resvg/resvg-js": "^2.6.2",
     "@vercel/analytics": "^1.2.2",
-    "@vercel/edge-config": "^1.5.1",
+    "@vercel/global-config": "^1.5.1",
     "@vercel/speed-insights": "^1.1.0",
     "astro": "^5.0.0-beta.4",
     "resend": "6.32.0",

@@ -11,7 +11,7 @@
  *
  * Añadir una temporada nueva: ver README → "Temas estacionales".
  */
-import { get } from "@vercel/edge-config";
+import { get } from "@vercel/global-config";
 
 export const THEMES = ["default", "halloween"] as const;
 export type SiteTheme = (typeof THEMES)[number];
