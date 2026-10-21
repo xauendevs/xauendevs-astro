@@ -53,7 +53,6 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:image" content={socialImage} />
   </head>
   <body>
-    <div class="halloween-lightning" aria-hidden="true"></div>
     <Header />
     <main class="min-w-0 px-4 sm:px-6 md:px-10">
       <slot class="" />
@@ -244,29 +243,52 @@ const socialImage = new URL(image, siteOrigin).href;
 
   body a:hover { text-decoration-color: #b51220; }
 
-  /* Relámpago de tormenta: flash corto, visible y con doble descarga. */
-  .halloween-lightning {
-    position: fixed;
-    z-index: 999;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-    background:
-      radial-gradient(ellipse at 78% 10%, rgba(220, 235, 255, .55), transparent 48%),
-      rgba(220, 230, 255, .24);
-    mix-blend-mode: screen;
-    animation: halloween-lightning-flash 9s steps(1, end) infinite;
+  /* Halloween editorial: atmósfera cinematográfica, sin flashes ni caricaturas. */
+  body {
+    background-image:
+      radial-gradient(ellipse at 50% -18%, rgba(125, 14, 24, .16), transparent 48%),
+      radial-gradient(ellipse at 100% 55%, rgba(80, 8, 14, .08), transparent 36%);
   }
 
-  @keyframes halloween-lightning-flash {
-    0%, 31%, 31.3%, 31.8%, 32.2%, 100% { opacity: 0; }
-    31.1% { opacity: .95; }
-    31.5% { opacity: .12; }
-    32% { opacity: .72; }
+  /* Una línea rojo sangre muy fina sustituye a la gota exagerada del logo. */
+  header a[aria-label*="inicio"]::after {
+    height: 3px;
+    bottom: -5px;
+    left: 1%;
+    right: 1%;
+    background: linear-gradient(90deg, transparent, #8f0d18 14%, #d21e2b 48%, #8f0d18 82%, transparent);
+    clip-path: none;
+    filter: drop-shadow(0 0 5px rgba(190, 20, 34, .35));
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .halloween-lightning { animation: none; opacity: 0; }
+  /* Murciélago de silueta discreta; se conserva solo como detalle de esquina. */
+  body::after {
+    content: "✦";
+    color: rgba(170, 24, 35, .75);
+    font-family: serif;
+    font-size: 26px;
+    opacity: .5;
+    filter: none;
+    top: 22%;
+    right: 2.5vw;
+  }
+
+  /* Superficies oscuras con jerarquía y bordes suaves, no un filtro negro uniforme. */
+  body main [class~="bg-white"],
+  body main [class~="bg-gray-50"],
+  body main [class~="bg-stone-50"],
+  body main [class~="bg-neutral-50"],
+  body main [class~="bg-zinc-50"] {
+    background-color: #151313 !important;
+    color: #f4eeee !important;
+    border-color: #383033 !important;
+  }
+
+  body main [class~="text-black"],
+  body main [class~="text-gray-900"],
+  body main [class~="text-neutral-900"],
+  body main [class~="text-stone-900"] {
+    color: #f1e9e9 !important;
   }
 
   #header-nav {
