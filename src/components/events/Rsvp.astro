@@ -5,15 +5,14 @@ interface Props {
 const { eventId } = Astro.props;
 ---
 
-<section class="mt-2 min-w-0 rounded-2xl bg-black/5 p-4 sm:p-5" data-rsvp data-event-id={eventId} aria-labelledby="rsvp-title">
-  <span class="text-xs font-bold uppercase tracking-[0.14em]">Asistencia</span>
-  <h3 id="rsvp-title" class="mt-2 text-xl font-black">¿Te apuntas?</h3>
-  <p class="mt-1 text-sm leading-relaxed text-black/60">Reserva tu asistencia a esta Pivo&Code.</p>
+<section id="rsvp" class="min-w-0 scroll-mt-6 rounded-2xl p-1" data-rsvp data-event-id={eventId} aria-labelledby="rsvp-title">
+  <h2 id="rsvp-title" class="text-2xl font-black">¿Te apuntas?</h2>
+  <p class="mt-1 text-base leading-relaxed text-black/80">Reserva tu sitio. Te enviaremos un email para confirmarlo.</p>
   <p class="mt-3 text-sm font-semibold" data-rsvp-count aria-live="polite">Comprobando asistencia…</p>
 
   <form class="mt-4 flex flex-col gap-3" data-rsvp-form novalidate>
     <div class="flex flex-col gap-1.5">
-      <label for={`rsvp-name-${eventId}`} class="text-xs font-bold uppercase tracking-wide text-black/60">Nombre</label>
+      <label for={`rsvp-name-${eventId}`} class="text-sm font-semibold">Nombre</label>
       <input
         id={`rsvp-name-${eventId}`}
         required
@@ -22,13 +21,13 @@ const { eventId } = Astro.props;
         maxlength="100"
         placeholder="Tu nombre"
         aria-describedby={`rsvp-name-error-${eventId}`}
-        class="w-full min-w-0 rounded-xl border border-black/10 bg-white/60 px-3 py-2.5 text-sm outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/10"
+        class="w-full min-w-0 rounded-xl border border-black/15 bg-white px-3.5 py-3 text-base text-black outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/10"
       />
       <p id={`rsvp-name-error-${eventId}`} class="hidden text-xs font-semibold text-red-700" data-rsvp-error="name"></p>
     </div>
 
     <div class="flex flex-col gap-1.5">
-      <label for={`rsvp-email-${eventId}`} class="text-xs font-bold uppercase tracking-wide text-black/60">Email</label>
+      <label for={`rsvp-email-${eventId}`} class="text-sm font-semibold">Email</label>
       <input
         id={`rsvp-email-${eventId}`}
         required
@@ -39,19 +38,19 @@ const { eventId } = Astro.props;
         maxlength="254"
         placeholder="tu@email.com"
         aria-describedby={`rsvp-email-error-${eventId}`}
-        class="rounded-xl border border-black/10 bg-white/60 px-3 py-2.5 text-sm outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/10"
+        class="rounded-xl border border-black/15 bg-white px-3.5 py-3 text-base text-black outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/10"
       />
       <p id={`rsvp-email-error-${eventId}`} class="hidden text-xs font-semibold text-red-700" data-rsvp-error="email"></p>
     </div>
 
     <div class="flex flex-col gap-1.5">
-      <label class="flex items-start gap-2 text-xs leading-relaxed text-black/60">
+      <label class="flex items-start gap-2.5 text-sm leading-relaxed text-black/80">
         <input
           required
           name="consent"
           type="checkbox"
           aria-describedby={`rsvp-consent-error-${eventId}`}
-          class="mt-0.5 accent-black"
+          class="mt-1 size-4 shrink-0 accent-black"
         />
         <span>Acepto la <a href="/privacidad" target="_blank" rel="noopener noreferrer" class="font-bold underline underline-offset-2">política de privacidad</a> y que XauenDevs guarde estos datos para gestionar mi asistencia a este evento.</span>
       </label>
@@ -60,7 +59,7 @@ const { eventId } = Astro.props;
 
     <button
       type="submit"
-      class="mt-1 w-full rounded-full bg-black px-5 py-3 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+      class="mt-1 min-h-12 w-full rounded-full bg-black px-5 py-3 text-base font-bold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
     >
       Quiero asistir →
     </button>

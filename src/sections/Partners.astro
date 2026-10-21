@@ -1,30 +1,255 @@
 ---
-import PartnerItem from "@/components/PartnerItem.astro";
-import SectionTitle from "@/components/SectionTitle.astro";
 import { getPartners } from "@/lib/get-partner";
+import { getPivosStrapi } from "@/lib/get-info-pivos";
 
-const partners = await getPartners();
+// Partners: panel oscuro con las cifras de la comunidad y una tarjeta por partner que se inclina hacia
+// el cursor y se ilumina con el color de su marca. Cierra con la invitación a que otras empresas se sumen.
+const { STRAPI_HOST } = import.meta.env;
+const [partners, pivos] = await Promise.all([
+  getPartners().then((p) => p ?? []).catch(() => []),
+  getPivosStrapi().then((p) => p ?? []).catch(() => []),
+]);
+
+const pastTalks = pivos.filter((pivo) => pivo.date.getTime() < Date.now()).length;
+const years = new Date().getFullYear() - 2017;
+const stats = [
+  { value: pastTalks, label: "charlas celebradas" },
+  { value: years, label: "años de comunidad" },
+  { value: partners.length, label: partners.length === 1 ? "partner" : "partners" },
+].filter((stat) => stat.value > 0);
+
+const host = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+};
+const mailto = `mailto:hola@xauendevs.io?subject=${encodeURIComponent("Quiero apoyar a XauenDevs")}`;
 ---
 
 <section
-  class="w-full flex justify-between p-8 lg:p-10 flex-col lg:flex-row gap-10"
+  class="partners relative isolate overflow-hidden rounded-3xl bg-black p-7 text-white fest:bg-night fest:ring-1 fest:ring-season/40 md:p-12"
+  aria-labelledby="partners-title"
 >
-  <div class="lg:max-w-[650px]">
-    <SectionTitle title="Partners" />
-    <p class="text-sm md:text-lg">
-      Estamos agradecidos por la colaboración de estas empresas que hacen
-      posible nuestras charlas tecnológicas. Su apoyo nos permite seguir
-      creciendo y compartiendo conocimiento con la comunidad de desarrolladores
-      en Jaén.
-    </p>
-  </div>
-  <div
-    class="grid grid-cols-2 lg:max-w-[520px] items-center justify-between gap-8 lg:gap-10"
-  >
-    {
-      partners?.map(({ name, logo, url }) => (
-        <PartnerItem name={name} logo={logo} url={url} />
-      ))
-    }
+  <div aria-hidden="true" class="partners-glow"></div>
+
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-14">
+    <div>
+      <p class="text-lg font-semibold text-accent fest:text-season">Partners</p>
+      <h2 id="partners-title" class="mt-2 text-4xl font-black tracking-tight md:text-5xl">
+        Gracias a ellos, cada Pivo&Code sale adelante.
+      </h2>
+      <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/80">
+        Su apoyo nos permite seguir organizando charlas y compartiendo conocimiento con la comunidad de desarrollo de
+        Jaén.
+      </p>
+
+      {
+        stats.length > 0 && (
+          <dl class="mt-8 grid grid-cols-3 gap-4">
+            {stats.map(({ value, label }) => (
+              <div>
+                <dt class="sr-only">{label}</dt>
+                <dd class="text-4xl font-black tabular-nums text-accent fest:text-season md:text-5xl" data-count={value}>
+                  {value}
+                </dd>
+                <dd class="mt-1 text-sm text-white/75" aria-hidden="true">{label}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+    </div>
+
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2" role="list">
+      {
+        partners.map(({ name, logo, url, mainColor }) => (
+          <li class="partner-tilt" style={`--brand:${mainColor || "#f6b703"};--brand-ink:${mainColor ? "#fff" : "#000"}`}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="partner-card group"
+              data-tilt
+              aria-label={`${name} (abre su web en otra pestaña)`}
+            >
+              <span aria-hidden="true" class="partner-spot"></span>
+              <img src={`${STRAPI_HOST}${logo}`} alt="" loading="lazy" class="partner-logo" />
+              <span class="partner-link">
+                {host(url)} <span aria-hidden="true">↗</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+      <li class="sm:col-span-2">
+        <a
+          href={mailto}
+          class="group flex flex-col gap-4 rounded-2xl bg-accent p-6 text-black transition-transform duration-200 hover:-translate-y-1 fest:bg-season fest:text-season-ink motion-reduce:transition-none sm:flex-row sm:items-center sm:justify-between"
+        >
+          <span>
+            <span class="block text-xl font-black">¿Tu empresa quiere apoyar la comunidad tech de Jaén?</span>
+            <span class="mt-1 block text-base">Escríbenos y te contamos cómo ser partner.</span>
+          </span>
+          <span class="inline-flex min-h-12 shrink-0 items-center self-start rounded-full bg-black px-6 font-bold text-white sm:self-auto fest:bg-night">
+            Quiero colaborar
+            <span aria-hidden="true" class="ml-1.5 transition-transform group-hover:translate-x-1">→</span>
+          </span>
+        </a>
+      </li>
+    </ul>
   </div>
 </section>
+
+<style>
+  /* Luz amarilla de fondo, muy suave, que asoma por la esquina */
+  .partners-glow {
+    position: absolute;
+    inset: auto -20% -60% auto;
+    z-index: -1;
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgb(246 183 3 / 0.22), transparent 65%);
+    pointer-events: none;
+  }
+  :global([data-festive]) .partners-glow {
+    background: radial-gradient(circle, rgb(var(--season-rgb) / 0.25), transparent 65%);
+  }
+
+  .partner-tilt {
+    perspective: 900px;
+  }
+  .partner-card {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #fff;
+    color: #000;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transform-style: preserve-3d;
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.35s;
+  }
+  .partner-card:hover,
+  .partner-card:focus-visible {
+    box-shadow: 0 24px 50px -20px var(--brand);
+  }
+  /* Foco de luz con el color de la marca que sigue al cursor */
+  .partner-spot {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx) var(--my), color-mix(in srgb, var(--brand) 28%, transparent), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .partner-card:hover .partner-spot,
+  .partner-card:focus-visible .partner-spot {
+    opacity: 1;
+  }
+  .partner-logo {
+    position: relative;
+    max-height: 5.5rem;
+    max-width: 75%;
+    object-fit: contain;
+    transform: translateZ(40px);
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .partner-card:hover .partner-logo {
+    transform: translateZ(40px) scale(1.06);
+  }
+  .partner-link {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-align: center;
+    background: var(--brand);
+    color: var(--brand-ink, #fff);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .partner-card:hover .partner-link,
+  .partner-card:focus-visible .partner-link {
+    transform: none;
+  }
+  @media (hover: none) {
+    .partner-link {
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .partner-card,
+    .partner-logo,
+    .partner-link {
+      transition: none;
+    }
+    .partner-card {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const initPartners = () => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Las tarjetas se inclinan hacia el cursor (como mucho 8°) y el foco de luz lo sigue.
+    document.querySelectorAll<HTMLElement>("[data-tilt]:not([data-tilt-ready])").forEach((card) => {
+      card.dataset.tiltReady = "1";
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        card.style.setProperty("--mx", `${x * 100}%`);
+        card.style.setProperty("--my", `${y * 100}%`);
+        if (reduced || event.pointerType !== "mouse") return;
+        card.style.setProperty("--ry", `${(x - 0.5) * 16}deg`);
+        card.style.setProperty("--rx", `${(0.5 - y) * 16}deg`);
+      });
+      card.addEventListener("pointerleave", () => {
+        card.style.setProperty("--rx", "0deg");
+        card.style.setProperty("--ry", "0deg");
+      });
+    });
+
+    // Las cifras cuentan desde cero la primera vez que aparecen en pantalla.
+    const counters = document.querySelectorAll<HTMLElement>("[data-count]:not([data-counted])");
+    if (reduced || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          io.unobserve(el);
+          el.dataset.counted = "1";
+          const target = Number(el.dataset.count);
+          const start = performance.now();
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / 1200);
+            el.textContent = String(Math.round(target * (1 - Math.pow(1 - t, 3))));
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      },
+      { threshold: 0.6 }
+    );
+    counters.forEach((el) => io.observe(el));
+  };
+
+  initPartners();
+  document.addEventListener("astro:page-load", initPartners);
+</script>

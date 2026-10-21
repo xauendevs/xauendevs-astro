@@ -5,7 +5,7 @@ import ClientRouter from "astro/components/ClientRouter.astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import HackIntro from "@/components/HackIntro.astro";
 import { getHackIntroEnabled } from "@/lib/site-theme";
-import { getSeason } from "@/lib/season";
+import { getSeason, seasonFavicon } from "@/lib/season";
 import "@/styles/seasons.css";
 
 interface Props {
@@ -13,6 +13,8 @@ interface Props {
   description: string;
   image?: string;
   imageType?: string;
+  /** Páginas con datos personales en la URL (enlaces de RSVP): no se indexan ni envían referrer. */
+  private?: boolean;
 }
 
 const {
@@ -20,6 +22,7 @@ const {
   description,
   image = "/img/og-xauendevs.svg",
   imageType,
+  private: isPrivate = false,
 } = Astro.props;
 // Temporada activa (Edge Config / env, ver src/lib/site-theme.ts). Sin temporada (o con un valor
 // desconocido) la web se renderiza exactamente igual que antes.
@@ -29,11 +32,15 @@ Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-re
 // `?hack=1` fuerza la broma para probarla, aunque la temporada o `hack_intro` la tengan apagada.
 const forceHack = Astro.url.searchParams.get("hack") === "1";
 // Con `?hack=1` y sin temporada, la broma sale con los textos de Halloween.
-const showHackIntro = forceHack || (!!season && (await getHackIntroEnabled()));
+// Nunca en las páginas privadas (enlaces de RSVP): ahí la broma estorba.
+const showHackIntro = !isPrivate && (forceHack || (!!season && (await getHackIntroEnabled())));
 
 const siteOrigin = import.meta.env.PROD
   ? Astro.site
   : new URL(Astro.url.origin);
+
+// Con temporada, el icono de la pestaña es el de la temporada y la barra del móvil toma el color de la noche.
+const favicon = season ? seasonFavicon(season) : "/favicon.svg";
 
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
 const socialImage = new URL(image, siteOrigin).href;
@@ -45,9 +52,11 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+    <meta name="theme-color" content={season === "navidad" ? "#060c16" : season ? "#08080b" : "#ffffff"} />
     <title>{title}</title>
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={isPrivate ? "noindex, nofollow" : "index, follow"} />
+    {isPrivate && <meta name="referrer" content="no-referrer" />}
     <link rel="canonical" href={canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="XauenDevs" />

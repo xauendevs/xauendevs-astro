@@ -1,7 +1,6 @@
 ---
 import { formatDate, formatTime } from "@/lib/format-date";
 import type { Charlante } from "@/types/Charlante";
-import LocationPin from "./icons/LocationPin.astro";
 import PivoVideoModal from "./PivoVideoModal.astro";
 
 const { STRAPI_HOST } = import.meta.env;
@@ -20,161 +19,91 @@ interface Props {
   customClass?: string;
 }
 
-const {
-  id,
-  title,
-  image,
-  isNext,
-  speakers,
-  place,
-  date,
-  videoId,
-  tags = [],
-  detailUrl,
-  customClass,
-} = Astro.props;
+const { id, title, image, isNext, speakers, place, date, videoId, tags = [], detailUrl, customClass } = Astro.props;
 
 const speakerNames = speakers?.map((speaker) => speaker.name).join(", ");
-const speakerName = speakers?.[0]?.name;
-const eventLabel = isNext ? "Próximo evento" : "Pivo&Code";
+// Sin ficha propia, la tarjeta abre el vídeo en el modal (comportamiento de siempre).
+const opensVideo = Boolean(videoId && !detailUrl);
 ---
 
-{videoId && !detailUrl && <PivoVideoModal />}
+{opensVideo && <PivoVideoModal />}
 
 <article
   id={id.toString()}
-  data-url={videoId && !detailUrl ? `https://www.youtube.com/embed/${videoId}?si=NjLzFU-ifS-QmXD6` : undefined}
-  data-clip-item={videoId && !detailUrl ? true : undefined}
+  data-url={opensVideo ? `https://www.youtube.com/embed/${videoId}?si=NjLzFU-ifS-QmXD6` : undefined}
+  data-clip-item={opensVideo ? true : undefined}
   data-event-tags={tags.join(",")}
   class:list={[
-    "group relative flex min-h-[350px] min-w-[200px] max-w-[200px] flex-col overflow-hidden rounded-3xl bg-[#356154] select-none md:min-h-[460px] md:max-h-[460px] md:min-w-[330px] md:max-w-[330px]",
-    isNext && "next-pivo",
-    videoId && !detailUrl && "cursor-pointer",
+    "group relative flex w-full min-w-0 flex-col overflow-hidden rounded-3xl bg-black/5 transition-transform duration-200 hover:-translate-y-1 fest:bg-white/5 fest:ring-1 fest:ring-white/10 motion-reduce:transition-none",
+    isNext && "ring-2 ring-accent",
+    opensVideo && "clip-container cursor-pointer",
     customClass,
   ]}
 >
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-90 transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none"
-    style={`background-image:url('${STRAPI_HOST}${image}'),url('/img/pivos/default.png')`}
-  ></div>
-
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 z-10 bg-gradient-to-b from-black/5 via-black/15 to-black/90"
-  ></div>
-
-  <div class="relative z-10 mt-auto flex flex-col gap-4 p-4 pb-16 text-white md:p-5 md:pb-16">
-    <div class="flex flex-wrap gap-1.5">
-      <span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm">
-        {eventLabel}
-      </span>
-      {tags.slice(0, 3).map((tag) => (
-        <span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm">
-          {tag}
+  <div class="relative aspect-[16/10] overflow-hidden bg-black/10">
+    <img
+      src={`${STRAPI_HOST}${image}`}
+      onerror="this.onerror=null;this.src='/img/pivos/default.png'"
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+    />
+    {
+      videoId && (
+        <span class="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-black/75 px-3 py-1 text-[13px] font-semibold text-white">
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="size-3.5" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+          Con vídeo
         </span>
-      ))}
-    </div>
-
-    <h3 class="line-clamp-2 min-h-[3.5rem] text-xl font-bold leading-tight md:text-2xl">
-      {title}
-    </h3>
-
-    <div class="grid grid-cols-1 gap-3 border-t border-white/15 pt-3">
-      <div class="flex min-w-0 items-center gap-3">
-        {
-          speakers && speakers.length > 0 ? (
-            <div class="flex min-w-0 items-center gap-2">
-              {speakers.length === 1 ? (
-                <img
-                  src={`${STRAPI_HOST}${speakers[0].photo}`}
-                  class="size-9 shrink-0 rounded-full border border-white/30 object-cover"
-                  alt={speakers[0].name}
-                />
-              ) : (
-                <div class="flex -space-x-3">
-                  <img
-                    src={`${STRAPI_HOST}${speakers[0].photo}`}
-                    class="size-9 rounded-full border-2 border-white object-cover"
-                    alt={speakers[0].name}
-                  />
-                  <span class="flex size-9 items-center justify-center rounded-full border-2 border-white bg-black/60 text-[10px] font-bold">
-                    +{speakers.length - 1}
-                  </span>
-                </div>
-              )}
-              <span class="min-w-0 truncate text-sm font-medium" title={speakerNames}>
-                {speakerName}
-                {speakers.length > 1 && " y más"}
-              </span>
-            </div>
-          ) : (
-            <span class="text-sm text-white/60">XauenDevs</span>
-          )
-        }
-      </div>
-
-      <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium text-white/75">
-        <span class="inline-flex items-center gap-1.5">
-          <span aria-hidden="true">📅</span>
-          <time datetime={date.toISOString()}>{formatDate(date)}</time>
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-          <span aria-hidden="true">🕐</span>
-          <time>{formatTime(date)}</time>
-        </span>
-        {place && (
-          <span class="inline-flex min-w-0 items-center gap-1.5">
-            <LocationPin class="size-3.5 shrink-0" />
-            <span class="truncate">{place}</span>
-          </span>
-        )}
-      </div>
-    </div>
+      )
+    }
   </div>
 
-  {
-    detailUrl && (
-      <a
-        href={detailUrl}
-        aria-label={`Ver evento: ${title}`}
-        class="absolute bottom-4 right-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/45 px-3.5 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-md transition-all duration-200 hover:border-accent/60 hover:bg-accent hover:text-dark focus-visible:border-accent focus-visible:bg-accent focus-visible:text-dark motion-reduce:transition-none"
-      >
-        Ver evento
-        <span aria-hidden="true" class="text-sm leading-none transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none">↗</span>
-      </a>
-    )
-  }
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <p class="text-sm font-semibold first-letter:uppercase text-black/70 fest:text-white/70">
+      <time datetime={date.toISOString()}>{formatDate(date)} · {formatTime(date)}</time>
+    </p>
+
+    <h3 class="text-lg font-bold leading-snug">
+      {
+        detailUrl ? (
+          <a href={detailUrl} class="after:absolute after:inset-0 after:content-[''] group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4">
+            {title}
+          </a>
+        ) : (
+          title
+        )
+      }
+    </h3>
+
+    <div class="mt-auto flex flex-col gap-2 pt-1 text-sm text-black/75 fest:text-white/75">
+      {
+        speakers && speakers.length > 0 && (
+          <p class="flex min-w-0 items-center gap-2" title={speakerNames}>
+            {speakers[0].photo && (
+              <img src={`${STRAPI_HOST}${speakers[0].photo}`} class="size-7 shrink-0 rounded-full object-cover" alt="" />
+            )}
+            <span class="min-w-0 truncate font-medium text-black fest:text-white">{speakerNames}</span>
+          </p>
+        )
+      }
+      {
+        place && (
+          <p class="flex min-w-0 items-center gap-2">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+            <span class="min-w-0 truncate">{place}</span>
+          </p>
+        )
+      }
+      {
+        tags.length > 1 && (
+          <ul class="flex flex-wrap gap-1.5 pt-1" aria-label="Temas">
+            {tags.filter((tag) => tag !== "Charlas").slice(0, 3).map((tag) => (
+              <li class="rounded-full bg-black/[0.07] px-2.5 py-0.5 text-[13px] font-medium fest:bg-white/10">{tag}</li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
 </article>
-
-<style>
-  .next-pivo::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-    border: 2px solid var(--color-accent);
-    border-radius: 1.5rem;
-    opacity: 0.85;
-  }
-
-  .next-pivo {
-    box-shadow: 0 0 0 1px rgb(246 183 3 / 0.2), 0 20px 50px rgb(0 0 0 / 0.2);
-  }
-
-  article:not(.next-pivo) > div:first-child {
-    filter: grayscale(100%);
-    transition-property: transform, filter;
-  }
-
-  article:not(.next-pivo):hover > div:first-child {
-    filter: grayscale(0%);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    article > div:first-child {
-      transition: none;
-    }
-  }
-</style>

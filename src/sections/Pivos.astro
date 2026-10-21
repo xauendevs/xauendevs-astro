@@ -3,28 +3,27 @@ import PivosContainer from "@/components/PivosContainer.astro";
 ---
 
 <section id="pivos" aria-labelledby="pivos-title">
-  <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
     <div class="max-w-2xl">
-      <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-accent fest:text-season">
-        Comunidad · Tecnología · Jaén
-      </p>
-      <h2 id="pivos-title" class="text-4xl font-black tracking-tight fest:text-white md:text-5xl">
-        Pivo&Code
-      </h2>
-      <p class="mt-3 text-base text-black/65 fest:text-white/70 md:text-lg">
-        Charlas para aprender, compartir lo que sabes y conocer a la gente que
-        hace tecnología en nuestra provincia.
+      <h2 id="pivos-title" class="text-4xl font-black tracking-tight md:text-5xl">Pivo&Code</h2>
+      <p class="mt-3 text-lg text-black/75 fest:text-white/75">
+        Nuestras charlas mensuales para aprender, compartir lo que sabes y conocer a la gente que hace tecnología en
+        Jaén. Estas son las últimas.
       </p>
     </div>
 
     <a
       data-astro-reload
       href="/eventos?tipo=xauen"
-      class="shrink-0 font-semibold underline fest:text-white decoration-accent fest:decoration-season decoration-2 underline-offset-4 hover:text-accent fest:hover:text-season"
+      class="inline-flex min-h-11 shrink-0 items-center self-start rounded-full border-2 border-black px-5 font-bold transition hover:bg-black hover:text-white fest:border-white fest:hover:bg-white fest:hover:text-black md:self-auto"
     >
-      Ver todas las charlas →
+      Ver todas las charlas <span aria-hidden="true" class="ml-1.5">→</span>
     </a>
   </div>
 
-  <PivosContainer server:defer />
+  <PivosContainer server:defer>
+    <div slot="fallback" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+      {[0, 1, 2].map(() => <div class="aspect-[4/5] animate-pulse rounded-3xl bg-black/5 fest:bg-white/5"></div>)}
+    </div>
+  </PivosContainer>
 </section>

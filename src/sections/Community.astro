@@ -1,82 +1,62 @@
 ---
+import { DISCORD_URL } from "@/consts/social-links";
+import SeasonCorner from "@/components/season/SeasonCorner.astro";
+
+// Tres formas de participar, cada una con un destino distinto.
+const ways = [
+  {
+    title: "Ven a la próxima charla",
+    text: "Apúntate, escucha a alguien de aquí contar lo que sabe y quédate a charlar después.",
+    cta: "Ver la próxima Pivo",
+    href: "/proxima-pivo",
+    reload: true,
+  },
+  {
+    title: "Da una charla",
+    text: "¿Tienes algo que contar? Propón una charla, un taller o un evento y lo preparamos contigo.",
+    cta: "Proponer una charla",
+    href: "/proponer-evento",
+  },
+  {
+    title: "Únete al Discord",
+    text: "Ahí avisamos de cada evento, resolvemos dudas y se organiza todo lo demás.",
+    cta: "Entrar al Discord",
+    href: DISCORD_URL,
+    external: true,
+  },
+];
 ---
 
 <section
-  class="relative overflow-hidden rounded-3xl bg-accent fest:bg-season p-7 fest:text-season-ink md:p-10"
+  class="relative overflow-hidden rounded-3xl bg-accent p-7 text-black fest:bg-season fest:text-season-ink md:p-10"
   aria-labelledby="participation-title"
 >
-  <div class="max-w-3xl">
-    <h2 id="participation-title" class="font-bold text-3xl md:text-4xl">
-      ¿Cómo quieres participar?
-    </h2>
-    <p class="mt-4 text-lg md:text-xl font-medium">
-      XauenDevs crece cuando la comunidad comparte, aprende y propone. Elige
-      cómo quieres formar parte.
-    </p>
+  <!-- Telaraña (Halloween) o guirnalda (Navidad) en la esquina; sin temporada no pinta nada -->
+  <SeasonCorner class="pointer-events-none absolute right-0 top-0 hidden w-44 -scale-x-100 opacity-60 navidad:opacity-100 sm:block md:w-56" />
+
+  <div class="relative max-w-3xl">
+    <h2 id="participation-title" class="text-3xl font-black tracking-tight md:text-4xl">¿Cómo quieres participar?</h2>
+    <p class="mt-3 text-lg font-medium md:text-xl">XauenDevs crece cuando la comunidad comparte, aprende y propone.</p>
   </div>
 
-  <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-    <a
-      href="/proponer-evento"
-      class="group rounded-2xl bg-white p-6 fest:text-black transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
-    >
-      <span class="text-3xl" aria-hidden="true">🎤</span>
-      <h3 class="mt-4 text-xl font-bold">Compartir conocimiento</h3>
-      <p class="mt-2 text-base">
-        ¿Tienes algo que contar? Propón una charla, taller o iniciativa para la
-        comunidad.
-      </p>
-      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
-        Proponer una charla →
-      </span>
-    </a>
-
-    <a
-      data-astro-reload
-      href="/eventos?tipo=xauen"
-      class="group rounded-2xl bg-white p-6 fest:text-black transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
-    >
-      <span class="text-3xl" aria-hidden="true">🧠</span>
-      <h3 class="mt-4 text-xl font-bold">Aprender</h3>
-      <p class="mt-2 text-base">
-        Descubre nuevas tecnologías, escucha experiencias y conoce a otros
-        desarrolladores.
-      </p>
-      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
-        Ver próximas charlas →
-      </span>
-    </a>
-
-    <a
-      href="https://discord.gg/CC9e6dtqxQ"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="group rounded-2xl bg-white p-6 fest:text-black transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
-    >
-      <span class="text-3xl" aria-hidden="true">🤝</span>
-      <h3 class="mt-4 text-xl font-bold">Colaborar</h3>
-      <p class="mt-2 text-base">
-        Ayuda a organizar, compartir, comunicar o hacer crecer las actividades
-        de la comunidad.
-      </p>
-      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
-        Únete a Discord →
-      </span>
-    </a>
-
-    <a
-      href="/proponer-evento"
-      class="group rounded-2xl bg-white p-6 fest:text-black transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
-    >
-      <span class="text-3xl" aria-hidden="true">💡</span>
-      <h3 class="mt-4 text-xl font-bold">Proponer una idea</h3>
-      <p class="mt-2 text-base">
-        ¿Tienes una idea para hacer algo en XauenDevs? Cuéntanosla y la
-        estudiamos juntos.
-      </p>
-      <span class="mt-5 inline-block font-semibold underline decoration-2 underline-offset-4">
-        Cuéntanosla →
-      </span>
-    </a>
+  <div class="relative mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+    {
+      ways.map(({ title, text, cta, href, reload, external }) => (
+        <a
+          href={href}
+          data-astro-reload={reload ? "" : undefined}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noopener noreferrer" : undefined}
+          class="group flex flex-col rounded-2xl bg-white p-6 text-black transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
+        >
+          <h3 class="text-xl font-bold">{title}</h3>
+          <p class="mt-2 text-base text-black/80">{text}</p>
+          <span class="mt-5 inline-flex items-center gap-1.5 font-bold underline decoration-2 underline-offset-4">
+            {cta}
+            <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">{external ? "↗" : "→"}</span>
+          </span>
+        </a>
+      ))
+    }
   </div>
 </section>

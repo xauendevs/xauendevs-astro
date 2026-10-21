@@ -8,20 +8,15 @@ import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
   description="Propón un evento tecnológico para incluirlo en la agenda de Jaén Tech Events."
 >
   <main class="flex flex-col gap-12">
-    <header class="relative overflow-hidden rounded-[2.5rem] bg-primary fest:bg-night px-7 py-10 text-white md:px-12 md:py-14">
-      <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-accent/90 blur-3xl fest:hidden"></div>
+    <header class="relative overflow-hidden rounded-3xl bg-black fest:bg-night px-7 py-10 text-white md:px-12 md:py-14">
       <SeasonOverlay />
 
       <div class="relative max-w-3xl">
-        <span class="text-accent text-sm font-bold uppercase tracking-[0.16em]">
-          JAÉN TECH EVENTS
-        </span>
-        <h1 class="mt-5 text-4xl font-black tracking-tight md:text-6xl">
-          ¿Organizas algo tech en Jaén?
+        <h1 class="text-4xl font-black tracking-tight md:text-6xl">
+          Propón un evento
         </h1>
-        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/70 md:text-xl">
-          Cuéntanos qué estás preparando y valoraremos añadirlo a la agenda de
-          la comunidad.
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">
+          ¿Organizas algo tech en Jaén o quieres dar una charla en una Pivo&Code? Cuéntanoslo y te respondemos por email.
         </p>
       </div>
     </header>
@@ -29,12 +24,13 @@ import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
     <section class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
       <form
         id="event-proposal-form"
-        class="flex flex-col gap-7 rounded-[2rem] border border-primary/10 fest:border-season/40 fest:bg-white/[0.03] fest:shadow-[0_0_30px_rgb(var(--season-rgb)_/_0.12)] p-6 md:p-8"
+        class="flex flex-col gap-7 rounded-3xl bg-black/[0.04] p-6 fest:bg-white/[0.04] fest:ring-1 fest:ring-season/40 md:p-8"
+        novalidate
       >
         <div>
           <h2 class="text-2xl font-bold">Cuéntanos sobre el evento</h2>
-          <p class="mt-2 text-primary/60 fest:text-white/60">
-            Rellena los datos básicos y envíanos la propuesta directamente.
+          <p class="mt-2 text-base text-black/80 fest:text-white/80">
+            Los campos con * son obligatorios. Tardarás un par de minutos.
           </p>
         </div>
 
@@ -47,36 +43,36 @@ import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
 
         <div class="grid gap-6 md:grid-cols-2">
           <label class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Nombre del evento *</span>
+            <span class="text-base font-semibold">Título del evento o charla *</span>
             <input
               required
               name="title"
               type="text"
-              placeholder="Ej. Meetup de JavaScript"
-              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              placeholder="Ej. Introducción a Rust"
+              class="min-h-12 rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
             />
           </label>
 
           <label class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Organizador *</span>
+            <span class="text-base font-semibold">Quién lo organiza *</span>
             <input
               required
               name="organizer"
               type="text"
-              placeholder="Comunidad, empresa..."
-              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              placeholder="Tu nombre, comunidad o empresa"
+              class="min-h-12 rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
             />
           </label>
 
           <label class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Email de contacto *</span>
+            <span class="text-base font-semibold">Email de contacto *</span>
             <input
               required
               name="email"
               type="email"
               autocomplete="email"
               placeholder="tu@email.com"
-              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="min-h-12 rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
             />
           </label>
 
@@ -84,79 +80,79 @@ import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
 
         <div class="grid gap-6 md:grid-cols-2">
           <label class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Fecha *</span>
+            <span class="text-base font-semibold">Fecha prevista *</span>
             <input
               required
               name="date"
               type="date"
-              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              data-min-today
+              class="min-h-12 rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
             />
           </label>
 
           <label class="flex flex-col gap-2">
-            <span class="text-sm font-semibold">Lugar *</span>
+            <span class="text-base font-semibold">Lugar *</span>
             <input
               required
               name="place"
               type="text"
               placeholder="Jaén, Universidad de Jaén..."
-              class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              class="min-h-12 rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
             />
           </label>
         </div>
 
         <label class="flex flex-col gap-2">
-          <span class="text-sm font-semibold">Web del evento</span>
+          <span class="text-base font-semibold">Web del evento</span>
           <input
             name="url"
             type="url"
             placeholder="https://..."
-            class="rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            class="min-h-12 rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
           />
         </label>
 
         <label class="flex flex-col gap-2">
-          <span class="text-sm font-semibold">Cuéntanos un poco más *</span>
+          <span class="text-base font-semibold">Cuéntanos un poco más *</span>
           <textarea
             required
             name="description"
             rows="5"
             placeholder="¿De qué trata? ¿A quién va dirigido? ¿Qué tipo de evento es?"
-            class="resize-y rounded-2xl border border-primary/15 fest:border-white/15 bg-primary/[0.02] fest:bg-white/[0.02] px-4 py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            class="resize-y rounded-2xl border border-black/20 bg-white px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-accent aria-[invalid=true]:border-red-700 fest:border-white/20 fest:bg-white/[0.06] fest:text-white"
           ></textarea>
         </label>
 
         <button
           type="submit"
-          class="w-fit rounded-full bg-accent px-6 py-3 font-bold fest:text-season-ink transition hover:-translate-y-0.5 hover:shadow-lg"
+          class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-black px-6 py-3 font-bold text-white transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60 fest:bg-season fest:text-season-ink sm:w-fit"
         >
           Enviar propuesta →
         </button>
 
         <p
           id="proposal-status"
-          class="hidden rounded-2xl border border-accent/40 bg-accent/10 p-4 text-sm font-semibold"
+          class="hidden rounded-2xl border-l-4 border-accent bg-white p-4 text-base font-semibold text-black"
+          tabindex="-1"
           role="status"
           aria-live="polite"
         ></p>
       </form>
 
-      <aside class="flex h-fit flex-col gap-5 rounded-[2rem] bg-accent p-7 fest:text-season-ink">
-        <span class="text-xs font-bold uppercase tracking-[0.16em]">
-          ¿Qué buscamos?
-        </span>
+      <aside class="flex h-fit flex-col gap-4 rounded-3xl bg-accent p-7 text-black fest:bg-season fest:text-season-ink">
         <h2 class="text-2xl font-black leading-tight">
-          Cosas que muevan la comunidad tech de Jaén.
+          ¿Qué buscamos?
         </h2>
-        <ul class="flex flex-col gap-3 text-sm leading-relaxed">
+        <p class="text-base">Cosas que muevan la comunidad tech de Jaén:</p>
+        <ul class="flex flex-col gap-2 text-base leading-relaxed">
           <li>→ Charlas y meetups</li>
           <li>→ Talleres y workshops</li>
           <li>→ Hackathons y retos</li>
           <li>→ Conferencias</li>
           <li>→ Actividades de comunidades tech</li>
         </ul>
-        <p class="border-t border-primary/15 fest:border-season-ink/15 pt-5 text-sm text-primary/65 fest:text-season-ink/70">
-          Revisaremos cada propuesta antes de incorporarla a la agenda.
+        <p class="border-t border-black/15 pt-5 text-base fest:border-season-ink/15">
+          Revisamos cada propuesta antes de añadirla a la agenda y te escribimos si necesitamos algo más.
         </p>
       </aside>
     </section>
@@ -167,10 +163,29 @@ import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
     const status = document.querySelector<HTMLElement>("#proposal-status");
     const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
 
+    // Rellenar desde ?titulo= (enlaces desde la portada) y no dejar elegir fechas pasadas.
+    const params = new URLSearchParams(location.search);
+    const titleInput = form?.querySelector<HTMLInputElement>('input[name="title"]');
+    if (titleInput && params.get("titulo")) titleInput.value = params.get("titulo")!.slice(0, 120);
+    const dateInput = form?.querySelector<HTMLInputElement>("[data-min-today]");
+    if (dateInput) dateInput.min = new Date().toLocaleDateString("en-CA");
+
+    // Marca los campos que fallan y lleva el foco al primero; el navegador muestra el motivo.
+    const markInvalid = () => {
+      if (!form) return false;
+      const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input:not([tabindex='-1']), textarea"));
+      fields.forEach((field) => field.setAttribute("aria-invalid", String(!field.checkValidity())));
+      return form.reportValidity();
+    };
+    form?.addEventListener("input", (event) => {
+      const field = event.target as HTMLInputElement;
+      if (field.getAttribute("aria-invalid") === "true" && field.checkValidity()) field.setAttribute("aria-invalid", "false");
+    });
+
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      if (!form.reportValidity() || !status || !submitButton) return;
+      if (!markInvalid() || !status || !submitButton) return;
 
       const data = Object.fromEntries(new FormData(form).entries());
       status.classList.remove("hidden");
@@ -188,8 +203,9 @@ import SeasonOverlay from "@/components/season/SeasonOverlay.astro";
 
         if (!response.ok) throw new Error(result.error || "No se pudo enviar la propuesta.");
 
-        status.textContent = "Propuesta enviada correctamente. Nos pondremos en contacto contigo si necesitamos más información.";
+        status.textContent = "¡Gracias! Hemos recibido tu propuesta. Te escribiremos al email que nos has dejado.";
         form.reset();
+        status.focus();
       } catch (error) {
         status.textContent = error instanceof Error
           ? error.message

@@ -4,7 +4,7 @@ interface Props {
   time: string;
   duration?: string;
   place?: string;
-  organizer: string;
+  organizer?: string;
   mapsUrl?: string;
   registrationStatus?: "open" | "closed";
 }
@@ -13,20 +13,18 @@ const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = 
 ---
 
 <section class="min-w-0" aria-labelledby="event-facts-title">
-  <h2 id="event-facts-title" class="text-accent-text text-xs font-bold uppercase tracking-[0.16em]">
-    Datos del evento
-  </h2>
+  <h2 id="event-facts-title" class="sr-only">Datos del evento</h2>
 
-  <div class="mt-4 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-    <div class="min-w-0 rounded-2xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] p-4 sm:p-5">
-      <span class="text-xs font-semibold uppercase tracking-wide text-primary/45 fest:text-white/45">Cuándo</span>
-      <p class="mt-2 break-words text-base font-bold capitalize sm:text-lg">{date}</p>
-      <p class="mt-1 break-words text-sm text-primary/55 fest:text-white/55">A las {time}</p>
-      {duration && <p class="mt-2 text-xs font-semibold uppercase tracking-wide text-primary/45 fest:text-white/45">{duration}</p>}
+  <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+    <div class="min-w-0 rounded-2xl bg-black/[0.04] fest:bg-white/[0.05] p-4 sm:p-5">
+      <span class="text-sm font-medium text-black/70 fest:text-white/70">Cuándo</span>
+      <p class="mt-2 break-words text-base font-bold first-letter:uppercase sm:text-lg">{date}</p>
+      <p class="mt-1 break-words text-sm text-black/75 fest:text-white/75">A las {time}</p>
+      {duration && <p class="mt-1 text-sm text-black/75 fest:text-white/75">{duration}</p>}
     </div>
 
-    <div class="min-w-0 rounded-2xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] p-4 sm:p-5">
-      <span class="text-xs font-semibold uppercase tracking-wide text-primary/45 fest:text-white/45">Dónde</span>
+    <div class="min-w-0 rounded-2xl bg-black/[0.04] fest:bg-white/[0.05] p-4 sm:p-5">
+      <span class="text-sm font-medium text-black/70 fest:text-white/70">Dónde</span>
       <p class="mt-2 break-words text-base font-bold sm:text-lg">{place || "Por confirmar"}</p>
       {
         place && mapsUrl && (
@@ -34,7 +32,7 @@ const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = 
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-primary/65 fest:text-white/65 underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-primary fest:hover:text-white"
+            class="mt-2 inline-flex items-center gap-1 text-sm font-bold underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-primary fest:hover:text-white"
           >
             Cómo llegar <span aria-hidden="true">↗</span>
           </a>
@@ -42,18 +40,20 @@ const { date, time, duration, place, organizer, mapsUrl, registrationStatus } = 
       }
     </div>
 
-    <div class="min-w-0 rounded-2xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] p-4 sm:p-5">
-      <span class="text-xs font-semibold uppercase tracking-wide text-primary/45 fest:text-white/45">Organiza</span>
-      <p class="mt-2 break-words text-base font-bold sm:text-lg">{organizer}</p>
-    </div>
+    {organizer && (
+      <div class="min-w-0 rounded-2xl bg-black/[0.04] fest:bg-white/[0.05] p-4 sm:p-5">
+        <span class="text-sm font-medium text-black/70 fest:text-white/70">Organiza</span>
+        <p class="mt-2 break-words text-base font-bold sm:text-lg">{organizer}</p>
+      </div>
+    )}
 
     {registrationStatus && (
-      <div class="min-w-0 rounded-2xl border border-primary/10 fest:border-white/10 bg-primary/[0.025] fest:bg-white/[0.025] p-4 sm:p-5">
-        <span class="text-xs font-semibold uppercase tracking-wide text-primary/45 fest:text-white/45">Inscripción</span>
+      <div class="min-w-0 rounded-2xl bg-black/[0.04] fest:bg-white/[0.05] p-4 sm:p-5">
+        <span class="text-sm font-medium text-black/70 fest:text-white/70">Inscripción</span>
         <p class="mt-2 break-words text-base font-bold sm:text-lg">
           {registrationStatus === "open" ? "Inscripción abierta" : "Inscripción cerrada"}
         </p>
-        <p class="mt-1 break-words text-sm text-primary/55 fest:text-white/55">
+        <p class="mt-1 break-words text-sm text-black/75 fest:text-white/75">
           {registrationStatus === "open"
             ? "La asistencia se confirma mediante el enlace que recibirás por email."
             : "Este evento ya ha terminado y no admite nuevas inscripciones."}

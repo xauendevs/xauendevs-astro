@@ -1,6 +1,7 @@
 const tagRules: Array<[string, RegExp]> = [
   ["IA", /\bIA\b|inteligencia artificial|prompt/i],
-  ["Ciberseguridad", /ciberseguridad|seguridad|RAT|FIDO|WebAuthn/i],
+  // «RAT» va en mayúsculas y como palabra suelta: con /i también casaba «ahórrate» o «tratamientos».
+  ["Ciberseguridad", /[Cc]iberseguridad|[Ss]eguridad|\bRAT\b|FIDO|WebAuthn|[Tt]royano|[Bb]ounties|[Bb]rechas/],
   ["DevOps", /devops|ci\/cd|docker|kubernetes/i],
   ["Cloud", /cloud|aws|azure|vercel/i],
   ["Web", /web|frontend|backend|javascript|typescript/i],

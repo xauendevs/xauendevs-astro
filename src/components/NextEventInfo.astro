@@ -2,33 +2,28 @@
 import { formatDateTime } from "@/lib/format-date";
 import { getPivosStrapi } from "@/lib/get-info-pivos";
 import { slugify } from "@/lib/event-slug";
-const pivos = await getPivosStrapi();
-const nextEvent = pivos?.find((pivo) => {
-  return pivo.date.getTime() > new Date().getTime();
-});
+
+const now = Date.now();
+const nextEvent = ((await getPivosStrapi()) ?? [])
+  .filter((pivo) => pivo.date.getTime() > now)
+  .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
 ---
 
-{
-  nextEvent && (
-    <>
-      <span class="ml-2">
-        <img src="/img/calendar_today.svg" class="size-4 lg:size-5 navidad:invert" />
-      </span>
-      <a
-        href={`/eventos/${slugify(nextEvent.title)}`}
-        aria-label={`Ver próximo evento: ${nextEvent.title}`}
-      >
-        <div class="flex flex-col ml-2 max-w-60">
-          <span
-            class="font-bold text-ellipsis whitespace-nowrap overflow-hidden"
-            title={nextEvent.title}
-          >
-            {nextEvent.title}
-          </span>
-          <span> {formatDateTime(nextEvent.date)} </span>
-        </div>
-      </a>
-    </>
-  )
-}
-{!nextEvent && <span class="ml-2">No hay evento programado</span>}
+<a
+  href={nextEvent ? `/eventos/${slugify(nextEvent.title)}` : "/eventos"}
+  aria-label={nextEvent ? `Próxima Pivo&Code: ${nextEvent.title}, ${formatDateTime(nextEvent.date)}` : "Ver la agenda"}
+  class="group inline-flex min-h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm text-black transition hover:-translate-y-0.5 fest:text-season-ink motion-reduce:transition-none"
+>
+  {
+    nextEvent ? (
+      <>
+        <span class="font-bold">Próxima Pivo</span>
+        <span aria-hidden="true">·</span>
+        <span class="font-semibold">{formatDateTime(nextEvent.date)}</span>
+      </>
+    ) : (
+      <span class="font-bold">Ver la agenda</span>
+    )
+  }
+  <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">→</span>
+</a>
