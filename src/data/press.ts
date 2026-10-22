@@ -22,6 +22,16 @@ export interface PressEntry {
 }
 
 export const PRESS: Array<string | PressEntry> = [
+  // Facebook no da titular ni fecha y su imagen caduca: todo a mano.
+  {
+    url: "https://www.facebook.com/AyuntamientodeJaen/posts/1548790643948886/",
+    date: "2026-10-22",
+    title: "El Banco de España acoge la 42.ª edición de Pivo&Code",
+    description:
+      "Encuentro de la comunidad tecnológica jiennense para compartir conocimientos, conectar profesionales y debatir.",
+    image: "/img/prensa/ayuntamiento-jaen-pivocode-42.jpg",
+    outlet: "Ayuntamiento de Jaén",
+  },
   "https://www.canalsurmas.es/videos/409399-noticias-2-ja%C3%A9n-mi%C3%A9rcoles-30-de-septiembre-canal-sur",
   "https://www.diariojaen.es/jaen/el-banco-de-espana-acogera-un-encuentro-para-analizar-el-impacto-de-la-ia-en-el-futuro-del-desarrollo-de-software-NA11666586",
   "https://www.horajaen.com/2026/10/20/banco-de-espana-jaen-pivo-code-42-inteligencia-artificial/",
