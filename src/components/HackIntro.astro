@@ -3,7 +3,7 @@
  * Broma de temporada (Halloween, Navidad…): al entrar, la web "se hackea" con un terminal falso, salta una
  * alerta y acaba revelando que era una broma. Es 100 % local: no hace peticiones ni usa cookies.
  *
- * - Sale una sola vez por sesión (sessionStorage).
+ * - Sale una sola vez por temporada en cada navegador (localStorage, clave `xd-hack:<temporada>:<año>`).
  * - Se salta con clic/toque, Esc, Enter o Espacio.
  * - No se muestra con "reducir movimiento" ni a bots/buscadores (para que no indexen "hackeado").
  * - Probarla: añade `?hack=1` a la URL. Saltarla siempre: `?nohack`.
@@ -23,8 +23,11 @@ const { season } = Astro.props;
       var q = location.search;
       if (/[?&]nohack(=|&|$)/.test(q)) return;
       var force = /[?&]hack(=1)?(&|$)/.test(q);
+      // Una vez por temporada y año (enero cuenta como la Navidad del año anterior).
+      var now = new Date();
+      var seenKey = "xd-hack:" + season + ":" + (now.getFullYear() - (now.getMonth() < 6 ? 1 : 0));
       if (!force) {
-        if (sessionStorage.getItem("xd-hack")) return;
+        if (localStorage.getItem(seenKey)) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         if (navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|pagespeed|headless|preview/i.test(navigator.userAgent)) return;
       }
@@ -33,6 +36,7 @@ const { season } = Astro.props;
       root.setAttribute("role", "dialog");
       root.setAttribute("aria-modal", "true");
       root.setAttribute("aria-label", "Animación de temporada: una broma de hackeo ficticio");
+      root.dataset.seenKey = seenKey; // hack-intro.ts la guarda al arrancar
       root.setAttribute("data-theme", season); // aplica los colores de la temporada aunque el <body> no los tenga (?hack=1)
       document.body.insertBefore(root, document.body.firstChild);
       document.documentElement.setAttribute("data-hack", "on");
