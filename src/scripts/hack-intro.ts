@@ -83,7 +83,7 @@ export async function runHackIntro(): Promise<void> {
   if (!root || root.dataset.run === "1") return;
   root.dataset.run = "1";
   try {
-    sessionStorage.setItem(SEEN_KEY, "1");
+    localStorage.setItem(root.dataset.seenKey ?? SEEN_KEY, "1");
   } catch {
     /* navegación privada: no pasa nada, simplemente podría repetirse */
   }
