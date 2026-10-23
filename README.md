@@ -169,5 +169,5 @@ Roles: `admin` (ve el panel) y `member` (puede iniciar sesión, pero aún no tie
 ### Cómo está montado
 - `src/lib/password.ts`: hash PBKDF2-SHA256 (600.000 iteraciones, sal por usuario). Lo usan el servidor y el script.
 - `src/lib/auth.ts`: JWT HS256 en una cookie `HttpOnly`, `Secure`, `SameSite=Strict` con prefijo `__Host-`, de 8 h. En cada petición se vuelve a leer el usuario de la base, así que borrarlo o cambiarle la contraseña o el rol surte efecto al momento.
-- `POST /api/auth/login` y `/api/auth/logout`: solo aceptan peticiones desde la propia web (cabecera `Origin`). Máximo 10 intentos por IP cada 15 min y bloqueo de la cuenta 15 min tras 5 fallos. Siempre responde lo mismo, exista o no el email.
+- `POST /api/auth/login` y `/api/auth/logout`: solo aceptan peticiones desde la propia web (`Sec-Fetch-Site`, o `Origin` frente al host si el navegador no lo envía). Máximo 10 intentos por IP cada 15 min y bloqueo de la cuenta 15 min tras 5 fallos. Siempre responde lo mismo, exista o no el email.
 - `src/pages/[panel].astro`: el panel. Los datos se pintan en el servidor y la página nunca se guarda en caché.

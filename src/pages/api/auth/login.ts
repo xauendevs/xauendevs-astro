@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { turso } from "@/lib/turso";
-import { createSessionToken, ensureAuthTables, setSessionCookie } from "@/lib/auth";
+import { createSessionToken, ensureAuthTables, isSameOrigin, setSessionCookie } from "@/lib/auth";
 import { DUMMY_HASH, normalizeUserEmail, verifyPassword } from "@/lib/password";
 import { hashValue } from "../rsvp";
 
@@ -21,9 +21,9 @@ const getClientIp = (request: Request) =>
   request.headers.get("x-real-ip")?.trim() ||
   "unknown";
 
-export const POST: APIRoute = async ({ request, cookies, url }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   // Solo se aceptan envíos desde la propia web.
-  if (request.headers.get("origin") !== url.origin) return json({ error: "Origen no permitido." }, 403);
+  if (!isSameOrigin(request)) return json({ error: "Origen no permitido." }, 403);
 
   try {
     const body = await request.json().catch(() => ({}));
