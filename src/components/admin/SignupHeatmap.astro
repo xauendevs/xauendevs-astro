@@ -1,0 +1,42 @@
+---
+interface Props {
+  heatmap: number[][];
+}
+
+// Cuándo se apunta la gente: día de la semana × franja de 3 horas (hora de Madrid).
+// Escala secuencial de un solo tono: del color de la superficie al de «confirmadas».
+const { heatmap } = Astro.props;
+const max = Math.max(...heatmap.flat(), 1);
+const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+const bands = ["0–3 h", "3–6 h", "6–9 h", "9–12 h", "12–15 h", "15–18 h", "18–21 h", "21–24 h"];
+const fill = (value: number) =>
+  value === 0 ? "var(--viz-track)" : `color-mix(in oklab, var(--viz-confirmed) ${Math.round(18 + (value / max) * 82)}%, var(--viz-surface))`;
+---
+
+<div class="grid grid-cols-[2.25rem_repeat(8,minmax(0,1fr))] gap-[3px] sm:gap-1" role="img"
+  aria-label={`Inscripciones por día y hora. Máximo: ${max} en una franja.`}>
+  <span></span>
+  {bands.map((band, index) => (
+    <span class="pb-1 text-center text-[10px] text-black/50 sm:text-xs fest:text-white/50">{index % 2 === 0 ? band.split("–")[0] : ""}</span>
+  ))}
+  {heatmap.map((row, day) => (
+    <>
+      <span class="self-center text-xs text-black/60 fest:text-white/60">{days[day].slice(0, 3)}</span>
+      {row.map((value, band) => (
+        <span
+          class="viz-hit aspect-square rounded-[4px] outline-none transition-transform hover:scale-110 focus-visible:scale-110 sm:aspect-[4/3]"
+          style={`background: ${fill(value)}`}
+          data-tip={`${days[day]}, ${bands[band]}\n${value} ${value === 1 ? "inscripción" : "inscripciones"}`}
+        ></span>
+      ))}
+    </>
+  ))}
+</div>
+
+<div class="mt-3 flex items-center justify-end gap-2 text-xs text-black/50 fest:text-white/50">
+  Menos
+  {[0, 0.25, 0.5, 0.75, 1].map((step) => (
+    <span class="h-3 w-3 rounded-[3px]" style={`background: ${step === 0 ? "var(--viz-track)" : `color-mix(in oklab, var(--viz-confirmed) ${Math.round(18 + step * 82)}%, var(--viz-surface))`}`}></span>
+  ))}
+  Más
+</div>

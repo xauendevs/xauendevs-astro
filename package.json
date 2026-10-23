@@ -7,7 +7,8 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "user:create": "node --env-file-if-exists=.env tools/create-user.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

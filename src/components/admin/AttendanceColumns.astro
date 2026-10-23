@@ -1,0 +1,59 @@
+---
+import type { RsvpStats } from "@/lib/rsvp-stats";
+import { niceMax } from "./scale";
+
+interface Props {
+  events: RsvpStats[];
+}
+
+// Columnas apiladas: confirmadas abajo y pendientes encima. Cronológico, la última a la derecha.
+const { events } = Astro.props;
+const max = niceMax(Math.max(...events.map((event) => event.confirmed + event.pending), 1));
+const ticks = [max, max / 2, 0];
+const pct = (value: number) => (value / max) * 100;
+const shortDate = (date: Date | null) =>
+  date ? date.toLocaleDateString("es-ES", { day: "numeric", month: "short", timeZone: "Europe/Madrid" }).replace(".", "") : "—";
+---
+
+<div class="flex flex-wrap gap-x-5 gap-y-1 text-sm text-black/70 fest:text-white/70">
+  <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-sm" style="background: var(--viz-confirmed)"></span>Confirmadas</span>
+  <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-sm" style="background: var(--viz-pending)"></span>Pendientes</span>
+</div>
+
+<div class="relative mt-5 h-60 pl-8">
+  {ticks.map((tick) => (
+    <div class="absolute inset-x-0 flex items-center" style={`bottom: ${pct(tick)}%`}>
+      <span class="w-8 -translate-y-px pr-2 text-right text-xs tabular-nums text-black/50 fest:text-white/50">{tick}</span>
+      <span class="h-px flex-1" style={`background: var(${tick === 0 ? "--viz-axis" : "--viz-grid"})`}></span>
+    </div>
+  ))}
+
+  <div class="absolute inset-y-0 left-8 right-0 flex">
+    {events.map((event) => {
+      const total = event.confirmed + event.pending;
+      return (
+        <div
+          class="viz-hit group relative flex-1 outline-none"
+          tabindex="0"
+          data-tip={`${event.title}\n${shortDate(event.date)} · ${event.confirmed} confirmadas · ${event.pending} pendientes`}
+          aria-label={`${event.title}: ${event.confirmed} confirmadas y ${event.pending} pendientes`}
+        >
+          <div class="viz-grow absolute bottom-0 left-1/2 flex w-[min(24px,60%)] -translate-x-1/2 flex-col-reverse gap-[2px]" style={`height: ${pct(total)}%`}>
+            {event.confirmed > 0 && <div class="w-full rounded-t-[4px] [&:not(:last-child)]:rounded-none" style={`flex: ${event.confirmed}; background: var(--viz-confirmed)`}></div>}
+            {event.pending > 0 && <div class="w-full rounded-t-[4px]" style={`flex: ${event.pending}; background: var(--viz-pending)`}></div>}
+          </div>
+          {total > 0 && (
+            <span class="absolute left-1/2 -translate-x-1/2 text-xs font-bold tabular-nums" style={`bottom: calc(${pct(total)}% + 6px)`}>{event.confirmed}</span>
+          )}
+          <span class="absolute inset-0 rounded-md bg-black/[0.04] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 fest:bg-white/[0.06]"></span>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+<div class="ml-8 mt-2 flex">
+  {events.map((event) => (
+    <span class="flex-1 truncate text-center text-xs text-black/60 fest:text-white/60">{shortDate(event.date)}</span>
+  ))}
+</div>

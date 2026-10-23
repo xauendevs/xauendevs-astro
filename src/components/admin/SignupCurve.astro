@@ -1,0 +1,63 @@
+---
+import { CURVE_DAYS, type SignupCurve } from "@/lib/rsvp-stats";
+import { niceMax } from "./scale";
+
+interface Props {
+  current: SignupCurve | null;
+  previous: SignupCurve | null;
+}
+
+// Inscripciones acumuladas en los días previos a la Pivo: la próxima frente a la anterior.
+// Las líneas van en un SVG estirado (trazo sin escalar); puntos y textos en HTML para que no se deformen.
+const { current, previous } = Astro.props;
+const max = niceMax(Math.max(...(current?.points ?? [0]), ...(previous?.points ?? [0]), 1));
+const ticks = [max, max / 2, 0];
+const x = (index: number) => (index / CURVE_DAYS) * 100;
+const y = (value: number) => 100 - (value / max) * 100;
+const path = (points: number[]) => points.map((value, index) => `${index === 0 ? "M" : "L"}${x(index)},${y(value)}`).join(" ");
+const area = (points: number[]) => `${path(points)} L${x(points.length - 1)},100 L0,100 Z`;
+const last = current ? current.points.length - 1 : -1;
+const series = JSON.stringify({ current: current?.points ?? [], previous: previous?.points ?? [], days: CURVE_DAYS, max });
+---
+
+<div class="flex flex-wrap gap-x-5 gap-y-1 text-sm text-black/70 fest:text-white/70">
+  {current && <span class="inline-flex items-center gap-2"><span class="h-0.5 w-4 rounded-full" style="background: var(--viz-confirmed)"></span>Próxima Pivo</span>}
+  {previous && <span class="inline-flex items-center gap-2"><span class="h-0.5 w-4 rounded-full" style="background: var(--viz-muted)"></span>Pivo anterior</span>}
+</div>
+
+<div class="relative mt-5 h-60 pl-8">
+  {ticks.map((tick) => (
+    <div class="absolute inset-x-0 flex items-center" style={`top: ${y(tick)}%`}>
+      <span class="w-8 -translate-y-px pr-2 text-right text-xs tabular-nums text-black/50 fest:text-white/50">{tick}</span>
+      <span class="h-px flex-1" style={`background: var(${tick === 0 ? "--viz-axis" : "--viz-grid"})`}></span>
+    </div>
+  ))}
+
+  <div class="viz-curve absolute inset-y-0 left-8 right-0" data-series={series} role="img"
+    aria-label={`Inscripciones acumuladas: ${current ? `la próxima Pivo lleva ${current.points[last]}` : "sin datos de la próxima Pivo"}${previous ? `; la anterior llegó a ${previous.points[CURVE_DAYS]}` : ""}.`}>
+    <svg class="viz-reveal absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      {previous && <path d={path(previous.points)} fill="none" stroke="var(--viz-muted)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />}
+      {current && <path d={area(current.points)} style="fill: var(--viz-confirmed); opacity: 0.12" />}
+      {current && <path d={path(current.points)} fill="none" stroke="var(--viz-confirmed)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />}
+    </svg>
+
+    {current && (
+      <>
+        <span class="absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2" style={`left: ${x(last)}%; top: ${y(current.points[last])}%; background: var(--viz-confirmed); --tw-ring-color: var(--viz-surface)`}></span>
+        <span class="absolute pb-2 text-xs font-bold tabular-nums" style={`left: ${x(last)}%; top: ${y(current.points[last])}%; transform: translate(${last > CURVE_DAYS - 3 ? "-100%" : "-50%"}, -100%)`}>{current.points[last]}</span>
+      </>
+    )}
+
+    <!-- Capa de hover: línea vertical, puntos y tooltip los mueve el script de la página -->
+    <span class="viz-crosshair pointer-events-none absolute inset-y-0 hidden w-px" style="background: var(--viz-axis)"></span>
+    <span class="viz-dot-current pointer-events-none absolute hidden h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2" style="background: var(--viz-confirmed); --tw-ring-color: var(--viz-surface)"></span>
+    <span class="viz-dot-previous pointer-events-none absolute hidden h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2" style="background: var(--viz-muted); --tw-ring-color: var(--viz-surface)"></span>
+  </div>
+</div>
+
+<div class="ml-8 mt-2 flex justify-between text-xs text-black/60 fest:text-white/60">
+  <span>{CURVE_DAYS} días antes</span>
+  <span>14</span>
+  <span>7</span>
+  <span>Día D</span>
+</div>
