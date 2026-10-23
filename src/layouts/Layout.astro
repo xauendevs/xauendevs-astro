@@ -29,7 +29,8 @@ const {
 // desconocido) la web se renderiza exactamente igual que antes.
 const season = await getSeason(Astro);
 // El tema puede cambiar sin desplegar: la CDN de Vercel lo refresca como mucho cada minuto.
-Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+// Las páginas privadas (RSVP, panel) no se guardan en ninguna caché.
+Astro.response.headers.set("Cache-Control", isPrivate ? "private, no-store" : "public, s-maxage=60, stale-while-revalidate=300");
 // `?hack=1` fuerza la broma para probarla, aunque la temporada o `hack_intro` la tengan apagada.
 const forceHack = Astro.url.searchParams.get("hack") === "1";
 // Con `?hack=1` y sin temporada, la broma sale con los textos de Halloween.

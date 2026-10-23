@@ -141,3 +141,33 @@ Alternativa sin Global Config: variables `SITE_THEME` y `SITE_HACK_INTRO` (**req
 4. Decoraciones: añadir su rama en `SeasonMark/Flyer/Corner` y los textos de la broma en `COPY` (`src/scripts/hack-intro.ts`).
 
 Broma de entrada: `/?hack=1` la fuerza (también sin temporada) · `/?nohack` la salta.
+
+## Panel interno y usuarios
+
+Panel con la asistencia a cada Pivo (solo recuentos, nunca nombres ni emails), con login de usuario y contraseña.
+
+### Variables (Vercel → *Settings* → *Environment Variables*, marcadas como **Sensitive**)
+- `JWT_SECRET`: firma las sesiones. Mínimo 32 caracteres; cambiarlo cierra todas las sesiones abiertas.
+- `ADMIN_PATH`: ruta del panel (`https://xauendevs.io/<ADMIN_PATH>`). Mínimo 16 caracteres y un solo tramo (sin `/`). No está en el código: cualquier otra ruta da el 404 normal.
+
+Sin alguna de las dos (o con valores demasiado cortos), el panel no existe y el login no emite sesiones. Para generarlas:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+```
+
+### Usuarios
+No hay registro público: las cuentas se crean con un script que escribe directamente en Turso (usa las credenciales de `.env`). La contraseña se pide por teclado, sin mostrarla, y debe tener al menos 12 caracteres.
+
+```bash
+pnpm user:create --email ana@example.com --name "Ana" --role admin
+pnpm user:create --email ana@example.com --update   # nueva contraseña; cierra sus sesiones
+```
+
+Roles: `admin` (ve el panel) y `member` (puede iniciar sesión, pero aún no tiene nada que ver).
+
+### Cómo está montado
+- `src/lib/password.ts`: hash PBKDF2-SHA256 (600.000 iteraciones, sal por usuario). Lo usan el servidor y el script.
+- `src/lib/auth.ts`: JWT HS256 en una cookie `HttpOnly`, `Secure`, `SameSite=Strict` con prefijo `__Host-`, de 8 h. En cada petición se vuelve a leer el usuario de la base, así que borrarlo o cambiarle la contraseña o el rol surte efecto al momento.
+- `POST /api/auth/login` y `/api/auth/logout`: solo aceptan peticiones desde la propia web (cabecera `Origin`). Máximo 10 intentos por IP cada 15 min y bloqueo de la cuenta 15 min tras 5 fallos. Siempre responde lo mismo, exista o no el email.
+- `src/pages/[panel].astro`: el panel. Los datos se pintan en el servidor y la página nunca se guarda en caché.

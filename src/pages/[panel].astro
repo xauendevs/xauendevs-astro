@@ -1,0 +1,406 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AttendanceColumns from "@/components/admin/AttendanceColumns.astro";
+import SignupCurve from "@/components/admin/SignupCurve.astro";
+import SignupHeatmap from "@/components/admin/SignupHeatmap.astro";
+import { getSessionUser } from "@/lib/auth";
+import { getDashboard, type Dashboard } from "@/lib/rsvp-stats";
+
+// El panel vive en /<ADMIN_PATH>, una ruta que solo está en los secrets de Vercel.
+// Cualquier otra ruta de un nivel que no exista cae aquí y responde con el 404 normal de la web.
+export const prerender = false;
+
+const MIN_PATH_LENGTH = 16;
+const COLUMN_EVENTS = 10;
+const adminPath = import.meta.env.ADMIN_PATH;
+if (!adminPath || adminPath.length < MIN_PATH_LENGTH || Astro.params.panel !== adminPath) {
+  return new Response(null, { status: 404 });
+}
+
+const user = await getSessionUser(Astro.cookies);
+const isAdmin = user?.role === "admin";
+
+let dashboard: Dashboard | null = null;
+let loadError = false;
+if (isAdmin) {
+  try {
+    dashboard = await getDashboard();
+  } catch (error) {
+    console.error("Panel stats error:", error);
+    loadError = true;
+  }
+}
+
+const number = (value: number, digits = 0) => value.toLocaleString("es-ES", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+const percent = (value: number) => `${Math.round(value * 100)} %`;
+const formatDate = (date: Date | null, options: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) =>
+  date ? date.toLocaleDateString("es-ES", { ...options, timeZone: "Europe/Madrid" }) : "—";
+const formatHours = (hours: number) => (hours < 1 ? "< 1 h" : hours < 48 ? `${Math.round(hours)} h` : `${Math.round(hours / 24)} días`);
+const countdown = (days: number) => (days === 0 ? "Es hoy" : days === 1 ? "Mañana" : `Faltan ${days} días`);
+
+const next = dashboard?.next ?? null;
+const totals = dashboard?.totals;
+const columnEvents = dashboard
+  ? dashboard.events
+      .filter((event) => event.date && (event.confirmed + event.pending > 0 || event.id === next?.id))
+      .slice(0, COLUMN_EVENTS)
+      .reverse()
+  : [];
+const trackedPivos = dashboard?.events.filter((event) => event.confirmed > 0).length ?? 0;
+
+const tiles = totals
+  ? [
+      { label: "Confirmadas en total", value: number(totals.confirmed), sub: `en ${trackedPivos} ${trackedPivos === 1 ? "Pivo" : "Pivos"}` },
+      {
+        label: "Personas distintas",
+        value: number(totals.people),
+        sub: totals.people ? `${totals.recurrentPeople} repiten (${percent(totals.recurrentPeople / totals.people)})` : "Aún nadie",
+      },
+      { label: "Media por Pivo", value: totals.avgPerPivo === null ? "—" : number(totals.avgPerPivo, 1), sub: "confirmadas en las ya celebradas" },
+      {
+        label: "Efecto del recordatorio",
+        value: totals.reminded ? `${totals.confirmedAfterReminder}/${totals.reminded}` : "—",
+        sub: `confirman tras el aviso${totals.medianHoursToConfirm === null ? "" : ` · tardan ${formatHours(totals.medianHoursToConfirm)}`}`,
+      },
+    ]
+  : [];
+---
+
+<Layout title="Panel · XauenDevs" description="Panel interno de XauenDevs." private>
+  <main class="viz mx-auto flex max-w-6xl flex-col py-6 sm:py-10">
+    {!isAdmin && (
+      <section class="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl bg-black/[0.04] fest:bg-white/[0.05] fest:ring-1 fest:ring-season/40">
+        <div class="h-2 bg-accent fest:bg-season"></div>
+        <div class="p-6 sm:p-10">
+          <p class="text-base font-semibold">Panel interno</p>
+          <h1 class="mt-2 text-4xl font-black leading-tight tracking-tight sm:text-5xl">{user ? "Sin acceso" : "Inicia sesión"}</h1>
+
+          {!user && (
+            <form class="mt-8 grid max-w-md gap-3" data-login>
+              <label class="grid gap-1 text-sm font-medium">
+                Email
+                <input name="email" type="email" autocomplete="username" required maxlength="254"
+                  class="rounded-full border border-black/20 bg-white px-5 py-3 text-base font-normal text-black fest:border-white/20" />
+              </label>
+              <label class="grid gap-1 text-sm font-medium">
+                Contraseña
+                <input name="password" type="password" autocomplete="current-password" required maxlength="256"
+                  class="rounded-full border border-black/20 bg-white px-5 py-3 text-base font-normal text-black fest:border-white/20" />
+              </label>
+              <button class="mt-2 justify-self-start rounded-full bg-black px-6 py-3 font-bold text-white fest:bg-season fest:text-black">Entrar</button>
+              <p class="text-base text-black/80 fest:text-white/80" data-message role="status"></p>
+            </form>
+          )}
+
+          {user && (
+            <>
+              <p class="mt-4 text-base text-black/80 fest:text-white/80">Hola, {user.name}. <button class="font-semibold underline" data-logout>Cerrar sesión</button></p>
+              <p class="mt-6 text-lg">Tu cuenta no tiene acceso a este panel.</p>
+            </>
+          )}
+        </div>
+      </section>
+    )}
+
+    {isAdmin && (
+      <>
+        <header class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="text-base font-semibold text-black/70 fest:text-white/70">Panel interno</p>
+            <h1 class="mt-1 text-4xl font-black leading-tight tracking-tight sm:text-5xl">Asistencia a las Pivos</h1>
+          </div>
+          <p class="text-sm text-black/70 fest:text-white/70">{user!.name} · <button class="font-semibold underline" data-logout>Cerrar sesión</button></p>
+        </header>
+
+        {loadError && <p class="mt-8 text-lg" role="alert">No se pudieron cargar las asistencias.</p>}
+
+        {dashboard && (
+          <div class="mt-8 grid gap-4 sm:gap-5">
+            <!-- La próxima Pivo: el número que importa hoy -->
+            <section class="viz-card relative overflow-hidden p-6 sm:p-8">
+              <div class="absolute inset-x-0 top-0 h-1.5" style="background: var(--viz-confirmed)"></div>
+              {next ? (
+                <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-end">
+                  <div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-sm font-semibold text-black/70 fest:text-white/70">Próxima Pivo</span>
+                      <span class="viz-pill rounded-full px-3 py-1 text-xs font-bold">{countdown(next.daysLeft)}</span>
+                    </div>
+                    <h2 class="mt-3 max-w-2xl text-2xl font-black leading-tight sm:text-3xl">{next.title}</h2>
+                    <p class="mt-2 text-black/70 fest:text-white/70">
+                      {formatDate(next.date, { weekday: "long", day: "numeric", month: "long" })} · {next.date!.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" })}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div class="flex items-end gap-4">
+                      <p class="text-7xl font-black leading-none tracking-tight sm:text-8xl">{next.confirmed}</p>
+                      <p class="pb-2 text-base leading-snug text-black/70 fest:text-white/70">
+                        confirmadas<br />
+                        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full" style="background: var(--viz-pending)"></span>+{next.pending} pendientes</span>
+                      </p>
+                    </div>
+                    {next.confirmRate !== null && (
+                      <div class="mt-5">
+                        <div class="flex justify-between text-sm text-black/70 fest:text-white/70">
+                          <span>Ya han confirmado</span>
+                          <span class="font-bold text-black fest:text-white">{percent(next.confirmRate)}</span>
+                        </div>
+                        <div class="viz-meter mt-2 h-2.5 overflow-hidden rounded-full" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(next.confirmRate * 100)} aria-label="Porcentaje de inscripciones confirmadas">
+                          <div class="viz-grow-x h-full rounded-full" style={`width: ${next.confirmRate * 100}%; background: var(--viz-confirmed)`}></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <p class="text-lg">No hay ninguna Pivo programada.</p>
+              )}
+            </section>
+
+            <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+              {tiles.map((tile) => (
+                <section class="viz-card p-5">
+                  <h2 class="text-sm font-semibold text-black/70 fest:text-white/70">{tile.label}</h2>
+                  <p class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">{tile.value}</p>
+                  <p class="mt-1 text-sm text-black/60 fest:text-white/60">{tile.sub}</p>
+                </section>
+              ))}
+            </div>
+
+            <section class="viz-card p-5 sm:p-6">
+              <h2 class="text-lg font-bold">Asistencia por Pivo</h2>
+              <p class="text-sm text-black/60 fest:text-white/60">Las últimas {columnEvents.length} con inscripciones. El número es el de confirmadas.</p>
+              <div class="mt-4">
+                {columnEvents.length ? <AttendanceColumns events={columnEvents} /> : <p class="py-10 text-center text-black/60 fest:text-white/60">Todavía no hay inscripciones.</p>}
+              </div>
+            </section>
+
+            <div class="grid gap-4 sm:gap-5 lg:grid-cols-2">
+              <section class="viz-card p-5 sm:p-6">
+                <h2 class="text-lg font-bold">Ritmo de inscripciones</h2>
+                <p class="text-sm text-black/60 fest:text-white/60">Inscripciones acumuladas en las tres semanas previas.</p>
+                <div class="mt-4"><SignupCurve current={dashboard.curves.current} previous={dashboard.curves.previous} /></div>
+              </section>
+
+              <section class="viz-card p-5 sm:p-6">
+                <h2 class="text-lg font-bold">Cuándo se apunta la gente</h2>
+                <p class="text-sm text-black/60 fest:text-white/60">Día y hora de cada inscripción (hora de Madrid).</p>
+                <div class="mt-4"><SignupHeatmap heatmap={dashboard.heatmap} /></div>
+              </section>
+            </div>
+
+            <details class="viz-card group p-5 sm:p-6">
+              <summary class="cursor-pointer list-none text-lg font-bold">
+                Todas las Pivos <span class="ml-1 inline-block text-black/50 transition-transform group-open:rotate-90 fest:text-white/50">›</span>
+              </summary>
+              <div class="mt-4 overflow-x-auto">
+                <table class="w-full text-left">
+                  <thead class="text-sm text-black/70 fest:text-white/70">
+                    <tr>
+                      <th class="py-2 pr-4 font-medium">Pivo</th>
+                      <th class="py-2 pr-4 font-medium">Fecha</th>
+                      <th class="py-2 pr-4 text-right font-medium">Confirmadas</th>
+                      <th class="py-2 text-right font-medium">Pendientes</th>
+                    </tr>
+                  </thead>
+                  <tbody class="tabular-nums">
+                    {dashboard.events.map((event) => (
+                      <tr class="border-t border-black/10 fest:border-white/10">
+                        <td class="py-3 pr-4">{event.title}</td>
+                        <td class="whitespace-nowrap py-3 pr-4">{formatDate(event.date)}</td>
+                        <td class="py-3 pr-4 text-right font-bold">{event.confirmed}</td>
+                        <td class="py-3 text-right">{event.pending}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+        )}
+
+        <div class="viz-tip pointer-events-none fixed z-50 hidden max-w-xs whitespace-pre-line rounded-xl px-3 py-2 text-sm shadow-lg" role="tooltip"></div>
+      </>
+    )}
+  </main>
+
+  <style>
+    /* Paleta validada (dataviz) para cada tema: claro, Halloween y Navidad. */
+    .viz {
+      --viz-surface: #ffffff;
+      --viz-confirmed: #d99a00;
+      --viz-pending: #2a78d6;
+      --viz-muted: #a3a29a;
+      --viz-grid: #ecebe6;
+      --viz-axis: #c3c2b7;
+      --viz-track: #f1f0ec;
+      --viz-border: rgba(11, 11, 11, 0.1);
+    }
+    :global([data-festive]) .viz {
+      --viz-surface: #141418;
+      --viz-muted: #6f6e68;
+      --viz-grid: #25252a;
+      --viz-axis: #3a3a40;
+      --viz-track: #1d1d22;
+      --viz-border: rgba(255, 255, 255, 0.1);
+    }
+    :global([data-theme="halloween"]) .viz {
+      --viz-confirmed: #e07012;
+      --viz-pending: #9b5cf0;
+    }
+    :global([data-theme="navidad"]) .viz {
+      --viz-surface: #121a26;
+      --viz-confirmed: #e22d3a;
+      --viz-pending: #3987e5;
+      --viz-grid: #1e2936;
+      --viz-track: #182230;
+    }
+
+    .viz :global(.viz-card) {
+      background: var(--viz-surface);
+      border: 1px solid var(--viz-border);
+      border-radius: 1.5rem;
+    }
+    .viz-pill {
+      background: color-mix(in oklab, var(--viz-confirmed) 18%, var(--viz-surface));
+    }
+    .viz-meter {
+      background: color-mix(in oklab, var(--viz-confirmed) 20%, var(--viz-surface));
+    }
+    .viz-tip {
+      background: var(--viz-surface);
+      border: 1px solid var(--viz-border);
+    }
+
+    /* Entrada: las columnas crecen desde la base y la línea se dibuja. Nada si se prefiere sin movimiento. */
+    @media (prefers-reduced-motion: no-preference) {
+      .viz :global(.viz-grow) {
+        transform-origin: bottom;
+        animation: viz-grow 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      .viz :global(.viz-grow-x) {
+        transform-origin: left;
+        animation: viz-grow-x 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      .viz :global(.viz-reveal) {
+        animation: viz-reveal 1200ms ease-out both;
+      }
+    }
+    @keyframes viz-grow {
+      from { transform: translateX(-50%) scaleY(0); }
+      to { transform: translateX(-50%) scaleY(1); }
+    }
+    @keyframes viz-grow-x {
+      from { transform: scaleX(0); }
+    }
+    @keyframes viz-reveal {
+      from { clip-path: inset(-10% 100% -10% 0); }
+      to { clip-path: inset(-10% 0 -10% 0); }
+    }
+  </style>
+
+  <script>
+    const init = () => {
+      const form = document.querySelector<HTMLFormElement>("[data-login]");
+      const logout = document.querySelector<HTMLButtonElement>("[data-logout]");
+      const tip = document.querySelector<HTMLElement>(".viz-tip");
+
+      if (form && !form.dataset.ready) {
+        form.dataset.ready = "1";
+        const message = form.querySelector<HTMLElement>("[data-message]")!;
+        const button = form.querySelector<HTMLButtonElement>("button")!;
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          button.disabled = true;
+          message.textContent = "Comprobando…";
+          try {
+            const response = await fetch("/api/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: data.get("email"), password: data.get("password") }),
+            });
+            if (response.ok) return location.reload();
+            const body = await response.json().catch(() => ({}));
+            message.textContent = body.error || "No se pudo iniciar sesión.";
+          } catch {
+            message.textContent = "No se pudo iniciar sesión.";
+          }
+          form.querySelector<HTMLInputElement>("[name=password]")!.value = "";
+          button.disabled = false;
+        });
+      }
+
+      if (logout && !logout.dataset.ready) {
+        logout.dataset.ready = "1";
+        logout.addEventListener("click", async () => {
+          await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+          location.reload();
+        });
+      }
+
+      if (!tip || tip.dataset.ready) return;
+      tip.dataset.ready = "1";
+
+      // Tooltip compartido, pegado encima del elemento (o del puntero en la curva).
+      const show = (text: string, x: number, y: number) => {
+        tip.textContent = text;
+        tip.classList.remove("hidden");
+        const width = tip.offsetWidth;
+        tip.style.left = `${Math.min(window.innerWidth - width - 8, Math.max(8, x - width / 2))}px`;
+        tip.style.top = `${Math.max(8, y - tip.offsetHeight - 10)}px`;
+      };
+      const hide = () => tip.classList.add("hidden");
+
+      document.querySelectorAll<HTMLElement>(".viz-hit").forEach((mark) => {
+        const open = () => {
+          const box = mark.getBoundingClientRect();
+          show(mark.dataset.tip ?? "", box.left + box.width / 2, box.top);
+        };
+        mark.addEventListener("pointerenter", open);
+        mark.addEventListener("focus", open);
+        mark.addEventListener("pointerleave", hide);
+        mark.addEventListener("blur", hide);
+      });
+
+      // Curva: línea vertical que sigue al puntero y muestra el valor de cada serie ese día.
+      document.querySelectorAll<HTMLElement>(".viz-curve").forEach((plot) => {
+        const { current, previous, days, max } = JSON.parse(plot.dataset.series ?? "{}") as { current: number[]; previous: number[]; days: number; max: number };
+        const crosshair = plot.querySelector<HTMLElement>(".viz-crosshair")!;
+        const dots = { current: plot.querySelector<HTMLElement>(".viz-dot-current")!, previous: plot.querySelector<HTMLElement>(".viz-dot-previous")! };
+        const place = (dot: HTMLElement, series: number[], index: number) => {
+          const value = series[index];
+          dot.classList.toggle("hidden", value === undefined);
+          if (value !== undefined) {
+            dot.style.left = `${(index / days) * 100}%`;
+            dot.style.top = `${100 - (value / max) * 100}%`;
+          }
+        };
+
+        plot.addEventListener("pointermove", (event) => {
+          const box = plot.getBoundingClientRect();
+          const index = Math.round(Math.min(1, Math.max(0, (event.clientX - box.left) / box.width)) * days);
+          crosshair.classList.remove("hidden");
+          crosshair.style.left = `${(index / days) * 100}%`;
+          place(dots.current, current, index);
+          place(dots.previous, previous, index);
+          const label = index === days ? "Día de la Pivo" : `${days - index} ${days - index === 1 ? "día" : "días"} antes`;
+          const lines = [label];
+          if (current[index] !== undefined) lines.push(`Próxima: ${current[index]}`);
+          if (previous[index] !== undefined) lines.push(`Anterior: ${previous[index]}`);
+          show(lines.join("\n"), box.left + (index / days) * box.width, box.top + 8);
+        });
+        plot.addEventListener("pointerleave", () => {
+          crosshair.classList.add("hidden");
+          dots.current.classList.add("hidden");
+          dots.previous.classList.add("hidden");
+          hide();
+        });
+      });
+    };
+
+    init();
+    document.addEventListener("astro:page-load", init);
+  </script>
+</Layout>
