@@ -92,3 +92,19 @@ export const getSessionUser = async (cookies: AstroCookies): Promise<SessionUser
     return null;
   }
 };
+
+// Protección CSRF: solo se aceptan envíos hechos desde la propia web.
+// Los navegadores marcan cada petición con Sec-Fetch-Site; si falta, se compara Origin con el host al que llegó
+// (no con la URL que reconstruye el servidor, que detrás del proxy de Vercel puede no coincidir).
+export const isSameOrigin = (request: Request) => {
+  const site = request.headers.get("sec-fetch-site");
+  if (site) return site === "same-origin";
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (!origin || !host) return false;
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+};
