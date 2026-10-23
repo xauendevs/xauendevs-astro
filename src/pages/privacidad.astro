@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { ORGANIZATION, ORGANIZATION_ADDRESS } from "@/consts/organization";
 
 export const prerender = false;
 ---
@@ -26,7 +27,8 @@ export const prerender = false;
         <h2 class="text-xl font-black text-black fest:text-white">1. Responsable del tratamiento</h2>
         <p class="mt-3">
           El responsable del tratamiento de los datos facilitados a través de este sitio web
-          es XauenDevs.
+          es {ORGANIZATION.name}, {ORGANIZATION.legalForm.toLowerCase()} con CIF {ORGANIZATION.taxId} y
+          domicilio social en {ORGANIZATION_ADDRESS}.
         </p>
         <p class="mt-2">
           Para cualquier cuestión relacionada con el tratamiento de tus datos puedes contactar

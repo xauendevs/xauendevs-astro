@@ -1,0 +1,96 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ORGANIZATION, ORGANIZATION_ADDRESS } from "@/consts/organization";
+
+export const prerender = false;
+
+const details = [
+  { label: "Denominación", value: ORGANIZATION.name },
+  { label: "Naturaleza", value: ORGANIZATION.legalForm },
+  { label: "CIF", value: ORGANIZATION.taxId },
+  {
+    label: "Inscripción",
+    value: `${ORGANIZATION.registry.name}, nº ${ORGANIZATION.registry.number}, desde el ${ORGANIZATION.registry.dateLabel}`,
+  },
+  { label: "Domicilio social", value: ORGANIZATION_ADDRESS },
+];
+---
+
+<Layout
+  title="Aviso legal · XauenDevs"
+  description="Datos identificativos de XauenDevs, asociación sin ánimo de lucro con sede en Jaén."
+>
+  <article class="mx-auto max-w-3xl py-12 md:py-20">
+    <h1 class="text-4xl font-black tracking-tight fest:text-white md:text-5xl">Aviso legal</h1>
+    <p class="mt-5 text-lg leading-relaxed text-black/80 fest:text-white/80">
+      En cumplimiento del artículo 10 de la Ley 34/2002, de Servicios de la Sociedad de la Información
+      y de Comercio Electrónico, estos son los datos del titular de este sitio web.
+    </p>
+
+    <dl
+      class="mt-8 grid gap-x-8 gap-y-4 rounded-2xl border-l-4 border-accent bg-black/[0.04] p-5 text-base sm:grid-cols-[auto_minmax(0,1fr)] fest:bg-white/[0.06]"
+    >
+      {
+        details.map(({ label, value }) => (
+          <>
+            <dt class="font-bold">{label}</dt>
+            <dd class="text-black/80 fest:text-white/80">{value}</dd>
+          </>
+        ))
+      }
+      <dt class="font-bold">Contacto</dt>
+      <dd>
+        <a class="font-bold underline underline-offset-4" href={`mailto:${ORGANIZATION.email}`}>{ORGANIZATION.email}</a>
+      </dd>
+    </dl>
+
+    <div class="mt-12 space-y-10 text-base leading-relaxed text-black/80 fest:text-white/80">
+      <section>
+        <h2 class="text-xl font-black text-black fest:text-white">1. Fines de la asociación</h2>
+        <p class="mt-3">
+          XauenDevs nace en {ORGANIZATION.foundingYear} como comunidad de desarrolladores de la provincia de Jaén
+          y en 2025 se constituye como asociación sin ánimo de lucro. Su fin es difundir el conocimiento sobre desarrollo de software y tecnología, y crear un punto
+          de encuentro para las personas que se dedican a ello o quieren empezar.
+        </p>
+        <p class="mt-3">
+          Para ello organiza charlas mensuales gratuitas y abiertas a todo el público (las Pivo&Code), talleres y
+          otros eventos de divulgación tecnológica, y colabora con otras comunidades, empresas e instituciones de
+          la provincia.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-black fest:text-white">2. Uso del sitio web</h2>
+        <p class="mt-3">
+          El acceso a este sitio web es gratuito. Quien lo utiliza se compromete a hacerlo conforme a la ley y a
+          estas condiciones, y a no usar sus contenidos ni servicios con fines ilícitos.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-black fest:text-white">3. Propiedad intelectual</h2>
+        <p class="mt-3">
+          Los textos, imágenes, logotipos y demás contenidos de este sitio pertenecen a XauenDevs o a sus
+          respectivos autores. Las marcas y logotipos de partners y colaboradores pertenecen a sus titulares y se
+          muestran solo para identificarlos.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-black fest:text-white">4. Enlaces externos</h2>
+        <p class="mt-3">
+          Este sitio incluye enlaces a webs de terceros, como plataformas de vídeo, redes sociales o las webs de
+          otros eventos. XauenDevs no se hace responsable de sus contenidos ni de sus políticas.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-black fest:text-white">5. Protección de datos</h2>
+        <p class="mt-3">
+          El tratamiento de los datos personales que se recogen a través de este sitio se explica en la
+          <a class="font-bold underline underline-offset-4" href="/privacidad">política de privacidad</a>.
+        </p>
+      </section>
+    </div>
+  </article>
+</Layout>

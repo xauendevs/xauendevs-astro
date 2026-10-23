@@ -7,6 +7,7 @@ import HackIntro from "@/components/HackIntro.astro";
 import EasterEgg from "@/components/EasterEgg.astro";
 import { getHackIntroEnabled } from "@/lib/site-theme";
 import { getSeason, seasonFavicon } from "@/lib/season";
+import { ORGANIZATION } from "@/consts/organization";
 import "@/styles/seasons.css";
 
 interface Props {
@@ -46,6 +47,31 @@ const favicon = season ? seasonFavicon(season) : "/favicon.svg";
 
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
 const socialImage = new URL(image, siteOrigin).href;
+
+// Datos de la asociación para buscadores y revisores automáticos (schema.org/NGO).
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  name: ORGANIZATION.name,
+  url: ORGANIZATION.url,
+  email: ORGANIZATION.email,
+  taxID: ORGANIZATION.taxId,
+  nonprofitStatus: "Nonprofit",
+  foundingDate: ORGANIZATION.registry.date,
+  identifier: {
+    "@type": "PropertyValue",
+    propertyID: ORGANIZATION.registry.name,
+    value: ORGANIZATION.registry.number,
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: ORGANIZATION.address.street,
+    postalCode: ORGANIZATION.address.postalCode,
+    addressLocality: ORGANIZATION.address.locality,
+    addressRegion: ORGANIZATION.address.region,
+    addressCountry: ORGANIZATION.address.countryCode,
+  },
+};
 ---
 
 <!doctype html>
@@ -75,6 +101,7 @@ const socialImage = new URL(image, siteOrigin).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
   </head>
   <body data-theme={season} data-festive={season ? "" : undefined} class:list={[season && "bg-night text-white"]}>
     {showHackIntro && <HackIntro season={season ?? "halloween"} />}

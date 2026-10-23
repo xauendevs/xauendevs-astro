@@ -1,6 +1,7 @@
 ---
 import PreFooter from "@/components/PreFooter.astro";
 import { getSeason, SEASON_CONTENT } from "@/lib/season";
+import { ORGANIZATION, ORGANIZATION_ADDRESS } from "@/consts/organization";
 
 // Con temporada, el corazón de la firma cambia por el emoji de la temporada.
 const season = await getSeason(Astro);
@@ -19,4 +20,11 @@ const heart = season ? SEASON_CONTENT[season].cta : "💚";
       >hecho con {heart} en Jaén</span
     >
   </div>
+  <!-- Datos legales visibles en todas las páginas: Google para Organizaciones sin Fines de Lucro los exige. -->
+  <p class="max-w-3xl text-balance text-center text-sm leading-relaxed text-black/70 fest:text-white/70">
+    {ORGANIZATION.name} · {ORGANIZATION.legalForm} · CIF {ORGANIZATION.taxId} ·
+    {ORGANIZATION.registry.name}, nº {ORGANIZATION.registry.number} · {ORGANIZATION_ADDRESS} ·
+    <a class="underline underline-offset-4" href="/aviso-legal">Aviso legal</a> ·
+    <a class="underline underline-offset-4" href="/privacidad">Privacidad</a>
+  </p>
 </footer>
