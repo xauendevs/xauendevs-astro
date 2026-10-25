@@ -30,3 +30,4 @@ xauendevs.ducklet
 pnpm-lock.yaml
 
 api.rest
+.playwright/

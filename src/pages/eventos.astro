@@ -175,17 +175,16 @@ const availableTags = Array.from(
         <section data-event-section class="pt-4">
           <h2 class="mb-6 text-3xl font-black tracking-tight">Charlas anteriores</h2>
 
-          <div class="overflow-hidden rounded-3xl bg-black/[0.04] fest:bg-white/[0.04]">
-            {pastEvents.map(({ title, speakers, place, date, tags }, index) => (
+          {/* El borde va entre filas visibles: con filtros o paginación la primera visible no siempre es la primera. */}
+          <div class="overflow-hidden rounded-3xl bg-black/[0.04] fest:bg-white/[0.04] [&>a:not(.hidden)~a:not(.hidden)]:border-t [&>a]:border-black/10 fest:[&>a]:border-white/10">
+            {pastEvents.map(({ title, speakers, place, date, tags }) => (
               <a
                 href={`/eventos/${slugify(title)}`}
                 data-event-tags={tags.join(",")}
                 data-event-type="xauen"
                 data-event-organizer="XauenDevs"
-                class:list={[
-                  "group flex flex-col gap-2 px-5 py-5 transition-colors hover:bg-black/[0.06] fest:hover:bg-white/[0.06] md:flex-row md:items-center md:gap-4 md:px-6",
-                  index > 0 && "border-t border-black/10 fest:border-white/10",
-                ]}
+                data-past-event
+                class="group flex flex-col gap-2 px-5 py-5 transition-colors hover:bg-black/[0.06] fest:hover:bg-white/[0.06] md:flex-row md:items-center md:gap-4 md:px-6"
               >
                 <time class="flex shrink-0 flex-col md:w-28" datetime={date.toISOString()}>
                   <span class="text-base font-bold">
@@ -222,6 +221,12 @@ const availableTags = Array.from(
               </a>
             ))}
           </div>
+
+          <nav data-past-pager aria-label="Páginas de charlas anteriores" class="mt-6 flex flex-wrap items-center justify-center gap-2"></nav>
+          {/* Plantilla para que los botones creados desde el script reciban los estilos con ámbito de .filter-chip. */}
+          <template data-past-pager-button>
+            <button type="button" aria-pressed="false" class="filter-chip min-w-10 disabled:pointer-events-none disabled:opacity-40"></button>
+          </template>
         </section>
       )
     }
@@ -236,8 +241,13 @@ const availableTags = Array.from(
     const clearButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-clear-filters], [data-clear-filters-empty]"));
     const filterResult = document.querySelector<HTMLElement>("[data-filter-result]");
     const filterEmpty = document.querySelector<HTMLElement>("[data-filter-empty]");
+    const pastPager = document.querySelector<HTMLElement>("[data-past-pager]");
+    const pastSection = pastPager?.closest<HTMLElement>("[data-event-section]");
+    const pastPagerButton = document.querySelector<HTMLTemplateElement>("[data-past-pager-button]");
+    const PAST_PAGE_SIZE = 10;
     const selectedTags = new Set<string>();
     const selectedTypes = new Set<string>();
+    let pastPage = 1;
 
     const matches = (card: HTMLElement) => {
       const tags = (card.dataset.eventTags || "").split(",").filter(Boolean);
@@ -250,17 +260,57 @@ const availableTags = Array.from(
       const params = new URLSearchParams();
       if (selectedTypes.size) params.set("tipo", [...selectedTypes].join(","));
       if (selectedTags.size) params.set("tema", [...selectedTags].join(","));
+      if (pastPage > 1) params.set("pagina", String(pastPage));
       const query = params.toString();
       history.replaceState({}, "", query ? `${location.pathname}?${query}` : location.pathname);
     };
 
+    // Las charlas anteriores se filtran primero y luego se reparten en páginas, así los filtros buscan en todas.
+    const renderPastPager = (totalPages: number) => {
+      if (!pastPager || !pastPagerButton) return;
+      pastPager.replaceChildren();
+      if (totalPages <= 1) return;
+      const addButton = (label: string, page: number, options: { current?: boolean; disabled?: boolean; ariaLabel?: string } = {}) => {
+        const button = pastPagerButton.content.firstElementChild!.cloneNode(true) as HTMLButtonElement;
+        button.textContent = label;
+        if (options.ariaLabel) button.setAttribute("aria-label", options.ariaLabel);
+        if (options.current) button.setAttribute("aria-current", "page");
+        button.setAttribute("aria-pressed", String(Boolean(options.current)));
+        button.disabled = Boolean(options.disabled);
+        button.addEventListener("click", () => {
+          pastPage = page;
+          updateFilter();
+          pastSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        pastPager.append(button);
+      };
+      addButton("←", pastPage - 1, { disabled: pastPage === 1, ariaLabel: "Página anterior" });
+      for (let page = 1; page <= totalPages; page++) {
+        addButton(String(page), page, { current: page === pastPage, ariaLabel: `Página ${page}` });
+      }
+      addButton("→", pastPage + 1, { disabled: pastPage === totalPages, ariaLabel: "Página siguiente" });
+    };
+
     const updateFilter = (sync = true) => {
       let visibleUpcoming = 0;
+      const matchingPast: HTMLElement[] = [];
       cards.forEach((card) => {
         const visible = matches(card);
+        if (card.hasAttribute("data-past-event")) {
+          if (visible) matchingPast.push(card);
+          return;
+        }
         card.classList.toggle("hidden", !visible);
         if (visible && card.dataset.upcoming === "true") visibleUpcoming++;
       });
+      const totalPastPages = Math.max(1, Math.ceil(matchingPast.length / PAST_PAGE_SIZE));
+      pastPage = Math.min(Math.max(1, pastPage), totalPastPages);
+      const pageStart = (pastPage - 1) * PAST_PAGE_SIZE;
+      const pageItems = new Set(matchingPast.slice(pageStart, pageStart + PAST_PAGE_SIZE));
+      cards.forEach((card) => {
+        if (card.hasAttribute("data-past-event")) card.classList.toggle("hidden", !pageItems.has(card));
+      });
+      renderPastPager(totalPastPages);
       sections.forEach((section) => {
         section.classList.toggle("hidden", section.querySelectorAll('[data-event-tags]:not(.hidden)').length === 0);
       });
@@ -280,12 +330,14 @@ const availableTags = Array.from(
       const params = new URLSearchParams(location.search);
       params.get("tipo")?.split(",").filter(Boolean).forEach((v) => selectedTypes.add(v));
       params.get("tema")?.split(",").filter(Boolean).forEach((v) => selectedTags.add(v));
+      pastPage = Number(params.get("pagina")) || 1;
     };
 
     tagButtons.forEach((button) => button.addEventListener("click", () => {
       const tag = button.dataset.tagFilter;
       if (!tag) return;
       selectedTags.has(tag) ? selectedTags.delete(tag) : selectedTags.add(tag);
+      pastPage = 1;
       updateFilter();
     }));
 
@@ -298,11 +350,12 @@ const availableTags = Array.from(
         selectedTypes.clear();
         selectedTypes.add(type);
       }
+      pastPage = 1;
       updateFilter();
     }));
 
     clearButtons.forEach((button) => button.addEventListener("click", () => {
-      selectedTags.clear(); selectedTypes.clear(); updateFilter();
+      selectedTags.clear(); selectedTypes.clear(); pastPage = 1; updateFilter();
     }));
 
     readUrl();
