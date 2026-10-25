@@ -32,6 +32,26 @@ export const PRESS: Array<string | PressEntry> = [
     image: "/img/prensa/ayuntamiento-jaen-pivocode-42.jpg",
     outlet: "Ayuntamiento de Jaén",
   },
+  {
+    url: "https://www.facebook.com/imefe/posts/-la-inteligencia-artificial-y-el-futuro-del-desarrollo-de-software-protagonistas/1541371144683255/",
+    date: "2026-10-23",
+    title: "La inteligencia artificial y el futuro del desarrollo de software, protagonistas de la 42.ª edición de Pivo&Code",
+    description:
+      "Raúl Yeguas habló de las oportunidades y los retos de la IA para los profesionales del desarrollo de software, con la participación del concejal Luis García Millán.",
+    image: "/img/prensa/imefe-pivocode-42.jpg",
+    outlet: "IMEFE (Facebook)",
+  },
+  // Instagram tampoco da los datos al servidor: igual que Facebook.
+  {
+    url: "https://www.instagram.com/p/De2OAeWEdlF/",
+    date: "2026-10-23",
+    title: "La IA y el futuro del desarrollo de software, en la 42.ª edición de Pivo&Code",
+    description:
+      "El edificio del Banco de España acoge un nuevo encuentro de la comunidad tecnológica jiennense, impulsado por XauenDevs.",
+    image: "/img/prensa/imefe-instagram-pivocode-42.jpg",
+    outlet: "IMEFE (Instagram)",
+  },
+  "https://www.horajaen.com/2026/10/23/pivo-code-jaen-inteligencia-artificial-desarrollo-software/",
   "https://www.canalsurmas.es/videos/409399-noticias-2-ja%C3%A9n-mi%C3%A9rcoles-30-de-septiembre-canal-sur",
   "https://www.diariojaen.es/jaen/el-banco-de-espana-acogera-un-encuentro-para-analizar-el-impacto-de-la-ia-en-el-futuro-del-desarrollo-de-software-NA11666586",
   "https://www.horajaen.com/2026/10/20/banco-de-espana-jaen-pivo-code-42-inteligencia-artificial/",
