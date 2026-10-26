@@ -9,6 +9,9 @@
  * Y la broma del hackeo (solo con tema "halloween"):
  *   Edge Config `hack_intro` (true/false) → env `SITE_HACK_INTRO` → activada.
  *
+ * Y el modo mantenimiento (src/middleware.ts):
+ *   Edge Config `maintenance` (true/false) → env `SITE_MAINTENANCE` → apagado.
+ *
  * Añadir una temporada nueva: añadirla a THEMES, definir sus tokens en Layout.astro (y sus textos en
  * HackIntro) — ver README → "Temas estacionales".
  */
@@ -49,6 +52,14 @@ export async function getSiteTheme(): Promise<SiteTheme> {
   if (isTheme(env)) return normalize(env);
 
   return DEFAULT_THEME;
+}
+
+/** Modo mantenimiento: Edge Config `maintenance` (true/false) → env `SITE_MAINTENANCE` → apagado. */
+export async function getMaintenanceEnabled(): Promise<boolean> {
+  const remote = await fromEdgeConfig<boolean | string>("maintenance");
+  const value = remote ?? import.meta.env.SITE_MAINTENANCE ?? process.env.SITE_MAINTENANCE;
+  if (value === undefined || value === "") return false;
+  return ["true", "1", "on", "yes"].includes(String(value).trim().toLowerCase());
 }
 
 export async function getHackIntroEnabled(): Promise<boolean> {

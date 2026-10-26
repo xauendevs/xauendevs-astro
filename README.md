@@ -121,9 +121,10 @@ La web tiene un diseño base (el de siempre) y **temporadas** que se activan y d
 2. Claves del store:
    - `site_theme`: `"halloween"` · `"navidad"` · `"default"`. **Cualquier otro valor (o ninguno) deja la web exactamente como siempre.**
    - `hack_intro`: `true` / `false` (broma de entrada; usa los textos de la temporada activa).
+   - `maintenance`: `true` / `false` (modo mantenimiento: todas las páginas muestran «Volvemos enseguida» con un 503; la API, el panel interno y los estáticos siguen funcionando. Ver `src/middleware.ts`).
 3. Guardar: se ve en ≤ 1 min (caché de la CDN, `s-maxage=60`).
 
-Alternativa sin Global Config: variables `SITE_THEME` y `SITE_HACK_INTRO` (**requieren *Redeploy***: Vercel solo aplica las variables de entorno a despliegues nuevos).
+Alternativa sin Global Config: variables `SITE_THEME`, `SITE_HACK_INTRO` y `SITE_MAINTENANCE` (**requieren *Redeploy***: Vercel solo aplica las variables de entorno a despliegues nuevos).
 
 ### Cómo está montado
 - `src/lib/site-theme.ts` resuelve la temporada (Global Config → env → `default`); `src/lib/season.ts` la memoiza por petición y guarda los textos/rutas por temporada (`SEASON_CONTENT`).
