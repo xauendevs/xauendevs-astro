@@ -1,0 +1,131 @@
+---
+import Logo from "@/components/Logo.astro";
+import { getMaintenanceEnabled } from "@/lib/site-theme";
+
+// Solo existe con el modo mantenimiento activo: src/middleware.ts reescribe aquí todas las páginas.
+export const prerender = false;
+
+if (!(await getMaintenanceEnabled())) {
+  return new Response(null, { status: 404 });
+}
+
+Astro.response.status = 503;
+Astro.response.headers.set("Retry-After", "600");
+Astro.response.headers.set("Cache-Control", "no-store");
+
+// Lo que "estamos haciendo" mientras tanto: van rotando en la consola de la página.
+const TASKS = [
+  "Centrando un div (intento n.º 37)",
+  "Borrando los console.log que se colaron en producción",
+  "Reinstalando node_modules (pesa más que el servidor)",
+  "Pidiéndole perdón al linter",
+  "Renombrando variables de data2 a algo con sentido",
+  "Probando en producción, como los valientes",
+  "Esperando a que termine el npm install",
+  "Enfriando las pivos para la próxima Pivo&Code",
+  "Cerrando las 46 pestañas de Stack Overflow",
+  "Resolviendo un merge conflict con nosotros mismos",
+];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Volvemos enseguida · XauenDevs</title>
+    <meta name="description" content="Estamos haciendo tareas de mantenimiento en la web. Volvemos enseguida." />
+  </head>
+  <body class="flex min-h-[100dvh] flex-col bg-white px-6 py-10 text-[#0d0d0d]">
+    <a href="/" aria-label="XauenDevs" class="mx-auto block">
+      <Logo width="200" class="text-[#0d0d0d]" />
+    </a>
+    <main class="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center py-16">
+      <p class="flex items-center gap-3 text-lg font-semibold text-accent-text">
+        <span class="relative flex h-3 w-3" aria-hidden="true">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75 motion-reduce:animate-none"></span>
+          <span class="relative inline-flex h-3 w-3 rounded-full bg-accent"></span>
+        </span>
+        En mantenimiento
+      </p>
+      <h1 class="mt-4 text-4xl font-black tracking-tight md:text-6xl">Estamos haciendo unos ajustes</h1>
+      <p class="mt-6 text-lg text-black/70 md:text-xl">
+        La web está en tareas de mantenimiento. <strong class="text-black">Volvemos enseguida.</strong>
+      </p>
+
+      <div class="mt-10 overflow-hidden rounded-2xl bg-[#0d0d0d] font-mono text-sm text-white shadow-xl" aria-label="Tareas en curso">
+        <div class="flex items-center gap-2 border-b border-white/10 px-4 py-3" aria-hidden="true">
+          <span class="h-3 w-3 rounded-full bg-[#ff5f57]"></span>
+          <span class="h-3 w-3 rounded-full bg-[#febc2e]"></span>
+          <span class="h-3 w-3 rounded-full bg-[#28c840]"></span>
+          <span class="ml-2 text-white/50">xauendevs@prod:~</span>
+        </div>
+        <div class="space-y-3 px-4 py-4">
+          <p class="flex gap-2">
+            <span class="text-accent" aria-hidden="true">$</span>
+            <span id="task" aria-live="polite">{TASKS[0]}</span><span class="cursor" aria-hidden="true">▍</span>
+          </p>
+          <div class="flex items-center gap-3">
+            <div class="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+              <div class="h-full w-[99%] rounded-full bg-accent"></div>
+            </div>
+            <span class="text-white/70">99%</span>
+          </div>
+          <p class="text-white/50">El último 1% es el que más cuesta.</p>
+        </div>
+      </div>
+
+      <a
+        href="/"
+        class="mt-10 inline-flex min-h-12 w-fit items-center rounded-full bg-accent px-6 font-bold text-black transition hover:-translate-y-0.5 motion-reduce:transition-none"
+      >
+        Volver a intentarlo
+      </a>
+    </main>
+
+    <script define:vars={{ tasks: TASKS }}>
+      const task = document.getElementById("task");
+      let i = 0;
+      setInterval(() => {
+        i = (i + 1) % tasks.length;
+        task.textContent = tasks[i];
+      }, 2800);
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-accent: #f6b703;
+    --color-accent-text: #6b4f00;
+    --color-focus: #0d0d0d;
+  }
+
+  html {
+    font-family: "Roboto Flex Variable", system-ui, sans-serif;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  .cursor {
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor {
+      animation: none;
+    }
+  }
+</style>
